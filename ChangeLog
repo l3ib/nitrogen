@@ -1,0 +1,158 @@
+Mon Apr 24 20:30:46 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Fixed a gigantic problem that someone else introduced in the 
+	  multihead setting code in the gui mode.  
+
+Tue Apr 18 23:31:25 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Tango'd up the display icon (for multiscreens).
+
+Fri Apr 14 13:30:17 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Background colour for center mode now works if the image
+	  has an alpha channel. The alpha was being set to zero, while
+	  it should have always been full.
+
+Fri Apr 14 12:55:06 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Restore shouldn't fail if it cannot get the bg color.
+	  This is an attempt to fix ticket #7.
+
+Thu Apr 13 23:21:50 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Added tiled background support. Oh joy.
+
+Thu Apr 13 15:11:25 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed --restore. Goddamned curly braces.
+
+Sat Apr  8 14:09:52 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Removed debugging print stuff that I left in accidentally.
+
+Sat Apr  8 12:53:41 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed insanity in the SetBG class. This fixes another hang-up
+	  bug.
+
+Fri Apr  7 13:53:47 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed logic in the config class. This fixes a hang-up
+	  bug.
+
+Tue Apr  4 21:50:02 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Added GPL headers to all source files, yay.
+
+Wed Mar 29 13:39:40 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed a bug where nitrogen thumbnails would crap out if the
+	  supplied path was not an absolute one.
+
+Sun Mar 26 18:23:39 EST 2006	Dave Foster <daf@minuslab.net>
+	* Added a new icon from Craig Duquette.
+	* Made it possible to select a color to use as the rest of the background
+	  when setting with a mode that may not take the entire screen up.  
+	* Made defaults better by restoring mode and bg color in addition to 
+	  just file name.
+
+Sun Mar 26 14:11:09 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Made the view more efficient. No more use of markup.
+	* Removed an unnecessary column.
+
+Wed Mar 22 12:25:26 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed the --help argument parser bug.
+
+Tue Mar 21 22:46:34 EST 2006	Dave Foster <daf@minuslab.net>
+	* Several internal changes, such as moving the Config class to a 
+	  singleton.  This will help us expand the configuration later for when
+	  it remembers directories and whatnot.
+	* Wrote a killer man page.  Currently does not seem to be picked up by 
+	  man when installed to the /usr/local prefix for some reason, perhaps
+	  it's just my system.
+	* Made the view automatically scroll to the saved bg for the default 
+	  display (if it exists).  Pretty nice!
+	* Internal code cleanups.
+	* Integrated updated argument parsing class, introduced a new bug that
+	  it doesn't seem to recognize --help anymore.  Sys, fix it!
+
+Fri Mar 17 15:55:26 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Added last-modified time sort; you can sort either oldest first or
+	  newest first. See --help.
+
+Fri Mar 17 14:50:20 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Added alphanumeric and reverse alphanumeric sort options;
+	  see --help.
+
+Fri Mar 17 14:05:48 EST 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* GTK's built-in tree view searching is now enabled. You can search
+	  by giving focus to the treeview and typing in the search key.
+
+Mon Mar 13 22:35:41 EST 2006	Dave Foster <daf@minuslab.net>
+	* Renamed a class and renamed a bunch of files.  You will most likely have
+	  to do the full suite of autoutils.. aclocal, autoconf, autoheader,
+	  automake will most likely get it done.
+
+Thu Mar  2 22:17:21 EST 2006	Dave Foster <daf@minuslab.net>
+	* Integrated Javeed's argument parser class into the app, meaning we can 
+	  finally support proper arguments.  I added two, "--restore" and 
+	  "--no-recurse".  If you can't figure out what they mean.. well.. sorry.
+
+Sat Dec  3 23:03:57 EST 2005	Dave Foster <daf@minuslab.net>
+	* Refactored crappy individual combo boxes into one common class, removed
+	  program logic from that class into other places.
+
+Tue Nov 29 21:32:41 EST 2005	Dave Foster <daf@minuslab.net>
+	* Re-enabled thumbnail creation after finding out GdkPixbuf does support
+	  saving of png text blocks.  Can't figure out how to read them in right
+	  now, but it works.  Now, also tries to create ~/.thumbnails + normal if
+	  they do not exist for some reason.
+
+Tue Nov 29 15:09:25 EST 2005	Dave Foster <daf@minuslab.net>
+	* Yes, we're still alive.
+	* Retooled a lot of the inner workings.  Files are no longer scanned in a
+	  thread, a rediculous exponential loop was removed.
+	* Now uses freedesktop.org thumbnailing standard instead of own thumbnail
+	  cache.  This offloads a lot of work to other apps, and duplicate data.
+	  Broke thumbnail generation in the process, becuase the standard requires
+	  certain info to be set in the png file, which it doesn't look like
+	  Gdk::Pixbuf supports.  Will have to do it manually using libpng.  Also 
+	  removed showing of dimensions, becuase storing them in their own file
+	  was wasteful and used a lot of IO.  These dims can optionally be stored
+	  in thumbnails, but will probably not due to other programs not having 
+	  the info available.
+	* Switched from our own custom Makefile hax to using autoconf/make/tools.
+
+Thu Sep  8 01:55:19 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Retooled UI to have a checkbox denoting whether to save the bg upon
+	  setting, rather than two seperate buttons.  This way, double clicking
+	  can save the state as well, if the CB is pressed.
+	* Internal API changes again, cleanup of NWindow class to avoid duplicate
+	  code.
+
+Wed Sep  7 03:34:15 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Added state saving to a file, and the ability to reset to those saved
+	  bgs.  Currently, it's very hax, as no argument parser exists, so run
+	  it with a third argument (doesn't matter what it is) to get it to try
+	  to read saved bgs in the file.  You make these saved entries by using
+	  the saved button in the UI.  Also, it won't exit right away, I'll 
+	  figure that out soon. (update: fixed)
+	* Some consistancy changes in the API.
+	* Added a search part to the UI, but it's currently hidden, as it's not
+	  anywhere near what it's supposed to look like.  It was more of a test
+	  for seeing what a Gtk Expander would look like, and will most likely
+	  be used for another area.
+
+Tue Sep  6 02:13:36 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Modified cache dir to reflect the user cache dir that glib returns, 
+	  for proper freedesktop.org compliance.
+	* Started making room for "Save" feature on UI.
+
+Mon Sep  5 16:52:57 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Fixed bug in display opening code, now it can open all displays again.
+	* Split modes of bg setting into different functions for clarity.
+	* Changed Centered mode to crop images that are larger.
+
+Mon Sep  5 02:01:34 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Added "Best Fit" setting mode.
+	* Changed wording of display drop down combo, and should be invisible on
+	  machines with only one screen.
+
+Thu Sep  1 03:53:32 GMT 2005	Dave Foster <daf@minuslab.net>
+	* Created CHANGELOG, AUTHORS, README files.  Will get to others shortly.
+	* Removed feh dependence.  Nitrogen can now set its own backgrounds.  At
+	  present, scaled works perfect, centered gets sketchy with images that 
+	  are bigger than the screen, and I'm not sure the best way to do tiled,
+	  so it's pretty much disabled.
+	* Various TODOs left in places to clean up, such as the awful named 
+	  "combo" class.
+

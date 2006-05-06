@@ -1,0 +1,41 @@
+NITROGEN:
+
+Webpage: http://www.minuslab.net/code/nitrogen/
+
+
+Requirements:
+
+GTKMM 2.8
+
+
+Installation:
+
+./configure
+make
+make install (as root or a user with proper permissions)
+
+The binary is called, amazingly enough, "nitrogen".
+
+
+
+Usage:  nitrogen [OPTIONS] DIRECTORY
+
+Options:
+        --no-recurse
+                Do not recurse into subdirectories
+        --restore
+                Restore saved backgrounds
+        --sort=[arg]
+                How to sort the backgrounds. Valid options are:
+                        * alpha, for alphanumeric sort
+                        * ralpha, for reverse alphanumeric sort
+                        * time, for last modified time sort (oldest first)
+                        * rtime, for reverse last modified time sort (newest first)
+
+DIRECTORY is the directory containing the backgrounds you wish to preview.  It
+adds files recursively from here (so long as --no-recurse hasn't been supplied),
+generating preview images asynchronously.
+
+If you want to tell us about the many bugs that we have, drop by #gentoo.et on
+irc.freenode.net, and talk to nightm4re or syscrash2k.
+

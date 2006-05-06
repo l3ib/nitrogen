@@ -1,0 +1,45 @@
+.TH NITROGEN 1 "MARCH 2006" "NITROGEN" "NITROGEN"
+.SH NAME
+nitrogen \- X11 background previewer and setter
+.SH SYNOPSIS
+.B nitrogen [
+.I OPTIONS
+.B ]
+.I DIRECTORY
+.SH DESCRIPTION
+In normal working mode, provides an interface which displays all pictures in the given DIRECTORY.  From this interface, it is possible to set the X11 root pixmap either temporarily or set and store the picture, drawing mode, and X display for restoration later.
+.P
+When the --restore option is passed, nitrogen sets all backgrounds that it has a configuration for and exits immediatly, for use in an .xinitrc or .xsession file.
+.SH OPTIONS
+.IP --no-recurse
+Do not recurse into subdirectories of DIRECTORY.
+.IP --restore
+Restores previously saved pictures to the root displays.
+.IP --sort=[option]
+Sorts the background list by the given option.  By default, items are sorted as they are found on the filesystem, giving a quasi-newest first sorting order.  Valid options are:
+.RS
+.IP alpha
+Alphabetical order.
+.IP ralpha
+Reverse alphabetical order.
+.IP time
+Modified time, ascending.
+.IP rtime
+Modified time, descending.
+.RE
+.IP --help
+A mystery option which saves the iguanas of Sweden.
+.SH FILES
+.I ~/.config/nitrogen/
+.RS 
+Holds the configuration for saved backgrounds.
+.RE
+.SH BUGS
+There are probably plenty of them.  Report all bugs to Dave Foster <daf@minuslab.net>.
+.SH AUTHORS
+Dave Foster <daf@minuslab.net>
+Javeed Shaikh <syscrash2k@gmail.com>
+.SH AVAILABILITY
+Homepage - http://www.minuslab.net/code/nitrogen/.  The SVN server for it is at http://syscrash.ca.
+
+
