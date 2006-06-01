@@ -136,8 +136,13 @@ void Thumbview::load_dir() {
 		}
 	
 		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
-			
-			Glib::ustring fullstr = curdir + "/" + Glib::filename_to_utf8(*i);
+			Glib::ustring fullstr;	
+			try {
+				fullstr = curdir + "/" + Glib::filename_to_utf8(*i);
+			} catch (Glib::ConvertError& error) {
+				std::cerr << "Invalid UTF-8 encountered. Skipping file " << *i << std::endl;
+				continue;
+			}
 
 			if ( Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR) )
 			{
@@ -295,10 +300,19 @@ void Thumbview::make_cache_images() {
 			#endif
 
 			// open image
-			thumb = Gdk::Pixbuf::create_from_file(file);
+			try {
+				thumb = Gdk::Pixbuf::create_from_file(file);
+			} catch (...) {
+				// forget it, move on
+				continue;
+			}
+
+			// eliminate zero heights (due to really tiny images :/)
+			int height = (int)(100*((float)thumb->get_height()/(float)thumb->get_width()));
+			if (!height) height = 1;
 
 			// create thumb
-			thumb = thumb->scale_simple(100, (int)(100*((float)thumb->get_height()/(float)thumb->get_width())), Gdk::INTERP_TILES);
+			thumb = thumb->scale_simple(100, height, Gdk::INTERP_TILES);
 
 			// create required fd.o png tags
 			std::list<Glib::ustring> opts, vals;

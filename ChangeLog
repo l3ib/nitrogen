@@ -1,3 +1,7 @@
+Thu Jun  1 12:22:55 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed some segfaults due to attempted saving of zero height
+	  images and incorrect UTF-8 file names.
+
 Mon Apr 24 20:30:46 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Fixed a gigantic problem that someone else introduced in the 
 	  multihead setting code in the gui mode.  
