@@ -138,7 +138,7 @@ void Thumbview::load_dir() {
 		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
 			Glib::ustring fullstr = curdir + Glib::ustring("/");
 			try {
-				fullstr += /*Glib::filename_to_utf8(*/*i;//);
+				fullstr += Glib::filename_to_utf8(*i);
 			} catch (Glib::ConvertError& error) {
 				std::cerr << "Invalid UTF-8 encountered. Skipping file " << *i << std::endl;
 				continue;
