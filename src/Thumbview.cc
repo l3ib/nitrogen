@@ -62,7 +62,7 @@ Thumbview::Thumbview() : dir("") {
 	this->col_thumb = new Gtk::TreeViewColumn("thumbnail", this->rend_img);
 	this->col_desc = new Gtk::TreeViewColumn("description", this->rend);
 	
-	col_desc->add_attribute (rend, "markup", 1);
+	col_desc->add_attribute (rend, "text", 1);
 	col_thumb->pack_start (thumbnail);
 	col_desc->set_sort_column (filename);
 	col_desc->set_sort_indicator (true);
@@ -138,7 +138,7 @@ void Thumbview::load_dir() {
 		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
 			Glib::ustring fullstr = curdir + Glib::ustring("/");
 			try {
-				fullstr += Glib::filename_to_utf8(*i);
+				fullstr += /*Glib::filename_to_utf8(*/*i;//);
 			} catch (Glib::ConvertError& error) {
 				std::cerr << "Invalid UTF-8 encountered. Skipping file " << *i << std::endl;
 				continue;
@@ -357,11 +357,14 @@ void Thumbview::handle_dispatch_thumb() {
 	
 	Gtk::TreeModel::Row row = *iter;
 	Glib::RefPtr<Gdk::Pixbuf> pb;
+	#ifdef PENDEBUG
+	std::cout << "DEBUG: (in handle_dispatch_thumb()) passing " << file << " to cache_file" << std::endl;
+	#endif
 	pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 96, 96, true);
 	row[thumbnail] = pb;
 	
 	// build desc
-	row[description] = "<b>" + Glib::Markup::escape_text(std::string(file, file.rfind ("/")+1)) + "</b>";
+	row[description] = Glib::ustring(file, file.rfind ("/")+1);
 
 	// emit a changed signal
 	store->row_changed (store->get_path(iter), iter);
