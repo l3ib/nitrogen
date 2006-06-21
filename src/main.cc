@@ -26,10 +26,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ArgParser.h"
 #include <stdio.h>
 
+// parafarmance testing / bug finding
+// http://primates.ximian.com/~federico/news-2006-03.html#09
+void
+program_log (const char *format, ...)
+{
+	va_list args;
+    char *formatted, *str;
+
+    va_start (args, format);
+    formatted = g_strdup_vprintf (format, args);
+    va_end (args);
+
+    str = g_strdup_printf ("MARK: %s: %s", g_get_prgname(), formatted);
+    g_free (formatted);
+
+	access (str, F_OK);
+    g_free (str);
+} 
+
 // TODO: friggin move these somewhere
 // <2k> I concur.
 void set_saved_bgs() {
 
+	program_log("entering set_saved_bgs()");
+	
 	Glib::ustring file, display;
 	SetBG::SetMode mode;
 	Gdk::Color bgcolor;
@@ -44,21 +65,32 @@ void set_saved_bgs() {
 	}
 
 	for (i=displist.begin(); i!=displist.end(); i++) {
+			
 		display = (*i);
+		program_log("display: %s", display.c_str());
+		
 		if (cfg->get_bg(display, file, mode, bgcolor)) {
+				
+			program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
 			SetBG::set_bg(display, file, mode, bgcolor);
+			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
+			
 		} else {
 			std::cerr << "Could not get bg info" << std::endl;
 		}
 	}
+
+	program_log("leaving set_saved_bgs()");
 	
 }
 
 void restore_bgs()
 {
+	program_log("entering restore_bgs()");
 	set_saved_bgs();
 	while( Gtk::Main::events_pending() )
 	   Gtk::Main::iteration();
+	program_log("leaving restore_bgs()");
 }
 
 // Converts a relative path to an absolute path.

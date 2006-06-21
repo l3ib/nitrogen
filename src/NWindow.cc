@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NWindow.h"
 #include "Config.h"
+#include <sys/types.h>
+#include <sys/wait.h>
 
 // leethax constructor
 
@@ -151,7 +153,19 @@ void NWindow::set_bg(const Glib::ustring file) {
 	Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
 	// set it
-	SetBG::set_bg(thedisp, file, mode, bgcolor);
+	
+/*	
+ 	pid_t cid = fork();
+	if (cid==0) {
+	*/
+		SetBG::set_bg(thedisp, file, mode, bgcolor);
+/*
+		exit(0);
+	}
+	else
+		waitpid(cid, NULL, 0);
+*/
+	
 
 	
 	// should we save?

@@ -52,8 +52,8 @@ class SetBG {
 		static SetMode string_to_mode( const Glib::ustring str );
 
 	private:
-		static Glib::RefPtr<Gdk::Display> _display;
-		static bool _opened;
+		//static Glib::RefPtr<Gdk::Display> _display;
+		//static bool _opened;
 
 		static Glib::RefPtr<Gdk::Pixbuf> make_scale(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_tile(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);

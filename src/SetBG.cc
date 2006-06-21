@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "SetBG.h"
+#include "main.h"
 #include <X11/Xatom.h>
 
 // for the linker
-Glib::RefPtr<Gdk::Display> SetBG::_display;
-bool SetBG::_opened = false;
+//Glib::RefPtr<Gdk::Display> SetBG::_display;
+//bool SetBG::_opened = false;
 
 /**
  * Sets the background to the image in the file specified.
@@ -46,8 +47,18 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	Glib::RefPtr<Gdk::Screen> screen;
 
 	// see if this display currently exists
-	SetBG::_display = Gdk::Display::open(disp);
+	//SetBG::_display = Gdk::Display::open(disp);
+	
+	// open display and screen
+	Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(disp);
+	if (!_display) {
+		std::cerr << "Could not open display " << disp << "\n";
+		return false;
+	}
 
+	screen = _display->get_default_screen();
+
+	/*
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
 	std::vector< Glib::RefPtr<Gdk::Display> > displays = std::vector< Glib::RefPtr<Gdk::Display> >(manager->list_displays());
 	std::vector< Glib::RefPtr<Gdk::Display> >::const_iterator iter;
@@ -61,11 +72,11 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 		std::cerr << "Display " << disp << " is not openable." << std::endl;
 		return false;		
 	}
-
+	*/
 	
 	
-	// open display and screen
 	
+/*	
 	if ( ! SetBG::_opened ) {
 		SetBG::_display = Gdk::Display::open(disp);
 		if (!SetBG::_display) {
@@ -88,7 +99,7 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 			std::cout << "got screen\n";
 		}
 	}
-
+*/
 	// get window stuff
 	window = screen->get_root_window();
 	window->get_geometry(winx,winy,winw,winh,wind);
@@ -141,7 +152,8 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	pixmap->draw_pixbuf(gc_, outpixbuf, 0,0,0,0, winw, winh, Gdk::RGB_DITHER_NONE,0,0);
 	
 	// begin the X fun!
-	Display *xdisp = GDK_WINDOW_XDISPLAY(window->gobj());
+	// /*GDK_DISPLAY_XDISPLAY(_display->gobj());*/ /*XOpenDisplay(disp.c_str());*/
+	Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
 	XSetCloseDownMode(xdisp, RetainPermanent);
 	Window xwin = DefaultRootWindow(xdisp);
 	Pixmap xpm = GDK_PIXMAP_XID(pixmap->gobj());
@@ -191,6 +203,19 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	window->set_back_pixmap(pixmap, false);
 	window->clear();
 
+	// close display  //No need the refptr does it apparantly
+	_display->flush();
+/*	
+	std::cerr << "preclose\n";
+	_display->close();
+	std::cerr << "we made it here\n";
+*/	
+
+	//_display = Gdk::Display::open(":0.0"); 
+
+	//_display->close();
+	//XCloseDisplay(xdisp);
+	
 	return true;
 }
 
