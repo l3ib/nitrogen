@@ -1,3 +1,7 @@
+Sat Jul  1 12:37:33 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed a bug in best fit mode where the image's final height would
+	  exceed the root window's height.
+
 Thu Jun  1 12:22:55 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
 	* Fixed some segfaults due to attempted saving of zero height
 	  images and incorrect UTF-8 file names.

@@ -322,15 +322,17 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	x = y = 0;
 		
 	// depends on bigger side
-	if ( orig->get_width() > orig->get_height() ) {
-			
+	unsigned orig_w = orig->get_width();
+	unsigned orig_h = orig->get_height();
+	// the second term (after the &&) is needed to ensure that the new height
+	// does not exceed the root window height
+	if ( orig_w > orig_h && ((float)orig_w / (float)orig_h) > ((float)winw / (float)winh)) {
 		resx = winw;
 		resy = (int)(((float)(orig->get_height()*resx))/(float)orig->get_width());
 		x = 0;
 		y = (winh - resy) >> 1;
 			
 	} else {
-			
 		resy = winh;
 		resx = (int)(((float)(orig->get_width()*resy))/(float)orig->get_height());
 		y = 0;
