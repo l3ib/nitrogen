@@ -1,0 +1,16 @@
+#! /bin/sh
+
+sh() {
+  /bin/sh -c "set -x; $*"
+}
+
+export WANT_AUTOMAKE=1.7
+
+sh autopoint --force # for GNU gettext
+sh libtoolize --copy --force --automake
+sh autoconf
+sh automake --include-deps --add-missing --copy
+
+echo
+echo You are now ready to run ./configure
+echo enjoy!

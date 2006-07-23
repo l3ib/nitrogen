@@ -11,6 +11,7 @@ GTK 2.10
 
 Installation:
 
+./bootstrap
 ./configure
 make
 make install (as root or a user with proper permissions)
