@@ -1,3 +1,8 @@
+Sat Jul 22 22:49:00 EDT 2006	Dave Foster <daf@minuslab.net>
+	* FINALLY figured out how to make it properly behave with other 
+	  background setting programs.  NO LONGER LEAKS PIXMAPS.  
+	  Will release -rc3 from this.
+
 Sat Jul  1 12:37:33 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
 	* Fixed a bug in best fit mode where the image's final height would
 	  exceed the root window's height.

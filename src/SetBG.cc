@@ -23,10 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "main.h"
 #include <X11/Xatom.h>
 
-// for the linker
-//Glib::RefPtr<Gdk::Display> SetBG::_display;
-//bool SetBG::_opened = false;
-
 /**
  * Sets the background to the image in the file specified.
  *
@@ -46,9 +42,6 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	Glib::RefPtr<Gdk::Pixmap> pixmap;
 	Glib::RefPtr<Gdk::Screen> screen;
 
-	// see if this display currently exists
-	//SetBG::_display = Gdk::Display::open(disp);
-	
 	// open display and screen
 	Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(disp);
 	if (!_display) {
@@ -56,50 +49,9 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 		return false;
 	}
 
+	// get the screen
 	screen = _display->get_default_screen();
 
-	/*
-	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-	std::vector< Glib::RefPtr<Gdk::Display> > displays = std::vector< Glib::RefPtr<Gdk::Display> >(manager->list_displays());
-	std::vector< Glib::RefPtr<Gdk::Display> >::const_iterator iter;
-	
-	for (iter=displays.begin();iter!=displays.end();iter++) {
-		if ((*iter)->get_name() == disp) 
-			break;
-	}
-
-	if ( iter == displays.end() ) {
-		std::cerr << "Display " << disp << " is not openable." << std::endl;
-		return false;		
-	}
-	*/
-	
-	
-	
-/*	
-	if ( ! SetBG::_opened ) {
-		SetBG::_display = Gdk::Display::open(disp);
-		if (!SetBG::_display) {
-			return false;
-		}
-		SetBG::_opened = true;
-		screen = SetBG::_display->get_default_screen();
-	} else {
-		screen = SetBG::_display->get_default_screen();
-		// make sure we are on right display
-		if ( screen->make_display_name() != disp ) {
-			std::cout << "not right disp\n";
-			SetBG::_display = Gdk::Display::open(disp);
-			std::cout << "opened disp\n";
-			if (SetBG::_display == 0) {
-				return false;
-			}
-			std::cout << "getting screen\n";
-			screen = SetBG::_display->get_default_screen();
-			std::cout << "got screen\n";
-		}
-	}
-*/
 	// get window stuff
 	window = screen->get_root_window();
 	window->get_geometry(winx,winy,winw,winh,wind);
@@ -114,7 +66,7 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	// create pixmap 
 	pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
 	pixmap->set_colormap(colormap);
-	
+
 	// get our pixbuf from the file
 	try {
 		pixbuf = Gdk::Pixbuf::create_from_file(file);	
@@ -123,8 +75,6 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 		return false;
 	}
 
-	// manipulate it with what we need
-	
 	switch(mode) {
 	
 		case SetBG::SET_SCALE:
@@ -152,7 +102,6 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	pixmap->draw_pixbuf(gc_, outpixbuf, 0,0,0,0, winw, winh, Gdk::RGB_DITHER_NONE,0,0);
 	
 	// begin the X fun!
-	// /*GDK_DISPLAY_XDISPLAY(_display->gobj());*/ /*XOpenDisplay(disp.c_str());*/
 	Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
 	XSetCloseDownMode(xdisp, RetainPermanent);
 	Window xwin = DefaultRootWindow(xdisp);
@@ -161,16 +110,13 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	// FROM HERE, mostly ported from feh and 
 	// http://www.eterm.org/docs/view.php?doc=ref#trans
 	
-	Atom prop_root, prop_esetroot;
-			/*, type;
+	Atom prop_root, prop_esetroot, type;
 	int format;
 	unsigned long length, after;
 	unsigned char *data_root, *data_esetroot;
-	*/
+	
 	// set and make persistant
-	// TODO: 100% BUG FILLED SHIT.  PLZ FIGURE OUT WHY XFREEPIXMAP DOES NOT WORK.
-	// actually,there may not be a leak at all with this.  
-/*
+
 	prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", True);
 	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", True);
 	
@@ -180,14 +126,14 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 			XGetWindowProperty(xdisp, xwin, prop_esetroot, 0L, 1L, False, AnyPropertyType, &type, &format, &length, &after, &data_esetroot);
 			if (data_root && data_esetroot)
 				if (type == XA_PIXMAP && *((Pixmap *) data_root) == *((Pixmap *) data_esetroot)) {
-					//XKillClient(xdisp, *((Pixmap *) data_root));
+					//XFreePixmap(xdisp, *((Pixmap*) data_root));
+					XKillClient(xdisp, *((Pixmap *) data_root));
 					//std::cout << "Shoulda killed\n";
-					XFreePixmap(xdisp, *((Pixmap*) data_root));
-					printf("Test says to remove %x\n", *((Pixmap*) data_root));
+					//printf("Test says to remove %x\n", *((Pixmap*) data_root));
 				}
 		}
 	}
-*/
+
 	prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", False);
 	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
 
@@ -203,19 +149,16 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	window->set_back_pixmap(pixmap, false);
 	window->clear();
 
-	// close display  //No need the refptr does it apparantly
-	_display->flush();
-/*	
-	std::cerr << "preclose\n";
+	// CLEAN UP, THIS IS A DELICATE ORDER
+	window.clear();    // must be before screen
+	screen.clear();    // from here, must be before display is closed
+	gc_.clear();
+	colormap.clear();
+	pixbuf.clear();
+	pixmap.clear();
+	outpixbuf.clear();
 	_display->close();
-	std::cerr << "we made it here\n";
-*/	
 
-	//_display = Gdk::Display::open(":0.0"); 
-
-	//_display->close();
-	//XCloseDisplay(xdisp);
-	
 	return true;
 }
 
@@ -234,7 +177,6 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_scale(const Glib::RefPtr<Gdk::Pixbuf> orig
 
 /**
  * Handles SET_TILE mode.
- * TODO: figure out how to do this
  *
  * @param	orig	The original pixbuf
  * @param	winw	Width of the window

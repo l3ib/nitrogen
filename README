@@ -6,6 +6,7 @@ Webpage: http://www.minuslab.net/code/nitrogen/
 Requirements:
 
 GTKMM 2.8
+GTK 2.10
 
 
 Installation:
