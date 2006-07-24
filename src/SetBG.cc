@@ -35,15 +35,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 
 	gint winx,winy,winw,winh,wind;
-	Glib::RefPtr<Gdk::GC> gc_;
+	Glib::RefPtr<Gdk::Display> _display;
+   Glib::RefPtr<Gdk::Screen> screen;
 	Glib::RefPtr<Gdk::Window> window;
+	Glib::RefPtr<Gdk::GC> gc_;
 	Glib::RefPtr<Gdk::Colormap> colormap;
 	Glib::RefPtr<Gdk::Pixbuf> pixbuf, outpixbuf;
 	Glib::RefPtr<Gdk::Pixmap> pixmap;
-	Glib::RefPtr<Gdk::Screen> screen;
 
 	// open display and screen
-	Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(disp);
+	_display = Gdk::Display::open(disp);
 	if (!_display) {
 		std::cerr << "Could not open display " << disp << "\n";
 		return false;
@@ -149,14 +150,9 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	window->set_back_pixmap(pixmap, false);
 	window->clear();
 
-	// CLEAN UP, THIS IS A DELICATE ORDER
-	window.clear();    // must be before screen
-	screen.clear();    // from here, must be before display is closed
 	gc_.clear();
-	colormap.clear();
-	pixbuf.clear();
-	pixmap.clear();
-	outpixbuf.clear();
+
+    // close display
 	_display->close();
 
 	return true;
@@ -293,7 +289,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig,
 		y = 0;
 
 	// resize to a temp
-	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(resx, resy, Gdk::INTERP_BILINEAR);
+	/*Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(resx, resy, Gdk::INTERP_BILINEAR);
 
 	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(	orig->get_colorspace(),
 															orig->get_has_alpha(),
@@ -305,7 +301,14 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	retval->fill(GdkColorToUint32(bgcolor));
 
 	// copy it in
-	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);
+	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);*/
+	
+	Glib::RefPtr<Gdk::Pixbuf> retval = orig->composite_color_simple(winw, winh,
+															Gdk::INTERP_BILINEAR,
+															255,
+															1,
+															0xffffffff,//bgcolor.get_pixel(),
+															0xffffffff);//bgcolor.get_pixel());
 
 	return retval;
 }		
