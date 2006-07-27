@@ -153,25 +153,11 @@ void NWindow::set_bg(const Glib::ustring file) {
 	Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
 	// set it
-	
-/*	
- 	pid_t cid = fork();
-	if (cid==0) {
-	*/
-		SetBG::set_bg(thedisp, file, mode, bgcolor);
-/*
-		exit(0);
-	}
-	else
-		waitpid(cid, NULL, 0);
-*/
-	
-
+	SetBG::set_bg(thedisp, file, mode, bgcolor);
 	
 	// should we save?
 	if (this->cb_save.get_active())
 		Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
-	
 }
 
 // leethax destructor

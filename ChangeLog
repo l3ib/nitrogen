@@ -1,3 +1,10 @@
+Wed Jul 26 22:40:13 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Removed thread that did thumbnail loading/creating.  Now
+	  does it in a glib idle callback.  Must split out create
+	  from load, so create can have a lower priority, and also
+	  split the load_dir into an idle func so startup is 
+	  immediate.
+
 Sat Jul 22 22:49:00 EDT 2006	Dave Foster <daf@minuslab.net>
 	* FINALLY figured out how to make it properly behave with other 
 	  background setting programs.  NO LONGER LEAKS PIXMAPS.  

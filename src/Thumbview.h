@@ -23,6 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <queue>
 #include <errno.h>
 
+struct TreePair {
+	Glib::ustring file;
+	Gtk::TreeModel::iterator iter;		
+};
+
 class Thumbview : public Gtk::ScrolledWindow {
 	public:
 		Thumbview ();
@@ -48,11 +53,8 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// thread funcs
 		// TODO: make private?
-		void make_cache_images();
+		bool make_cache_images();
 		void load_dir();
-
-		// dispatcher
-		Glib::Dispatcher dispatch_thumb;
 
 		void set_sort_mode (SortMode mode);
 		// search compare function
@@ -75,10 +77,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// TODO: remove when we get a proper db
 		std::string dir;
 
-		// dispatch signal
-		void handle_dispatch_thumb();
-
-		// async queue
-		GAsyncQueue* aqueue_thumbs;
-		GAsyncQueue* aqueue_donethumbs;
+		// load thumbnail queue
+		std::queue<TreePair*> queue_thumbs;
 };

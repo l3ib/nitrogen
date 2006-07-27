@@ -195,9 +195,9 @@ int main (int argc, char ** argv) {
 		
 		main_window->view.set_sort_mode (mode);
 	}
-	
-	// start cache thread
-	Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::make_cache_images), true);
+
+	// rig up idle pice
+	Glib::signal_idle().connect(sigc::mem_fun(main_window->view, &Thumbview::make_cache_images));
 	
 	Gtk::Main::run (*main_window);
 	return 0;
