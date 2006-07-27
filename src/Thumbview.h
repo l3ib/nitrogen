@@ -53,7 +53,8 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// thread funcs
 		// TODO: make private?
-		bool make_cache_images();
+		bool load_cache_images();
+		bool create_cache_images();
 		void load_dir();
 
 		void set_sort_mode (SortMode mode);
@@ -72,6 +73,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// utility functions
 		bool is_image(std::string file);
 		Glib::ustring cache_file(Glib::ustring file);
+		void update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb);
 		
 		// base dir
 		// TODO: remove when we get a proper db
@@ -79,4 +81,5 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// load thumbnail queue
 		std::queue<TreePair*> queue_thumbs;
+		std::queue<TreePair*> queue_createthumbs;
 };

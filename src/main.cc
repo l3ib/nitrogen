@@ -197,7 +197,7 @@ int main (int argc, char ** argv) {
 	}
 
 	// rig up idle pice
-	Glib::signal_idle().connect(sigc::mem_fun(main_window->view, &Thumbview::make_cache_images));
+	Glib::signal_idle().connect(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images));
 	
 	Gtk::Main::run (*main_window);
 	return 0;

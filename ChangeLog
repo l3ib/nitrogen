@@ -1,9 +1,7 @@
-Wed Jul 26 22:40:13 EDT 2006	Dave Foster <daf@minuslab.net>
+Wed Jul 26 23:19:15 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Removed thread that did thumbnail loading/creating.  Now
-	  does it in a glib idle callback.  Must split out create
-	  from load, so create can have a lower priority, and also
-	  split the load_dir into an idle func so startup is 
-	  immediate.
+	  does it in a glib idle callback.  Also split create and 
+	  load thumb (on second commit).  Still must split loaddir.
 
 Sat Jul 22 22:49:00 EDT 2006	Dave Foster <daf@minuslab.net>
 	* FINALLY figured out how to make it properly behave with other 
