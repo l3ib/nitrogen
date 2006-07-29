@@ -1,3 +1,6 @@
+Sat Jul 29 14:53:39 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Made default screen combobox work correctly.
+
 Wed Jul 26 23:19:15 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Removed thread that did thumbnail loading/creating.  Now
 	  does it in a glib idle callback.  Also split create and 
