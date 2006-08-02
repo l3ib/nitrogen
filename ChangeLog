@@ -1,3 +1,7 @@
+Wed Aug  2 13:16:54 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Added the ability to set the background colour for images with an
+	  alpha channel. The colour picker button is always shown.
+
 Sat Jul 29 14:53:39 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Made default screen combobox work correctly.
 

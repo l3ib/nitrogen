@@ -76,6 +76,12 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 		return false;
 	}
 
+	// apply the bg color to pixbuf here, because every make_ method would
+	// have to do it anyway.
+	pixbuf = pixbuf->composite_color_simple(pixbuf->get_width(),
+		pixbuf->get_height(), Gdk::INTERP_NEAREST, 255, 1, bgcolor.get_pixel(),
+		bgcolor.get_pixel());
+
 	switch(mode) {
 	
 		case SetBG::SET_SCALE:
@@ -288,27 +294,9 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	if ( y < 0 )
 		y = 0;
 
-	// resize to a temp
-	/*Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(resx, resy, Gdk::INTERP_BILINEAR);
-
-	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(	orig->get_colorspace(),
-															orig->get_has_alpha(),
-															orig->get_bits_per_sample(),
-															winw,
-															winh);
-
-	// use passed bg color
-	retval->fill(GdkColorToUint32(bgcolor));
-
-	// copy it in
-	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);*/
-	
-	Glib::RefPtr<Gdk::Pixbuf> retval = orig->composite_color_simple(winw, winh,
-															Gdk::INTERP_BILINEAR,
-															255,
-															1,
-															0xffffffff,//bgcolor.get_pixel(),
-															0xffffffff);//bgcolor.get_pixel());
+	// scale!
+	Glib::RefPtr<Gdk::Pixbuf> retval = orig->scale_simple(winw, winh,
+		Gdk::INTERP_BILINEAR);
 
 	return retval;
 }		

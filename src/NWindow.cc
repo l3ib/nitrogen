@@ -69,7 +69,6 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), dosearch(Gtk::Stock::REFRES
 	// signals
 	view.view.signal_row_activated ().connect (sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
-	select_mode.signal_changed().connect(sigc::mem_fun(*this, &NWindow::sighandle_mode_change));
 
 	// set icon
 	extern guint8 ni_icon[];
@@ -87,6 +86,7 @@ void NWindow::show (void) {
 	cb_save.show();
 	bot_hbox.show ();
 	main_vbox.show ();
+	button_bgcolor.show();
 
 	/*
 	expand_search.show();
@@ -123,20 +123,6 @@ void NWindow::sighandle_click_apply (void) {
 	Gtk::TreeModel::Row row = *iter;
 	this->set_bg(row[view.filename]);
 	
-}
-
-/**
- * Handles when the mode combo box is changed.  Brings up the color button when needed.
- */
-void NWindow::sighandle_mode_change(void)
-{
-	SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-	// only show the bg color button if in a mode that would have bg space
-	if ( mode == SetBG::SET_CENTER || mode == SetBG::SET_BEST ) {
-		button_bgcolor.show();				
-	} else {
-		button_bgcolor.hide();
-	}
 }
 
 /**
