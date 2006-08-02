@@ -294,9 +294,17 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	if ( y < 0 )
 		y = 0;
 
-	// scale!
-	Glib::RefPtr<Gdk::Pixbuf> retval = orig->scale_simple(winw, winh,
+	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(resx, resy,
 		Gdk::INTERP_BILINEAR);
+	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(
+		orig->get_colorspace(), orig->get_has_alpha(),
+		orig->get_bits_per_sample(), winw, winh);
+
+	// use passed bg color
+	retval->fill(GdkColorToUint32(bgcolor));
+
+	// copy it in
+	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);
 
 	return retval;
 }		
