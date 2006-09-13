@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <queue>
 #include <errno.h>
 
+#ifdef USE_INOTIFY
+#include "Inotify.h"
+#endif
+
 struct TreePair {
 	Glib::ustring file;
 	Gtk::TreeModel::iterator iter;		
@@ -55,13 +59,23 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// TODO: make private?
 		bool load_cache_images();
 		bool create_cache_images();
-		void load_dir();
+		void load_dir(std::string dir = "");
 
 		void set_sort_mode (SortMode mode);
 		// search compare function
 		bool search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter);
 		
 	protected:
+
+#ifdef USE_INOTIFY
+		void file_deleted_callback(std::string filename);
+		void file_changed_callback(std::string filename);
+		void file_created_callback(std::string filename);
+		std::map<std::string, Inotify::Watch*> watches;
+#endif
+
+		void add_file(std::string filename);
+
 		Gtk::TreeModel::ColumnRecord record;
 		
 		Gtk::TreeViewColumn *col_thumb;

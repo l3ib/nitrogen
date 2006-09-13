@@ -42,7 +42,7 @@ class SetBG {
 			SET_BEST
 		};
 		
-		static bool set_bg(	Glib::ustring disp,
+		static bool set_bg(	Glib::ustring &disp,
 							Glib::ustring file,
 							SetMode mode,
 							Gdk::Color bgcolor

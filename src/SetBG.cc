@@ -26,17 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /**
  * Sets the background to the image in the file specified.
  *
- * @param	disp	The display to set it on
+ * @param	disp	The display to set it on.  If "", uses the default display, and passes is out by reference.
  * @param	file	The file to set the bg to
  * @param	mode	Stretch, tile, center, bestfit
  * @param	bgcolor	The background color for modes that do not cover entire portions
  * @return			If it went smoothly
  */
-bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+bool SetBG::set_bg(	Glib::ustring &disp,	Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 
 	gint winx,winy,winw,winh,wind;
 	Glib::RefPtr<Gdk::Display> _display;
-   Glib::RefPtr<Gdk::Screen> screen;
+ 	Glib::RefPtr<Gdk::Screen> screen;
 	Glib::RefPtr<Gdk::Window> window;
 	Glib::RefPtr<Gdk::GC> gc_;
 	Glib::RefPtr<Gdk::Colormap> colormap;
@@ -44,7 +44,7 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 	Glib::RefPtr<Gdk::Pixmap> pixmap;
 
 	// open display and screen
-	_display = Gdk::Display::open(disp);
+	_display = (disp == "") ? Gdk::DisplayManager::get()->get_default_display() : Gdk::Display::open(disp);
 	if (!_display) {
 		std::cerr << "Could not open display " << disp << "\n";
 		return false;
@@ -52,6 +52,9 @@ bool SetBG::set_bg(	Glib::ustring disp,	Glib::ustring file, SetMode mode, Gdk::C
 
 	// get the screen
 	screen = _display->get_default_screen();
+
+	// restore the disp name
+	disp = screen->make_display_name();
 
 	// get window stuff
 	window = screen->get_root_window();

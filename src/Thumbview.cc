@@ -30,6 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 
 /**
+ * Returns the last modified time of a file.
+ * @param file The name of the file to get the modified time for.
+ */
+static time_t get_file_mtime(std::string file) {
+	struct stat buf;
+	if (stat(file.c_str(), &buf) == -1) return 0; // error
+	return buf.st_mtime;
+}
+
+/**
  * Constructor, sets up gtk stuff, inits data and queues
  */
 Thumbview::Thumbview() : dir("") {
@@ -87,18 +97,51 @@ Thumbview::~Thumbview() {
 }
 
 /**
+ * Adds the given file to the tree view and pushes it onto the thumbnail
+ * creation queue.
+ *
+ * @param filename The name of the file to add.
+ *
+ */
+void Thumbview::add_file(std::string filename) {
+	Gtk::TreeModel::iterator iter = this->store->append ();
+	Gtk::TreeModel::Row row = *iter;
+	Glib::RefPtr<Gdk::Pixbuf> thumb;
+
+	extern guint8 ni_loading[]; 
+	thumb = Gdk::Pixbuf::create_from_inline(24+2993, ni_loading);
+
+	row[thumbnail] = thumb;
+	row[this->filename] = filename;
+	row[description] = Glib::ustring(filename, filename.rfind ("/")+1);
+
+	// for modified time
+	row[time] = get_file_mtime(filename);
+
+#ifdef PENDEBUG
+	std::cout << "DEBUG: Adding file " << filename << "\n";
+#endif
+
+	// push it on the thumb queue
+	TreePair *tp = new TreePair();
+	tp->file = filename;
+	tp->iter = iter;
+
+	queue_thumbs.push(tp);
+}
+
+
+/**
  * Opens the internal directory and starts reading files into the async queue.
  */
-void Thumbview::load_dir() {
-	
+void Thumbview::load_dir(std::string dir) {
+	if (!dir.length()) dir = this->dir;
+
 	std::queue<Glib::ustring> subdirs;
 	Glib::Dir *dirhandle;	
 
-	// for modified time
-	struct stat * buf = new struct stat;
-	
 	// push the initial dir back onto subdirs 
-	subdirs.push(this->dir);
+	subdirs.push(dir);
 	
 	// loop it
 	while ( ! subdirs.empty() ) {
@@ -116,7 +159,39 @@ void Thumbview::load_dir() {
 			std::cerr << "Could not open dir " << this->dir << ": " << e.what() << "\n";
 			continue;
 		}
-	
+
+#ifdef USE_INOTIFY
+
+		// check if we're already monitoring this dir.
+		if (watches.find(curdir) == watches.end()) {
+			// this dir was successfully opened. monitor it for changes with inotify.
+			// the Watch will be cleaned up automatically if the dir is deleted.
+			Inotify::Watch * watch = Inotify::Watch::create(curdir);
+			if (watch) {
+				// no error occurred.
+
+				// emitted when a file is deleted in this dir.
+				watch->signal_deleted.connect(sigc::mem_fun(this,
+					&Thumbview::file_deleted_callback));
+				// emitted when a file is modified or created in this dir.
+				watch->signal_write_closed.connect(sigc::mem_fun(this,
+					&Thumbview::file_changed_callback));
+				// two signals that are emitted when a file is renamed in this dir.
+				// the best way to handle this IMO is to remove the file upon receiving
+				// 'moved_from', and then to add the file upon receiving 'moved_to'.
+				watch->signal_moved_from.connect(sigc::mem_fun(this,
+					&Thumbview::file_deleted_callback));
+				watch->signal_moved_to.connect(sigc::mem_fun(this,
+					&Thumbview::file_changed_callback));
+				watch->signal_created.connect(sigc::mem_fun(this,
+					&Thumbview::file_created_callback));
+
+				watches[curdir] = watch;
+			}
+		}
+
+#endif
+
 		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
 			Glib::ustring fullstr = curdir + Glib::ustring("/");
 			try {
@@ -133,40 +208,13 @@ void Thumbview::load_dir() {
 			}
 			else {			
 				if ( this->is_image(fullstr) ) {
-
-					Gtk::TreeModel::iterator iter = this->store->append ();
-					Gtk::TreeModel::Row row = *iter;
-					Glib::RefPtr<Gdk::Pixbuf> thumb;
-
-					extern guint8 ni_loading[]; 
-					thumb = Gdk::Pixbuf::create_from_inline(24+2993, ni_loading);
-
-					row[thumbnail] = thumb;
-					//row[description] = "<b>" + Glib::Markup::escape_text(Glib::ustring(fullstr, fullstr.rfind ("/")+1)) + "</b>";
-					row[filename] = fullstr;
-					row[description] = Glib::ustring(fullstr, fullstr.rfind ("/")+1);
-				
-					stat (fullstr.c_str (), buf);
-					row[time] = buf->st_mtime;
-	
-					#ifdef PENDEBUG
-					std::cout << "DEBUG: Adding file " << fullstr << "\n";
-					#endif
-				
-					// push it on the thumb queue
-					TreePair *tp = new TreePair();
-					tp->file = fullstr;
-					tp->iter = iter;
-					
-					queue_thumbs.push(tp);
+					add_file(fullstr);
 				}
 			}
 		}
 
 		delete dirhandle;
 	}
-
-	delete buf;
 }
 
 /**
@@ -243,6 +291,18 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
 }
 
 /**
+ * Returns the value of the "tEXt::Thumb::MTime" key for fd.o style thumbs.
+ * @param pixbuf The pixbuf of the fd.o thumbnail.
+ */
+static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
+	std::string mtime_str = pixbuf->get_option("tEXt::Thumb::MTime");
+	std::stringstream stream(mtime_str);
+	time_t mtime = 0;
+	stream >> mtime;
+	return mtime;
+}
+
+/**
  * Creates cache images that show up in its async queue.  
  */
 bool Thumbview::load_cache_images() {
@@ -268,16 +328,23 @@ bool Thumbview::load_cache_images() {
 	} else {
 		// load thumb
 		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 100, 100, true);
+		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
+			// the thumbnail is old. we need to make a new one.
+			pb.clear();
+			this->queue_createthumbs.push(p);
+		} else {
+			// display it
+			this->update_thumbnail(file, p->iter, pb);
+			// only delete here
+			delete p;	
+		}
 
-		// display it
-		this->update_thumbnail(file, p->iter, pb);
-
-		// only delete here
-		delete p;	
 	}
 
 	return true;
 }
+
+
 
 /**
  * Idle function to create thumbnail cache images for those that do not exist.
@@ -322,12 +389,11 @@ bool Thumbview::create_cache_images()
 	std::list<Glib::ustring> opts, vals;
 	opts.push_back(Glib::ustring("tEXt::Thumb::URI"));
 	vals.push_back(Glib::filename_to_uri(file));
-	
-	struct stat fst;
-	stat(file.c_str(), &fst);
+
+	time_t mtime = get_file_mtime(file);
 
 	char *bufout = new char[20];
-	sprintf(bufout, "%d", fst.st_mtime);
+	sprintf(bufout, "%d", mtime);
 
 	opts.push_back(Glib::ustring("tEXt::Thumb::MTime"));
 	vals.push_back(Glib::ustring(bufout));
@@ -389,3 +455,62 @@ void Thumbview::set_sort_mode (Thumbview::SortMode mode) {
 	}
 }
 
+#ifdef USE_INOTIFY
+
+/**
+ * Called when a file in a directory being monitored by inotify is deleted.
+ * Removes the file from the tree view.
+ *
+ * @param filename The name of the file to remove.
+ */
+void Thumbview::file_deleted_callback(std::string filename) {
+	if (watches.find(filename) != watches.end()) {
+		watches.erase(filename);
+		return;
+	}
+	Gtk::TreeIter iter;
+	Gtk::TreeModel::Children children = store->children();
+	for (iter = children.begin(); iter != children.end(); iter++) {
+		Glib::ustring this_filename = (*iter)[this->filename];
+		if (this_filename == filename) {
+			// remove this iter.
+			store->erase(iter);
+			break;
+		}
+	}
+}
+
+/**
+ * Called when a file in a directory being monitored by inotify is modified
+ * or a new file is created. Adds the file to the tree view.
+ *
+ * @param filename The name of the file modified or created.
+ */
+void Thumbview::file_changed_callback(std::string filename) {
+	// first remove the old instance of this file.
+	file_deleted_callback(filename);
+	if ( Glib::file_test(filename, Glib::FILE_TEST_IS_DIR) ) {
+		// this is a directory; use load_dir() to set us up the bomb.
+		load_dir(filename);
+	} else if (is_image(filename)) {
+		// this is a file.
+		add_file(filename);
+	}
+	// restart the idle function
+	Glib::signal_idle().connect(sigc::mem_fun(this, &Thumbview::load_cache_images));
+}
+
+/**
+ * Called when a new file or directory is created in a directory being
+ * monitored. Discards the event for non-directories, because
+ * file_changed_callback will be called for those.
+ *
+ * @param filename The name of the file modified or created.
+ */
+void Thumbview::file_created_callback(std::string filename) {
+	if ( Glib::file_test(filename, Glib::FILE_TEST_IS_DIR) ) {
+		file_changed_callback(filename);
+	}
+}
+
+#endif

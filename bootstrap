@@ -6,7 +6,6 @@ sh() {
 
 export WANT_AUTOMAKE=1.7
 
-sh autopoint --force # for GNU gettext
 sh libtoolize --copy --force --automake
 sh autoconf
 sh automake --include-deps --add-missing --copy

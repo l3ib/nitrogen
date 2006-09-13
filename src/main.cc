@@ -93,6 +93,24 @@ void restore_bgs()
 	program_log("leaving restore_bgs()");
 }
 
+void set_bg_once(Glib::ustring file, SetBG::SetMode mode, bool save)
+{
+	program_log("entering set_bg_once()");
+
+	// TODO: how to get a default color in here
+	Gdk::Color col;
+
+	// TODO: find out why teh config::set_bg will not get me default
+	Glib::ustring disp;
+
+	SetBG::set_bg(disp,file,mode,col);
+	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
+	while (Gtk::Main::events_pending())
+		Gtk::Main::iteration();
+
+	program_log("leaving set_bg_once()");
+}
+
 // Converts a relative path to an absolute path.
 // Probably works best if the path doesn't start with a '/' :)
 // XXX: There must be a better way to do this, haha.
@@ -121,6 +139,13 @@ Glib::ustring path_to_abs_path(Glib::ustring path) {
 	return cwd + '/' + path;
 }
 
+#ifdef USE_INOTIFY
+bool poll_inotify(void) {
+	Inotify::Watch::poll(0);
+	return true;
+}
+#endif
+
 int main (int argc, char ** argv) {
 
 	if (argc < 2) {
@@ -138,6 +163,20 @@ int main (int argc, char ** argv) {
 	parser.register_option("restore", "Restore saved backgrounds");
 	parser.register_option("no-recurse", "Do not recurse into subdirectories");
 	parser.register_option("sort", "How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)", true);
+
+// command line set modes
+	parser.register_option("set-scaled", "Sets the background to the given file (scaled)");
+	parser.register_option("set-tiled", "Sets the background to the given file (tiled)");
+	parser.register_option("set-best", "Sets the background to the given file (best-fit)");
+	parser.register_option("set-centered", "Sets the background to the given file (centered)");
+	parser.register_option("save", "Saves the background permanently");
+	
+	std::vector<std::string> vecsetopts;
+	vecsetopts.push_back("set-scaled");
+	vecsetopts.push_back("set-tiled");
+	vecsetopts.push_back("set-best");
+	vecsetopts.push_back("set-centered");
+	parser.make_exclusive(vecsetopts);
 
 	if ( ! parser.parse(argc, argv) ) {
 		std::cerr << "Error parsing command line: " << parser.get_error() << "\n";
@@ -159,7 +198,7 @@ int main (int argc, char ** argv) {
 
 	std::string startdir(parser.get_extra_args());
 	if ( startdir.length() <= 0 ) {
-		std::cerr << "Error: no directory specified!\n";
+		std::cerr << "Error: no directory/file specified!\n";
 		return -1;
 	}
 
@@ -171,6 +210,27 @@ int main (int argc, char ** argv) {
 	// if this is not an absolute path, make it one.
 	if ( !Glib::path_is_absolute(startdir) ) {
 		startdir = path_to_abs_path(startdir);
+	}
+
+	// should we set on the command line?
+	if ( parser.has_argument("set-tiled") )	{
+		set_bg_once(startdir, SetBG::SET_TILE, parser.has_argument("save"));
+		return 0;
+	}
+
+	if ( parser.has_argument("set-scaled") )	{
+		set_bg_once(startdir, SetBG::SET_SCALE, parser.has_argument("save"));
+		return 0;
+	}
+
+	if ( parser.has_argument("set-best") )	{
+		set_bg_once(startdir, SetBG::SET_BEST, parser.has_argument("save"));
+		return 0;
+	}
+
+	if ( parser.has_argument("set-centered") )	{
+		set_bg_once(startdir, SetBG::SET_CENTER, parser.has_argument("save"));
+		return 0;
 	}
 	
 	main_window = new NWindow();
@@ -198,6 +258,11 @@ int main (int argc, char ** argv) {
 
 	// rig up idle pice
 	Glib::signal_idle().connect(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images));
+
+#ifdef USE_INOTIFY
+	Glib::signal_timeout().connect(sigc::ptr_fun(&poll_inotify),
+		(unsigned)1e3);
+#endif
 	
 	Gtk::Main::run (*main_window);
 	return 0;

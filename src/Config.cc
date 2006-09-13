@@ -146,6 +146,22 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 	if ( ! Config::check_dir() )
 		return false;
 
+	Glib::ustring realdisp = disp;
+
+	/*
+	std::cerr << "realdisp is " << realdisp << "\n";
+
+	Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
+
+	std::cerr << "name is " << display->get_name() << "\n";
+
+	// fix up display if we don't have one
+//	realdisp = (disp == "") ? screen->make_display_name() : disp;
+	return 0;
+
+	std::cerr << "realdisp is " << realdisp << "\n";
+	*/
+
 	Glib::ustring cfgfile = Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen/bg-saved.cfg");
 	GKeyFile *kf = g_key_file_new();
 
@@ -167,10 +183,10 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 	}
 
 	// set data
-	g_key_file_set_string(kf, disp.c_str(), "file", file.c_str());
-	g_key_file_set_integer(kf, disp.c_str(), "mode", (gint)mode);
+	g_key_file_set_string(kf, realdisp.c_str(), "file", file.c_str());
+	g_key_file_set_integer(kf, realdisp.c_str(), "mode", (gint)mode);
 	if ( mode == SetBG::SET_BEST || mode == SetBG::SET_CENTER)
-		g_key_file_set_string(kf, disp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
+		g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
 	
 	// output it
 	Glib::ustring outp = g_key_file_to_data(kf, NULL, NULL);

@@ -37,10 +37,31 @@ NITROGEN_CFLAGS="$GLIB2_CFLAGS $GTK2_CFLAGS $GTKMM2_CFLAGS $GTHREAD2_CFLAGS"
 AC_SUBST(NITROGEN_LIBS)
 AC_SUBST(NITROGEN_CFLAGS)
 
+dnl do some autotools picen to get inotify
+AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify watching of dirs (default: enable)], [enable_inotify=$enableval],[enable_inotify=yes])
+
+if test x$enable_inotify = xyes; then
+	AC_DEFINE(USE_INOTIFY, 1, [Define to enable inotify dir watching])
+fi
 
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT
 
-echo
-echo $PACKAGE $VERSION is configured
-echo
+dnl syscrash says don't test for inotify support in kernel for some reason
+echo ""
+echo "##########################################"
+echo ""
+echo "Options:"
+echo ""
+
+if test x$enable_inotify = xyes; then
+	echo "inotify support ............. enabled"
+else
+	echo "inotify support ............. disabled"
+fi
+
+echo ""
+echo "##########################################"
+echo ""
+echo "You are now ready to compile nitrogen"
+echo "Type \"make\" to compile nitrogen"

@@ -21,5 +21,8 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Define to enable inotify dir watching */
+#undef USE_INOTIFY
+
 /* Version number of package */
 #undef VERSION

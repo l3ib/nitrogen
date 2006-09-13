@@ -1,3 +1,23 @@
+Tue Sep 12 14:25:02 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Hopefully figured out how to merge the inotify branch.
+
+Wed Aug 23 21:00:19 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Added new command line set modes.
+
+Sat Aug  5 12:31:51 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* No longer loads valid thumbnails twice (for checking mtime.)
+	  Someone should test this crap, I nominate Dave.
+
+Sat Aug  5 12:04:07 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed a bug where thumbnail cache file mtimes were not being checked.
+
+Thu Aug  3 17:55:27 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* I think it is working properly. I'll let Dave have a look at it.
+
+Thu Aug  3 15:02:30 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
+	* Branched. Added inotify C++ wrapper source code. Modified build
+	  scripts to use the added files.
+
 Wed Aug  2 13:16:54 EDT 2006	Javeed Shaikh <syscrash2k@gmail.com>
 	* Added the ability to set the background colour for images with an
 	  alpha channel. The colour picker button is always shown.
