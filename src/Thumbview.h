@@ -29,7 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 struct TreePair {
 	Glib::ustring file;
-	Gtk::TreeModel::iterator iter;		
+	Gtk::TreeModel::iterator iter;	
+	Glib::RefPtr<Gdk::Pixbuf> thumb;
 };
 
 class Thumbview : public Gtk::ScrolledWindow {
@@ -55,10 +56,12 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Glib::RefPtr<Gtk::ListStore> store;
 		Gtk::TreeView view;
 
-		// thread funcs
-		// TODO: make private?
+		// dispatcher 
+		Glib::Dispatcher dispatch_thumb;
+
+		// thread/idle funcs
 		bool load_cache_images();
-		bool create_cache_images();
+		void create_cache_images();
 		void load_dir(std::string dir = "");
 
 		void set_sort_mode (SortMode mode);
@@ -75,6 +78,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 #endif
 
 		void add_file(std::string filename);
+		void handle_dispatch_thumb();
 
 		Gtk::TreeModel::ColumnRecord record;
 		
@@ -95,5 +99,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// load thumbnail queue
 		std::queue<TreePair*> queue_thumbs;
-		std::queue<TreePair*> queue_createthumbs;
+		GAsyncQueue* aqueue_createthumbs;
+		GAsyncQueue* aqueue_donethumbs;
 };

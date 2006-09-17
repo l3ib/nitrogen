@@ -82,6 +82,13 @@ Thumbview::Thumbview() : dir("") {
 	// enable alphanumeric sorting
 	// store->set_sort_column (short_filename, Gtk::SORT_ASCENDING);
 	
+	// make our async queues
+	this->aqueue_createthumbs = g_async_queue_new();
+	this->aqueue_donethumbs = g_async_queue_new();	
+
+	// init dispatcher 
+	this->dispatch_thumb.connect(sigc::mem_fun(this, &Thumbview::handle_dispatch_thumb)); 
+
 	col_desc->set_expand ();
 
 	add (view);
@@ -94,6 +101,8 @@ Thumbview::Thumbview() : dir("") {
  * Destructor
  */
 Thumbview::~Thumbview() {
+	g_async_queue_unref(this->aqueue_createthumbs);
+	g_async_queue_unref(this->aqueue_donethumbs);
 }
 
 /**
@@ -303,15 +312,15 @@ static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
 }
 
 /**
- * Creates cache images that show up in its async queue.  
+ * Creates cache images that show up in its queue.  
  */
 bool Thumbview::load_cache_images() {
 
 	// check for exit condition!
 	if (this->queue_thumbs.empty()) {
 		// create our new idle func
-		if (!this->queue_createthumbs.empty())
-			Glib::signal_idle().connect(sigc::mem_fun(this, &Thumbview::create_cache_images), Glib::PRIORITY_LOW);
+		if (g_async_queue_length(this->aqueue_createthumbs) > 0)
+			Glib::Thread::create(sigc::mem_fun(this, &Thumbview::create_cache_images), true);
 		return false;
 	}
 
@@ -324,14 +333,14 @@ bool Thumbview::load_cache_images() {
 
 	// branch to see if we need to load or create cache file
 	if ( !Glib::file_test(cachefile, Glib::FILE_TEST_EXISTS) ) {
-		this->queue_createthumbs.push(p);
+		g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
 	} else {
 		// load thumb
 		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 100, 100, true);
 		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
 			// the thumbnail is old. we need to make a new one.
 			pb.clear();
-			this->queue_createthumbs.push(p);
+			g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
 		} else {
 			// display it
 			this->update_thumbnail(file, p->iter, pb);
@@ -347,66 +356,90 @@ bool Thumbview::load_cache_images() {
 
 
 /**
- * Idle function to create thumbnail cache images for those that do not exist.
+ * Thread function to create thumbnail cache images for those that do not exist.
  */
-bool Thumbview::create_cache_images()
+void Thumbview::create_cache_images()
 {
  	Glib::RefPtr<Gdk::Pixbuf> thumb;
 
+	g_async_queue_ref(this->aqueue_createthumbs); 
+	g_async_queue_ref(this->aqueue_donethumbs); 
+
 	// check for exit condition
-	if (this->queue_createthumbs.empty())
-		return false;
+	while (g_async_queue_length(this->aqueue_createthumbs) > 0) {
 
-	// remove first item
-	TreePair *p = this->queue_createthumbs.front();
-	this->queue_createthumbs.pop();
+		// remove first item
+		TreePair *p = (TreePair*)g_async_queue_pop(this->aqueue_createthumbs);
 
-	// get filenames
-	Glib::ustring file = p->file;
-	Glib::ustring cachefile = this->cache_file(file);
+		// get filenames
+		Glib::ustring file = p->file;
+		Glib::ustring cachefile = this->cache_file(file);
 
-	#ifdef PENDEBUG
-	std::cout << "DEBUG: Caching file " << file << "\n";
-	#endif
+		#ifdef PENDEBUG
+		std::cout << "DEBUG: Caching file " << file << "\n";
+		#endif
 
-	// open image
-	try {
-		thumb = Gdk::Pixbuf::create_from_file(file);
-	} catch (...) {
-		// forget it, move on
+		// open image
+		try {
+			thumb = Gdk::Pixbuf::create_from_file(file);
+		} catch (...) {
+			// forget it, move on
+			delete p;
+			continue;
+		}
+
+		// eliminate zero heights (due to really tiny images :/)
+		int height = (int)(100*((float)thumb->get_height()/(float)thumb->get_width()));
+		if (!height) height = 1;
+
+		// create thumb
+		thumb = thumb->scale_simple(100, height, Gdk::INTERP_TILES);
+
+		// create required fd.o png tags
+		std::list<Glib::ustring> opts, vals;
+		opts.push_back(Glib::ustring("tEXt::Thumb::URI"));
+		vals.push_back(Glib::filename_to_uri(file));
+
+		time_t mtime = get_file_mtime(file);
+
+		char *bufout = new char[20];
+		sprintf(bufout, "%d", mtime);
+
+		opts.push_back(Glib::ustring("tEXt::Thumb::MTime"));
+		vals.push_back(Glib::ustring(bufout));
+
+		delete [] bufout;
+				
+		thumb->save(cachefile, "png", opts, vals);
+
+		// send it to the display
+		//this->update_thumbnail(file, p->iter, thumb);
+		TreePair *sendp = new TreePair();
+		sendp->file = file;
+		sendp->iter = p->iter;
+		sendp->thumb = thumb;
+		g_async_queue_push(this->aqueue_donethumbs, (gpointer)sendp);
+
+		// emit dispatcher
+		this->dispatch_thumb.emit();
+		
+
 		delete p;
-		return true;
 	}
 
-	// eliminate zero heights (due to really tiny images :/)
-	int height = (int)(100*((float)thumb->get_height()/(float)thumb->get_width()));
-	if (!height) height = 1;
+	g_async_queue_unref(this->aqueue_createthumbs); 
+	g_async_queue_unref(this->aqueue_donethumbs); 
+	throw Glib::Thread::Exit();
+}
 
-	// create thumb
-	thumb = thumb->scale_simple(100, height, Gdk::INTERP_TILES);
+void Thumbview::handle_dispatch_thumb() { 
+	g_async_queue_ref(this->aqueue_donethumbs);
 
-	// create required fd.o png tags
-	std::list<Glib::ustring> opts, vals;
-	opts.push_back(Glib::ustring("tEXt::Thumb::URI"));
-	vals.push_back(Glib::filename_to_uri(file));
+	TreePair *donep = (TreePair*)g_async_queue_pop(this->aqueue_donethumbs);
+	this->update_thumbnail(donep->file, donep->iter, donep->thumb);
+	delete donep;
 
-	time_t mtime = get_file_mtime(file);
-
-	char *bufout = new char[20];
-	sprintf(bufout, "%d", mtime);
-
-	opts.push_back(Glib::ustring("tEXt::Thumb::MTime"));
-	vals.push_back(Glib::ustring(bufout));
-
-	delete [] bufout;
-		
-	thumb->save(cachefile, "png", opts, vals);
-
-	// send it to the display
-	this->update_thumbnail(file, p->iter, thumb);
-
-	delete p;
-	return true;
+	g_async_queue_unref(this->aqueue_donethumbs);
 }
 
 /**

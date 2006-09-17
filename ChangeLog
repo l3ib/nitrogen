@@ -1,3 +1,8 @@
+Sat Sep 16 15:36:46 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Reintroduced a thread, but only to create thumbnails, as 
+	  doing it as an idle func was freezing the GUI for larger
+	  images.
+
 Tue Sep 12 14:25:02 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Hopefully figured out how to merge the inotify branch.
 
