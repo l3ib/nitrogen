@@ -40,6 +40,18 @@ static time_t get_file_mtime(std::string file) {
 }
 
 /**
+ * Returns the value of the "tEXt::Thumb::MTime" key for fd.o style thumbs.
+ * @param pixbuf The pixbuf of the fd.o thumbnail.
+ */
+static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
+	std::string mtime_str = pixbuf->get_option("tEXt::Thumb::MTime");
+	std::stringstream stream(mtime_str);
+	time_t mtime = 0;
+	stream >> mtime;
+	return mtime;
+}
+
+/**
  * Constructor, sets up gtk stuff, inits data and queues
  */
 Thumbview::Thumbview() : dir("") {
@@ -127,9 +139,7 @@ void Thumbview::add_file(std::string filename) {
 	// for modified time
 	row[time] = get_file_mtime(filename);
 
-#ifdef PENDEBUG
-	std::cout << "DEBUG: Adding file " << filename << "\n";
-#endif
+	program_log("add_file(): Adding file %s\n", filename.c_str());
 
 	// push it on the thumb queue
 	TreePair *tp = new TreePair();
@@ -161,9 +171,8 @@ void Thumbview::load_dir(std::string dir) {
 		
 		try {
 			dirhandle = new Glib::Dir(curdir);
-			#ifdef PENDEBUG
-			std::cout << "DEBUG: Opening dir " << curdir << "\n";
-			#endif
+			program_log("load_dir(): Opening dir %s\n", curdir.c_str());
+
 		} catch (Glib::FileError e) {
 			std::cerr << "Could not open dir " << this->dir << ": " << e.what() << "\n";
 			continue;
@@ -278,37 +287,17 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
 	delete [] buf;
 	delete [] full;
 
-	// start at thumbnails dir
-	Glib::ustring halfref = Glib::get_home_dir() + Glib::ustring("/.thumbnails/");
+	// build dir paths
+	Glib::ustring halfref = Glib::build_filename(Glib::get_home_dir(),".thumbnails/");
+	halfref = Glib::build_filename(halfref, "normal/");
 
 	if ( !Glib::file_test(halfref, Glib::FILE_TEST_EXISTS) )
-		if ( ! mkdir(halfref.c_str(), 0700) )
-			// TODO: exception
-			return "FAIL";
-
-	// add normal
-	halfref += Glib::ustring("normal/");
-
-	if ( !Glib::file_test(halfref, Glib::FILE_TEST_EXISTS) )
-		if ( ! mkdir(halfref.c_str(), 0700) )
+		if ( g_mkdir_with_parents(halfref.c_str(), 0700) == -1)
 			// TODO: exception
 			return "FAIL";
 
 	// add and return
-	halfref += md5file;
-	return halfref;
-}
-
-/**
- * Returns the value of the "tEXt::Thumb::MTime" key for fd.o style thumbs.
- * @param pixbuf The pixbuf of the fd.o thumbnail.
- */
-static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
-	std::string mtime_str = pixbuf->get_option("tEXt::Thumb::MTime");
-	std::stringstream stream(mtime_str);
-	time_t mtime = 0;
-	stream >> mtime;
-	return mtime;
+	return Glib::build_filename(halfref, md5file);
 }
 
 /**
@@ -353,8 +342,6 @@ bool Thumbview::load_cache_images() {
 	return true;
 }
 
-
-
 /**
  * Thread function to create thumbnail cache images for those that do not exist.
  */
@@ -375,9 +362,7 @@ void Thumbview::create_cache_images()
 		Glib::ustring file = p->file;
 		Glib::ustring cachefile = this->cache_file(file);
 
-		#ifdef PENDEBUG
-		std::cout << "DEBUG: Caching file " << file << "\n";
-		#endif
+		program_log("create_cache_images(): Caching file %s\n", file.c_str());
 
 		// open image
 		try {

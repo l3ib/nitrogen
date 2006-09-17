@@ -243,8 +243,9 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
  */
 bool Config::check_dir() {
 		
-	if ( !Glib::file_test(Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen"), Glib::FILE_TEST_EXISTS ) )
-		if ( g_mkdir(Glib::ustring(Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen")).c_str(), 0755) == -1 )
+	Glib::ustring dirname = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), "nitrogen");
+	if ( !Glib::file_test(dirname, Glib::FILE_TEST_EXISTS ) )
+		if ( g_mkdir_with_parents(dirname.c_str(), 0755) == -1 )
 			// TODO: throw
 			return false;
 	
