@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  * @param	bgcolor	The background color for modes that do not cover entire portions
  * @return			If it went smoothly
  */
-bool SetBG::set_bg(	Glib::ustring &disp,	Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 
 	gint winx,winy,winw,winh,wind;
 	Glib::RefPtr<Gdk::Display> _display;
@@ -59,6 +59,10 @@ bool SetBG::set_bg(	Glib::ustring &disp,	Glib::ustring file, SetMode mode, Gdk::
 	// get window stuff
 	window = screen->get_root_window();
 	window->get_geometry(winx,winy,winw,winh,wind);
+
+	// check to see if nautilus is running
+	if (SetBG::nautilus_running(window))
+		return SetBG::set_bg_nautilus(screen, file, mode, bgcolor);		
 
 	// create gc and colormap
 	gc_ = Gdk::GC::create(window);
@@ -165,6 +169,60 @@ bool SetBG::set_bg(	Glib::ustring &disp,	Glib::ustring file, SetMode mode, Gdk::
 	_display->close();
 
 	return true;
+}
+
+/**
+ * Determines if Nautilus is being used to draw the root desktop.
+ *
+ * @returns 	True if nautilus is drawing the desktop.
+ */
+bool SetBG::nautilus_running(Glib::RefPtr<Gdk::Window> rootwin)
+{   
+	GdkAtom type;
+    gint format;
+    gint length;
+	guchar *data;
+
+	return (TRUE == gdk_property_get(rootwin->gobj(), 
+								 gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
+								 gdk_atom_intern("WINDOW", FALSE),
+								 0,
+								 4, /* wtf is a length of a window */
+								 FALSE, &type, &format, &length, &data));
+}
+
+/**
+ * Sets the bg if nautilus is appearing to draw the desktop image.
+ *
+ * Simply calls gconftool-2 for now, until we find a better way to do it.
+ */
+bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+
+	GError *error;
+
+	gchar** argv = (gchar**)g_malloc(sizeof(gchar*)*6);
+	argv[0] = "gconftool-2";
+	argv[1] = "--type";
+	argv[2] = "string";
+	argv[3] = "--set";
+	argv[4] = "/desktop/gnome/background/picture_filename";
+	argv[5] = g_strdup(file.c_str());
+
+	gboolean res = gdk_spawn_on_screen(screen->gobj(),
+										NULL,
+										argv,
+										NULL,
+										G_SPAWN_SEARCH_PATH,
+										NULL,
+										NULL,
+										NULL,
+										&error);
+
+	g_free(argv[5]);
+	g_free(argv);
+
+	// disregard error atm, just return true or false
+	return (res == TRUE);
 }
 
 /**

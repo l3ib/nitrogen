@@ -43,14 +43,12 @@ class NWindow : public Gtk::Window {
 	protected:
 		
 		Gtk::VBox main_vbox;
-		Gtk::HBox bot_hbox, search_hbox;
+		Gtk::HBox bot_hbox;
 
 		ImageCombo select_mode, select_display;
 
-		Gtk::Button apply, dosearch, clearsearch;
+		Gtk::Button apply;
 		Gtk::CheckButton cb_save;
-		Gtk::Expander expand_search;
-		Gtk::Entry search_string;
 		Gtk::ColorButton button_bgcolor;
 
 		void set_bg(Glib::ustring file);

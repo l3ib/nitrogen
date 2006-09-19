@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), dosearch(Gtk::Stock::REFRESH), clearsearch(Gtk::Stock::CLEAR), cb_save("Sa_ve"), is_multihead(false)  {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save("Sa_ve"), is_multihead(false)  {
 	
 	set_border_width (5);
 	set_default_size (350, 500);
@@ -50,19 +50,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), dosearch(Gtk::Stock::REFRES
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
 	bot_hbox.pack_end(cb_save, FALSE, FALSE, 0);
 
-	// set up search hbox
-	search_hbox.set_spacing(5);
-	search_hbox.pack_start(search_string, TRUE, TRUE, 0);
-	search_hbox.pack_start(dosearch, FALSE, FALSE, 0);
-	search_hbox.pack_start(clearsearch, FALSE, FALSE, 0);
-
-	// search expander
-	expand_search.set_use_underline();
-	expand_search.set_label("_Search");
-	expand_search.add(search_hbox);
-	
 	// add to main box
-	main_vbox.pack_start(expand_search, FALSE, FALSE, 0);
 	main_vbox.pack_start (view, TRUE, TRUE, 0);
 	main_vbox.pack_start (bot_hbox, FALSE, FALSE, 0);
 
@@ -87,15 +75,6 @@ void NWindow::show (void) {
 	bot_hbox.show ();
 	main_vbox.show ();
 	button_bgcolor.show();
-
-	/*
-	expand_search.show();
-	search_hbox.show();
-	dosearch.show();
-	clearsearch.show();
-	search_string.show();
-	button_bgcolor.show();
-	*/
 
 	this->set_title("Nitrogen");
 }

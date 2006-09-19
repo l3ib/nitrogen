@@ -48,6 +48,14 @@ class SetBG {
 							Gdk::Color bgcolor
 							);
 
+		static bool set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen,
+						            Glib::ustring file,
+									SetMode mode,
+									Gdk::Color bgcolor
+								    );
+
+		static bool nautilus_running(Glib::RefPtr<Gdk::Window> rootwin);
+
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );
 

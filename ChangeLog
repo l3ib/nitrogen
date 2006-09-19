@@ -1,3 +1,8 @@
+Mon Sep 18 22:43:46 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Removed old lingering search UI idea (how was it still there!)
+	* Added support for setting backgrounds under GNOME, or when
+	  Nautilus is drawing the desktop.  Please test!
+
 Sat Sep 16 15:36:46 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Reintroduced a thread, but only to create thumbnails, as 
 	  doing it as an idle func was freezing the GUI for larger
