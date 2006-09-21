@@ -194,22 +194,35 @@ bool SetBG::nautilus_running(Glib::RefPtr<Gdk::Window> rootwin)
 /**
  * Sets the bg if nautilus is appearing to draw the desktop image.
  *
+ * TODO: Fix this crap array stuff
+ *
  * Simply calls gconftool-2 for now, until we find a better way to do it.
  */
 bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 
-	GError *error;
+	GError *error = NULL;
 
-	gchar** argv = (gchar**)g_malloc(sizeof(gchar*)*6);
+	Glib::ustring strmode;
+	switch(mode) {
+		case SetBG::SET_SCALE:  strmode = "stretched";  break;
+		case SetBG::SET_TILE:   strmode = "wallpaper"; break; 
+		case SetBG::SET_CENTER: strmode = "centered"; break;
+		case SetBG::SET_BEST:   strmode = "scaled"; break;
+	};
+
+	gchar** argv = (gchar**)g_malloc(sizeof(gchar*)*10);
 	argv[0] = "gconftool-2";
 	argv[1] = "--type";
 	argv[2] = "string";
 	argv[3] = "--set";
-	argv[4] = "/desktop/gnome/background/picture_filename";
-	argv[5] = g_strdup(file.c_str());
+	argv[4] = "/desktop/gnome/background/picture_options";
+	argv[5] = g_strdup(strmode.c_str());
+	argv[6] = "--set";
+	argv[7] = "/desktop/gnome/background/picture_filename";
+	argv[8] = g_strdup(file.c_str());
+	argv[9] = NULL;
 
-	gboolean res = gdk_spawn_on_screen(screen->gobj(),
-										NULL,
+	gboolean res = g_spawn_async(		NULL,
 										argv,
 										NULL,
 										G_SPAWN_SEARCH_PATH,
@@ -218,7 +231,20 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
 										NULL,
 										&error);
 
+	if (res == FALSE)
+	{
+		std::cerr << "erreur occured\n" << error->message << "\n";
+		g_clear_error(&error);
+		
+		for (int i=0; i<9; i++)
+			std::cerr << argv[i] << " ";
+
+		std::cerr << "\n";
+	}
+
+
 	g_free(argv[5]);
+	g_free(argv[8]);
 	g_free(argv);
 
 	// disregard error atm, just return true or false

@@ -1,3 +1,7 @@
+Wed Sep 20 08:52:26 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Added mode support to GNOME background setting.
+	* Fixed a dumb bug with the GNOME setting not working.
+
 Mon Sep 18 22:43:46 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Removed old lingering search UI idea (how was it still there!)
 	* Added support for setting backgrounds under GNOME, or when
