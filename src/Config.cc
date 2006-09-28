@@ -147,22 +147,9 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 		return false;
 
 	Glib::ustring realdisp = disp;
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("bg-saved.cfg"));
 
-	/*
-	std::cerr << "realdisp is " << realdisp << "\n";
-
-	Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
-
-	std::cerr << "name is " << display->get_name() << "\n";
-
-	// fix up display if we don't have one
-//	realdisp = (disp == "") ? screen->make_display_name() : disp;
-	return 0;
-
-	std::cerr << "realdisp is " << realdisp << "\n";
-	*/
-
-	Glib::ustring cfgfile = Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen/bg-saved.cfg");
 	GKeyFile *kf = g_key_file_new();
 
 	GError *ge = NULL;
@@ -182,11 +169,32 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 		g_clear_error(&ge);
 	}
 
+	// must do complex removals if xinerama occurs
+	if (realdisp.find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos) {
+		
+		if (realdisp == Glib::ustring("xin_-1")) {
+			// get all keys, remove all keys that exist with xin_ prefixes
+			gchar **groups;
+			gsize num;
+			groups = g_key_file_get_groups(kf, &num);
+			for (int i=0; i<num; i++)
+				if (Glib::ustring(groups[i]).find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos)
+					g_key_file_remove_group(kf, groups[i], NULL);
+
+		} else {
+			
+			// a normal xinerama screen, therefore
+			// remove the big realdisp if it occurs
+			if (g_key_file_has_group(kf, "xin_-1"))
+				g_key_file_remove_group(kf, "xin_-1", NULL);
+		}
+	}
+
+
 	// set data
 	g_key_file_set_string(kf, realdisp.c_str(), "file", file.c_str());
 	g_key_file_set_integer(kf, realdisp.c_str(), "mode", (gint)mode);
-	if ( mode == SetBG::SET_BEST || mode == SetBG::SET_CENTER)
-		g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
+	g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
 	
 	// output it
 	Glib::ustring outp = g_key_file_to_data(kf, NULL, NULL);
@@ -210,7 +218,8 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
 	if ( ! Config::check_dir() )
 		return false;
 
-	Glib::ustring cfgfile = Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen/bg-saved.cfg");
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("bg-saved.cfg"));
 	GKeyFile *kf = g_key_file_new();
 	
 	if ( g_key_file_load_from_file(kf, cfgfile.c_str(), G_KEY_FILE_NONE, NULL) == FALSE ) {

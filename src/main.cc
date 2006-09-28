@@ -45,8 +45,9 @@ program_log (const char *format, ...)
     g_free (str);
 } 
 
-// TODO: friggin move these somewhere
-// <2k> I concur.
+//
+// TODO: i turned this kind of into a shitshow with the xinerama, must redo a bit
+//
 void set_saved_bgs() {
 
 	program_log("entering set_saved_bgs()");
@@ -64,24 +65,70 @@ void set_saved_bgs() {
 		return;
 	}
 
-	for (i=displist.begin(); i!=displist.end(); i++) {
-			
-		display = (*i);
-		program_log("display: %s", display.c_str());
-		
-		if (cfg->get_bg(display, file, mode, bgcolor)) {
-				
-			program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-			SetBG::set_bg(display, file, mode, bgcolor);
-			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-			
+	// determine what mode we are going into
+	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
+	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
+	
+	XineramaScreenInfo* xinerama_info;
+	gint xinerama_num_screens;
+
+	int event_base, error_base;
+	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
+	if (xinerama && XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()))) {
+		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
+
+
+		program_log("using xinerama");
+
+		bool foundfull = false;
+		for (i=displist.begin(); i!=displist.end(); i++)
+			if ((*i) == Glib::ustring("xin_-1"))
+				foundfull = true;
+
+		if (foundfull) {
+			if (cfg->get_bg(Glib::ustring("xin_-1"), file, mode, bgcolor)) {
+				program_log("setting full xinerama screen to %s", file.c_str());
+				SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, Glib::ustring("xin_-1"), file, mode, bgcolor); 
+				program_log("done setting full xinerama screen");
+			} else {
+				std::cerr << "Could not get bg info for fullscreen xinerama" << std::endl;
+			}
 		} else {
-			std::cerr << "Could not get bg info" << std::endl;
+
+			// iterate through, pick out the xin_*
+			for (i=displist.begin(); i!=displist.end(); i++) {
+				if ((*i).find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos) {
+					if (cfg->get_bg((*i), file, mode, bgcolor)) {
+						program_log("setting %s to %s", (*i).c_str(), file.c_str());
+						SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, (*i), file, mode, bgcolor);
+						program_log("done setting %s", (*i).c_str());
+					} else {
+						std::cerr << "Could not get bg info for " << (*i) << std::endl;
+					}
+				}
+			}
+		}
+	} else {
+
+		for (int n=0; n<disp->get_n_screens(); n++) {
+				
+			display = disp->get_screen(n)->make_display_name();
+
+			program_log("display: %s", display.c_str());
+			
+			if (cfg->get_bg(display, file, mode, bgcolor)) {
+					
+				program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
+				SetBG::set_bg(display, file, mode, bgcolor);
+				program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
+				
+			} else {
+				std::cerr << "Could not get bg info" << std::endl;
+			}
 		}
 	}
 
-	program_log("leaving set_saved_bgs()");
-	
+	program_log("leaving set_saved_bgs()");	
 }
 
 void restore_bgs()

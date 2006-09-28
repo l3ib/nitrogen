@@ -1,3 +1,6 @@
+Wed Sep 27 23:18:34 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Added preliminary Xinerama support.  Please test.
+
 Wed Sep 20 08:52:26 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Added mode support to GNOME background setting.
 	* Fixed a dumb bug with the GNOME setting not working.

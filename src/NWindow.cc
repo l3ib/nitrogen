@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <X11/extensions/Xinerama.h>
 
 // leethax constructor
 
@@ -118,7 +119,10 @@ void NWindow::set_bg(const Glib::ustring file) {
 	Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
 	// set it
-	SetBG::set_bg(thedisp, file, mode, bgcolor);
+	if (this->is_xinerama)
+		SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, thedisp, file, mode, bgcolor);
+	else
+		SetBG::set_bg(thedisp, file, mode, bgcolor);
 	
 	// should we save?
 	if (this->cb_save.get_active())
@@ -148,18 +152,43 @@ void NWindow::setup_select_boxes() {
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
 	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
 
-	for (int i=0; i<disp->get_n_screens(); i++) {
-		Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
-		std::ostringstream ostr;
-		ostr << "Screen " << i;
-		bool on = (screen == disp->get_default_screen());
-		
-		this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), screen->make_display_name(), on );
-	}
-
 	if ( disp->get_n_screens() > 1 ) 
+	{
 		this->is_multihead = true;	
 
+		for (int i=0; i<disp->get_n_screens(); i++) {
+			Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
+			std::ostringstream ostr;
+			ostr << "Screen " << i;
+			bool on = (screen == disp->get_default_screen());
+				
+			this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), screen->make_display_name(), on );
+		}
+	}
+
+	// xinerama
+	int event_base, error_base;
+	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
+	if (xinerama) {
+		xinerama = XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()));
+		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
+	
+		if (xinerama_num_screens > 0) {
+			this->is_multihead = true;
+			this->is_xinerama = true;
+
+			// add the big one
+			this->select_display.add_image_row(Gdk::Pixbuf::create_from_inline(24 + 684, img_display), "Full Screen", "xin_-1", true);
+
+			for (int i=0; i<xinerama_num_screens; i++) {
+				std::ostringstream ostr, valstr;
+				ostr << "Screen " << xinerama_info[i].screen_number+1;
+				valstr << "xin_" << xinerama_info[i].screen_number;
+						
+				this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), valstr.str(), false);
+			}
+		}
+	}
 	
 }
 

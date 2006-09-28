@@ -55,6 +55,11 @@ class NWindow : public Gtk::Window {
 		void setup_select_boxes();
 
 		bool is_multihead;
+		bool is_xinerama;
+
+		// xinerama stuff
+		XineramaScreenInfo* xinerama_info;
+		gint xinerama_num_screens;
 };
 
 #endif

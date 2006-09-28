@@ -172,6 +172,173 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 }
 
 /**
+ * Sets a bg on a Xinerama "screen", which is one of the virtual screens on a Xinerama display.
+ *
+ */
+bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens, Glib::ustring xinerama_screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+	gint winx,winy,winw,winh,wind;
+	Glib::RefPtr<Gdk::Display> _display;
+ 	Glib::RefPtr<Gdk::Screen> screen;
+	Glib::RefPtr<Gdk::Window> window;
+	Glib::RefPtr<Gdk::GC> gc_;
+	Glib::RefPtr<Gdk::Colormap> colormap;
+	Glib::RefPtr<Gdk::Pixbuf> pixbuf, outpixbuf;
+	Glib::RefPtr<Gdk::Pixmap> pixmap;
+	gint xin_screen_num; 
+	int xin_offset = -1;
+
+	// get specific xinerama "screen"
+	// xinerama_screen is a string that should be "xin_#"
+	// "xin_-1" refers to the whole thing
+	Glib::ustring xin_numstr = xinerama_screen.substr(4);
+	std::stringstream sstr;
+	sstr << xin_numstr;	
+	sstr >> xin_screen_num;
+
+	if ( xin_screen_num != -1 ) {
+		for (int i=0; i<xinerama_num_screens; i++)
+			if (xinerama_info[i].screen_number == xin_screen_num)
+				xin_offset = i;
+
+		if (xin_offset == -1) {
+			std::cerr << "Could not find Xinerama screen # " << xin_screen_num << " in xinerama info!\n";
+			return false;
+		}
+	}
+
+	// open display and screen
+	_display = Gdk::DisplayManager::get()->get_default_display();
+	if (!_display) {
+		std::cerr << "Could not open display\n";
+		return false;
+	}
+
+	// get the screen
+	screen = _display->get_default_screen();
+
+	// get window stuff
+	window = screen->get_root_window();
+	window->get_geometry(winx,winy,winw,winh,wind);
+
+	// determine our target dimensions
+	gint tarx, tary, tarw, tarh;
+	if (xin_screen_num == -1) {
+		tarx = winx;
+		tary = winy;
+		tarw = winw;
+		tarh = winh;
+	} else {
+		tarx = xinerama_info[xin_offset].x_org;
+		tary = xinerama_info[xin_offset].y_org;
+		tarw = xinerama_info[xin_offset].width;
+		tarh = xinerama_info[xin_offset].height;
+	}
+
+	Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+	XSetCloseDownMode(xdisp, RetainPermanent);
+	Window xwin = DefaultRootWindow(xdisp);
+	Pixmap* xoldpm = NULL;
+
+	Atom prop_root, prop_esetroot, type;
+	int format;
+	unsigned long length, after;
+	unsigned char *data_root, *data_esetroot;
+	
+	prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", True);
+	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", True);
+	
+	if (prop_root != None && prop_esetroot != None) {
+		XGetWindowProperty(xdisp, xwin, prop_root, 0L, 1L, False, AnyPropertyType, &type, &format, &length, &after, &data_root);
+		if (type == XA_PIXMAP) {
+			XGetWindowProperty(xdisp, xwin, prop_esetroot, 0L, 1L, False, AnyPropertyType, &type, &format, &length, &after, &data_esetroot);
+			if (data_root && data_esetroot)
+				if (type == XA_PIXMAP && *((Pixmap *) data_root) == *((Pixmap *) data_esetroot)) {
+					xoldpm = (Pixmap*)data_root;
+				}
+		}
+	}
+
+	// we need to alloc a colormap every time
+	colormap = Gdk::Colormap::get_system();
+
+	// alloc our background color 
+	colormap->alloc_color(bgcolor, false, true);
+
+	if (xoldpm != NULL) {
+		// grab the old pixmap and ref it into a gdk pixmap
+		pixmap = Gdk::Pixmap::create(_display, *xoldpm);
+	
+		} else {
+		// we have to create it
+		pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
+	}
+
+	// set the colormap 
+	pixmap->set_colormap(colormap);
+
+	// get our pixbuf from the file
+	try {
+		pixbuf = Gdk::Pixbuf::create_from_file(file);	
+	} catch (Glib::FileError e) {
+		std::cerr << "ERROR: Could not load file in bg set: " << e.what() << "\n";
+		return false;
+	}
+	
+	// apply the bg color to pixbuf here, because every make_ method would
+	// have to do it anyway.
+	pixbuf = pixbuf->composite_color_simple(pixbuf->get_width(),
+		pixbuf->get_height(), Gdk::INTERP_NEAREST, 255, 1, bgcolor.get_pixel(),
+		bgcolor.get_pixel());
+
+	switch(mode) {
+	
+		case SetBG::SET_SCALE:
+			outpixbuf = SetBG::make_scale(pixbuf, tarw, tarh, bgcolor);
+			break;
+
+		case SetBG::SET_TILE:
+			outpixbuf = SetBG::make_tile(pixbuf, tarw, tarh, bgcolor);
+			break;
+
+		case SetBG::SET_CENTER:
+			outpixbuf = SetBG::make_center(pixbuf, tarw, tarh, bgcolor);
+			break;
+
+		case SetBG::SET_BEST:
+			outpixbuf = SetBG::make_best(pixbuf, tarw, tarh, bgcolor);
+			break;
+			
+		default:
+			std::cerr << "Unknown mode for saved bg " << std::endl;
+			return false;
+	};
+
+	// render it to the pixmap
+	pixmap->draw_pixbuf(gc_, outpixbuf, 0,0, tarx, tary, tarw, tarh, Gdk::RGB_DITHER_NONE,0,0);
+
+	Pixmap xpm = GDK_PIXMAP_XID(pixmap->gobj());
+
+	prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", False);
+	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
+
+	if (prop_root == None || prop_esetroot == None) {
+		std::cerr << "ERROR: BG set could not make atoms.\n";
+		return false;
+	}
+
+	XChangeProperty(xdisp, xwin, prop_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
+	XChangeProperty(xdisp, xwin, prop_esetroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
+
+	// set it gtk style
+	window->set_back_pixmap(pixmap, false);
+	window->clear();
+
+	return true;
+	
+}
+
+/**
  * Determines if Nautilus is being used to draw the root desktop.
  *
  * @returns 	True if nautilus is drawing the desktop.
