@@ -170,15 +170,15 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 	}
 
 	// must do complex removals if xinerama occurs
-	if (realdisp.find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos) {
+	if (realdisp.find("xin_", 0, 4) != Glib::ustring::npos) {
 		
-		if (realdisp == Glib::ustring("xin_-1")) {
+		if (realdisp == "xin_-1") {
 			// get all keys, remove all keys that exist with xin_ prefixes
 			gchar **groups;
 			gsize num;
 			groups = g_key_file_get_groups(kf, &num);
 			for (int i=0; i<num; i++)
-				if (Glib::ustring(groups[i]).find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos)
+				if (Glib::ustring(groups[i]).find("xin_", 0, 4) != Glib::ustring::npos)
 					g_key_file_remove_group(kf, groups[i], NULL);
 
 		} else {
