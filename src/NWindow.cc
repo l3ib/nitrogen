@@ -162,8 +162,6 @@ void NWindow::setup_select_boxes() {
 			ostr << "Screen " << i;
 			bool on = (screen == disp->get_default_screen());
 				
-			std::cout << "inserting " << ostr.str() << ", " << screen->make_display_name() << "\n";
-
 			this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), screen->make_display_name(), on );
 		}
 
