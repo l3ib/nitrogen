@@ -69,6 +69,7 @@ void set_saved_bgs() {
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
 	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
 	
+#ifdef USE_XINERAMA
 	XineramaScreenInfo* xinerama_info;
 	gint xinerama_num_screens;
 
@@ -108,23 +109,27 @@ void set_saved_bgs() {
 				}
 			}
 		}
-	} else {
 
-		for (int n=0; n<disp->get_n_screens(); n++) {
+		// must return here becuase not all systems have xinerama
+		program_log("leaving set_saved_bgs()");	
+		return;
+	} 
+#endif
+
+	for (int n=0; n<disp->get_n_screens(); n++) {
 				
-			display = disp->get_screen(n)->make_display_name();
+		display = disp->get_screen(n)->make_display_name();
 
-			program_log("display: %s", display.c_str());
+		program_log("display: %s", display.c_str());
 			
-			if (cfg->get_bg(display, file, mode, bgcolor)) {
+		if (cfg->get_bg(display, file, mode, bgcolor)) {
 					
-				program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-				SetBG::set_bg(display, file, mode, bgcolor);
-				program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
+			program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
+			SetBG::set_bg(display, file, mode, bgcolor);
+			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
 				
-			} else {
-				std::cerr << "Could not get bg info" << std::endl;
-			}
+		} else {
+			std::cerr << "Could not get bg info" << std::endl;
 		}
 	}
 

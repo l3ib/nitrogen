@@ -23,11 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
+#endif
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save("Sa_ve"), is_multihead(false)  {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save("Sa_ve"), is_multihead(false), is_xinerama(false)  {
 	
 	set_border_width (5);
 	set_default_size (350, 500);
@@ -168,6 +171,7 @@ void NWindow::setup_select_boxes() {
 		return;
 	}
 
+#ifdef USE_XINERAMA
 	// xinerama
 	int event_base, error_base;
 	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
@@ -193,6 +197,7 @@ void NWindow::setup_select_boxes() {
 
 		return;
 	}
+#endif
 
 	// if we made it here, we do not have any kidn of multihead
 	// we still need to insert an entry to the display selector or we will die harshly

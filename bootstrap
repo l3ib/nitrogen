@@ -8,6 +8,7 @@ export WANT_AUTOMAKE=1.7
 
 sh libtoolize --copy --force --automake
 sh autoconf
+sh autoheader
 sh automake --include-deps --add-missing --copy
 
 echo

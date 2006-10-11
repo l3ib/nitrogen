@@ -34,15 +34,25 @@ PKG_CHECK_MODULES(GTHREAD2, [gthread-2.0 >= $GTHREAD2_VERSION])
 NITROGEN_LIBS="$GLIB2_LIBS $GTK2_LIBS $GTKMM2_LIBS $GTHREAD2_LIBS"
 NITROGEN_CFLAGS="$GLIB2_CFLAGS $GTK2_CFLAGS $GTKMM2_CFLAGS $GTHREAD2_CFLAGS"
 
-AC_SUBST(NITROGEN_LIBS)
-AC_SUBST(NITROGEN_CFLAGS)
-
 dnl do some autotools picen to get inotify
-AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify watching of dirs (default: enable)], [enable_inotify=$enableval],[enable_inotify=yes])
+AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify watching of dirs (default: enabled)], [enable_inotify=$enableval],[enable_inotify=yes])
 
 if test x$enable_inotify = xyes; then
 	AC_DEFINE(USE_INOTIFY, 1, [Define to enable inotify dir watching])
 fi
+
+dnl now do some proper checking for Xinerama
+AC_ARG_ENABLE(xinerama, [  --disable-xinerama      disable support for Xinerama (default: enabled)], [enable_xinerama=$xineramaval],[enable_xinerama=yes])
+
+if test x$enable_xinerama = xyes; then
+	AC_CHECK_LIB(Xinerama, XineramaQueryScreens, 
+				 	[AC_DEFINE(USE_XINERAMA, 1, [Define to enable Xinerama])
+					 NITROGEN_LIBS="$NITROGEN_LIBS -lXinerama"],
+					[enable_xinerama=no])
+fi
+
+AC_SUBST(NITROGEN_LIBS)
+AC_SUBST(NITROGEN_CFLAGS)
 
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT
@@ -58,6 +68,12 @@ if test x$enable_inotify = xyes; then
 	echo "inotify support ............. enabled"
 else
 	echo "inotify support ............. disabled"
+fi
+
+if test x$enable_xinerama = xyes; then
+	echo "xinerama support ............ enabled"
+else
+	echo "xinerama support ............ disabled"
 fi
 
 echo ""
