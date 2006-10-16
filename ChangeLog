@@ -1,3 +1,6 @@
+Sun Oct 15 22:59:55 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Started some code cleanups.
+
 Tue Oct 10 21:14:46 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Tried to introduce some autotools foo to deal with Xinerama
 	  better.

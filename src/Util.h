@@ -19,17 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <fstream>
-#include <stdio.h>
+#ifndef _UTIL_H_
+#define _UTIL_H_
+
+#include "ArgParser.h"
 #include <gtkmm.h>
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
+namespace Util {
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+	void program_log(const char *format, ...);
+	Glib::ustring path_to_abs_path(Glib::ustring path);
+	void restore_saved_bgs();
+	ArgParser* create_arg_parser();
+	std::string fix_start_dir(std::string startdir);
+}
+
 #endif
+

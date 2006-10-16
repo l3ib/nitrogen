@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 #include "Config.h"
+#include "Util.h"
 
 /**
  * Returns the last modified time of a file.
@@ -139,7 +140,7 @@ void Thumbview::add_file(std::string filename) {
 	// for modified time
 	row[time] = get_file_mtime(filename);
 
-	program_log("add_file(): Adding file %s\n", filename.c_str());
+	Util::program_log("add_file(): Adding file %s\n", filename.c_str());
 
 	// push it on the thumb queue
 	TreePair *tp = new TreePair();
@@ -171,7 +172,7 @@ void Thumbview::load_dir(std::string dir) {
 		
 		try {
 			dirhandle = new Glib::Dir(curdir);
-			program_log("load_dir(): Opening dir %s\n", curdir.c_str());
+			Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
 
 		} catch (Glib::FileError e) {
 			std::cerr << "Could not open dir " << this->dir << ": " << e.what() << "\n";
@@ -362,7 +363,7 @@ void Thumbview::create_cache_images()
 		Glib::ustring file = p->file;
 		Glib::ustring cachefile = this->cache_file(file);
 
-		program_log("create_cache_images(): Caching file %s\n", file.c_str());
+		Util::program_log("create_cache_images(): Caching file %s\n", file.c_str());
 
 		// open image
 		try {

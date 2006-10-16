@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
+#ifndef _ARGPARSER_H_
+#define _ARGPARSER_H_
+
 #include <map>
 #include <string>
 #include <vector>
@@ -110,7 +113,7 @@ class ArgParser {
 
 		// returns the help text (--help)
 		std::string help_text (void) const;
-	
+
 	protected:
 		// checks if the supplied key conflicts with an existing key.
 		bool conflicts (std::string key);
@@ -120,3 +123,5 @@ class ArgParser {
 		std::map<std::string, Arg> expected_args;
 		std::vector< std::vector<std::string> > exclusive;
 };
+
+#endif
