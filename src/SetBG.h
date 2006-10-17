@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "main.h"
 #include <gdk/gdkx.h>
 #include <math.h>
+#ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
+#endif
 
 /**
  * Utility class for setting the background image.
@@ -49,6 +51,7 @@ class SetBG {
 							Gdk::Color bgcolor
 							);
 
+#ifdef USE_XINERAMA
 		static bool set_bg_xinerama(XineramaScreenInfo *xinerama_info,
 									gint xinerama_num_screens,
 									Glib::ustring xinerama_screen, 
@@ -56,6 +59,7 @@ class SetBG {
 									SetMode mode,
 									Gdk::Color bgcolor
 									);
+#endif
 
 		static bool set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen,
 						            Glib::ustring file,

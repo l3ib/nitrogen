@@ -171,6 +171,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	return true;
 }
 
+#ifdef USE_XINERAMA
 /**
  * Sets a bg on a Xinerama "screen", which is one of the virtual screens on a Xinerama display.
  *
@@ -337,6 +338,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	return true;
 	
 }
+
+#endif
 
 /**
  * Determines if Nautilus is being used to draw the root desktop.
