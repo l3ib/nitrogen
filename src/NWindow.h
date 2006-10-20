@@ -57,9 +57,11 @@ class NWindow : public Gtk::Window {
 		bool is_multihead;
 		bool is_xinerama;
 
+#ifdef USE_XINERAMA
 		// xinerama stuff
 		XineramaScreenInfo* xinerama_info;
 		gint xinerama_num_screens;
+#endif
 };
 
 #endif

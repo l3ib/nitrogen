@@ -42,7 +42,7 @@ if test x$enable_inotify = xyes; then
 fi
 
 dnl now do some proper checking for Xinerama
-AC_ARG_ENABLE(xinerama, [  --disable-xinerama      disable support for Xinerama (default: enabled)], [enable_xinerama=$xineramaval],[enable_xinerama=yes])
+AC_ARG_ENABLE(xinerama, [  --disable-xinerama      disable support for Xinerama (default: enabled)], [enable_xinerama=$enableval],[enable_xinerama=yes])
 
 if test x$enable_xinerama = xyes; then
 	AC_CHECK_LIB(Xinerama, XineramaQueryScreens, 

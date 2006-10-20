@@ -122,9 +122,11 @@ void NWindow::set_bg(const Glib::ustring file) {
 	Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
 	// set it
+#ifdef USE_XINERAMA
 	if (this->is_xinerama)
 		SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, thedisp, file, mode, bgcolor);
 	else
+#endif
 		SetBG::set_bg(thedisp, file, mode, bgcolor);
 	
 	// should we save?

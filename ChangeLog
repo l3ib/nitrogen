@@ -1,3 +1,7 @@
+Thu Oct 19 22:33:53 EDT 2006	Dave Foster <daf@minuslab.net>
+	* Fixed various compile/configure bugs.
+	* Released 1.0 RC4.
+
 Sun Oct 15 22:59:55 EDT 2006	Dave Foster <daf@minuslab.net>
 	* Started some code cleanups.
 
