@@ -54,7 +54,7 @@ fi
 AC_SUBST(NITROGEN_LIBS)
 AC_SUBST(NITROGEN_CFLAGS)
 
-AC_CONFIG_FILES(Makefile src/Makefile)
+AC_CONFIG_FILES(Makefile src/Makefile data/Makefile data/icons/Makefile)
 AC_OUTPUT
 
 dnl syscrash says don't test for inotify support in kernel for some reason

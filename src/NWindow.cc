@@ -142,16 +142,13 @@ NWindow::~NWindow () {}
  */
 void NWindow::setup_select_boxes() {
 		
-	extern guint8 wallpaper_center[];
-	extern guint8 wallpaper_scale[];
-	extern guint8 wallpaper_tile[];
-	extern guint8 img_display[];
+	Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
 
 	// modes
-	this->select_mode.add_image_row( Gdk::Pixbuf::create_from_inline(24 + 337, wallpaper_scale), "Scaled", SetBG::mode_to_string(SetBG::SET_SCALE), true );
-	this->select_mode.add_image_row( Gdk::Pixbuf::create_from_inline(24 + 333, wallpaper_center), "Centered", SetBG::mode_to_string(SetBG::SET_CENTER), false );
-	this->select_mode.add_image_row( Gdk::Pixbuf::create_from_inline(24 + 383, wallpaper_tile), "Tiled", SetBG::mode_to_string(SetBG::SET_TILE), false );
-	this->select_mode.add_image_row( Gdk::Pixbuf::create_from_inline(24 + 337, wallpaper_scale), "Best Fit", SetBG::mode_to_string(SetBG::SET_BEST), false );
+	this->select_mode.add_image_row( icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG), "Scaled", SetBG::mode_to_string(SetBG::SET_SCALE), true );
+	this->select_mode.add_image_row( icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG), "Centered", SetBG::mode_to_string(SetBG::SET_CENTER), false );
+	this->select_mode.add_image_row( icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG), "Tiled", SetBG::mode_to_string(SetBG::SET_TILE), false );
+	this->select_mode.add_image_row( icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG), "Best Fit", SetBG::mode_to_string(SetBG::SET_BEST), false );
 
 	// displays
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
@@ -167,7 +164,7 @@ void NWindow::setup_select_boxes() {
 			ostr << "Screen " << i;
 			bool on = (screen == disp->get_default_screen());
 				
-			this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), screen->make_display_name(), on );
+			this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), screen->make_display_name(), on );
 		}
 
 		return;
@@ -186,14 +183,14 @@ void NWindow::setup_select_boxes() {
 			this->is_xinerama = true;
 
 			// add the big one
-			this->select_display.add_image_row(Gdk::Pixbuf::create_from_inline(24 + 684, img_display), "Full Screen", "xin_-1", true);
+			this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), "Full Screen", "xin_-1", true);
 
 			for (int i=0; i<xinerama_num_screens; i++) {
 				std::ostringstream ostr, valstr;
 				ostr << "Screen " << xinerama_info[i].screen_number+1;
 				valstr << "xin_" << xinerama_info[i].screen_number;
 						
-				this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), ostr.str(), valstr.str(), false);
+				this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), valstr.str(), false);
 			}
 		}
 
@@ -204,7 +201,7 @@ void NWindow::setup_select_boxes() {
 	// if we made it here, we do not have any kidn of multihead
 	// we still need to insert an entry to the display selector or we will die harshly
 	
-	this->select_display.add_image_row( Gdk::Pixbuf::create_from_inline (24 + 684, img_display), "Default", disp->get_default_screen()->make_display_name(), true);
+	this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), "Default", disp->get_default_screen()->make_display_name(), true);
 
 	return;
 }

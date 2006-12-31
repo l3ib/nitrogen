@@ -69,6 +69,7 @@ int main (int argc, char ** argv) {
 	}
 	
 	Gtk::Main kit(argc, argv);
+	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR G_DIR_SEPARATOR_S "icons");
 	Glib::thread_init();
 	Config *cfg = Config::get_instance();
 	ArgParser *parser = Util::create_arg_parser();

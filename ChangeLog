@@ -1,3 +1,7 @@
+Sun Dec 31 01:56:26 EST 2006	Dave Foster <daf@minuslab.net>
+	* Added proper icon support, new icons from Craig, stolen
+	  build script to install icons (from Banshee).
+
 Tue Oct 31 21:42:24 EST 2006	Dave Foster <daf@minuslab.net>
 	* Cleaned up some autotools crud that shouldn't be in svn.
 

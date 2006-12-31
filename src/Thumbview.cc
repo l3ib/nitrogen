@@ -128,10 +128,7 @@ Thumbview::~Thumbview() {
 void Thumbview::add_file(std::string filename) {
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
-	Glib::RefPtr<Gdk::Pixbuf> thumb;
-
-	extern guint8 ni_loading[]; 
-	thumb = Gdk::Pixbuf::create_from_inline(24+2993, ni_loading);
+	Glib::RefPtr<Gdk::Pixbuf> thumb = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
 
 	row[thumbnail] = thumb;
 	row[this->filename] = filename;
