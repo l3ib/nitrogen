@@ -101,4 +101,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		std::queue<TreePair*> queue_thumbs;
 		GAsyncQueue* aqueue_createthumbs;
 		GAsyncQueue* aqueue_donethumbs;
+
+		// loading image
+		Glib::RefPtr<Gdk::Pixbuf> loading_image;
 };

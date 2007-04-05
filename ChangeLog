@@ -1,3 +1,14 @@
+Thu Apr  5 18:01:16 EDT 2007	Dave Foster <daf@minuslab.net>
+	* Added new icons from Craig Duquette, split out images
+	  into actual directories you have to install.  "make install"
+	  takes care of all this.
+	* This has been stale for a while, committing to see if it 
+	  works for anyone else so we can release 1.0.
+
+Mon Jan 29 12:03:02 EST 2007	Dave Foster <daf@minuslab.net>
+	* Improved loading time of large directories (back to pre-
+	  icon switch).
+
 Sun Dec 31 01:56:26 EST 2006	Dave Foster <daf@minuslab.net>
 	* Added proper icon support, new icons from Craig, stolen
 	  build script to install icons (from Banshee).

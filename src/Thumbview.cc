@@ -94,7 +94,10 @@ Thumbview::Thumbview() : dir("") {
 
 	// enable alphanumeric sorting
 	// store->set_sort_column (short_filename, Gtk::SORT_ASCENDING);
-	
+
+	// load loading image
+	this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
+
 	// make our async queues
 	this->aqueue_createthumbs = g_async_queue_new();
 	this->aqueue_donethumbs = g_async_queue_new();	
@@ -128,8 +131,7 @@ Thumbview::~Thumbview() {
 void Thumbview::add_file(std::string filename) {
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
-	Glib::RefPtr<Gdk::Pixbuf> thumb = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
-
+	Glib::RefPtr<Gdk::Pixbuf> thumb = this->loading_image; 
 	row[thumbnail] = thumb;
 	row[this->filename] = filename;
 	row[description] = Glib::ustring(filename, filename.rfind ("/")+1);
