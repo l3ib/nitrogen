@@ -148,20 +148,37 @@ void NWindow::setup_select_boxes() {
 	genericicon = icontheme->load_icon("image-x-generic", 16, Gtk::ICON_LOOKUP_NO_SVG);
 
 	// modes
-	icon = icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	if (!icon) icon = genericicon;
+	try {
+		icon = icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG);
+		if (!icon) icon = genericicon;
+	} catch (...) {
+		icon = genericicon;
+	}
 	this->select_mode.add_image_row( icon, "Scaled", SetBG::mode_to_string(SetBG::SET_SCALE), true );
 
-	icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	if (!icon) icon = genericicon;
+	try {
+		icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
+		if (!icon) icon = genericicon;
+	} catch (...) {
+		icon = genericicon;
+	}
 	this->select_mode.add_image_row( icon, "Centered", SetBG::mode_to_string(SetBG::SET_CENTER), false );
 
-	icon = icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	if (!icon) icon = genericicon;
+	try {
+		icon = icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG);
+		if (!icon) icon = genericicon;
+	} catch (...) {
+		icon = genericicon;
+	}
 	this->select_mode.add_image_row( icon, "Tiled", SetBG::mode_to_string(SetBG::SET_TILE), false );
 
-	icon = icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	if (!icon) icon = genericicon;
+	try {
+		icon = icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG);
+		if (!icon) icon = genericicon;
+	} catch (...) {
+		icon = genericicon;
+	}
+
 	this->select_mode.add_image_row( icon, "Best Fit", SetBG::mode_to_string(SetBG::SET_BEST), false );
 
 	// displays

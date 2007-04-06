@@ -1,3 +1,7 @@
+Fri Apr  6 14:04:46 EDT 2007	Javeed Shaikh <syscrash2k@gmail.com>
+	* Trying to fix a bug where icons are not being found, causing
+		nitrogen to abort. Dave should probably look into this further.
+
 Thu Apr  5 18:01:16 EDT 2007	Dave Foster <daf@minuslab.net>
 	* Added new icons from Craig Duquette, split out images
 	  into actual directories you have to install.  "make install"
