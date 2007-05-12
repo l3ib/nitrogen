@@ -1,3 +1,7 @@
+Fri May 11 15:09:04 EDT 2007	Dave Foster <daf@minuslab.net>
+	* Added main application icons by Craig Duquette.
+	* Updated license info to include CC license for icons.
+
 Fri Apr  6 14:04:46 EDT 2007	Javeed Shaikh <syscrash2k@gmail.com>
 	* Trying to fix a bug where icons are not being found, causing
 		nitrogen to abort. Dave should probably look into this further.

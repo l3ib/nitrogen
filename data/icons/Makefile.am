@@ -1,6 +1,11 @@
 theme=hicolor
 themedir=$(datadir)/icons/$(theme)
 theme_icons = \
+	apps,nitrogen-128.png \
+	apps,nitrogen-16.png \
+	apps,nitrogen-22.png \
+	apps,nitrogen-32.png \
+	apps,nitrogen-48.png \
 	devices,video-display-16.png \
 	actions,wallpaper-bestfit-16.png \
 	actions,wallpaper-centered-16.png \

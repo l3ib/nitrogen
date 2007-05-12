@@ -63,9 +63,21 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save("Sa_ve"), is_multih
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
 
 	// set icon
-	extern guint8 ni_icon[];
-	Glib::RefPtr<Gdk::Pixbuf> icon = Gdk::Pixbuf::create_from_inline(24+32767, ni_icon);
-	this->set_icon(icon);
+	try {
+		Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
+		std::vector<Glib::RefPtr<Gdk::Pixbuf> > vec;
+		vec.push_back(icontheme->load_icon("nitrogen", 16, Gtk::ICON_LOOKUP_NO_SVG));
+		vec.push_back(icontheme->load_icon("nitrogen", 22, Gtk::ICON_LOOKUP_NO_SVG));
+		vec.push_back(icontheme->load_icon("nitrogen", 32, Gtk::ICON_LOOKUP_NO_SVG));
+		vec.push_back(icontheme->load_icon("nitrogen", 48, Gtk::ICON_LOOKUP_NO_SVG));
+		vec.push_back(icontheme->load_icon("nitrogen", 128, Gtk::ICON_LOOKUP_NO_SVG));
+		Glib::ListHandle<Glib::RefPtr<Gdk::Pixbuf> > lister(vec);
+
+		this->set_icon_list(lister);
+	} catch  (...) {
+		// don't even worry about it!
+	}
+	
 }
 
 // shows all of our widgets
