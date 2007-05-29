@@ -1,6 +1,5 @@
 AC_PREREQ(2.59)
 AC_INIT([nitrogen],[1.0],[daf@minuslab.net])
-AM_MAINTAINER_MODE
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_ISC_POSIX
@@ -10,6 +9,7 @@ AC_PROG_RANLIB
 AC_PROG_INSTALL
 
 ALL_LINGUAS=""
+AM_GNU_GETTEXT_VERSION(0.16)
 AM_GNU_GETTEXT([external])
 AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/${DATADIRNAME}/locale", [Name of gettext locale directory])
 

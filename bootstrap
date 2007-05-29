@@ -4,7 +4,7 @@ sh() {
   /bin/sh -c "set -x; $*"
 }
 
-export WANT_AUTOMAKE=1.7
+export WANT_AUTOMAKE=1.9
 
 sh libtoolize --copy --force --automake
 sh aclocal
