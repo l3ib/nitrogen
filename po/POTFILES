@@ -1,9 +1,9 @@
-../src/ArgParser.cc
-../src/Config.cc
-../src/ImageCombo.cc
-../src/Inotify.cc 
-../src/NWindow.cc
-../src/SetBG.cc
-../src/Thumbview.cc
-../src/Util.cc
-../src/main.cc
+     ../src/ArgParser.cc \
+     ../src/Config.cc \
+     ../src/ImageCombo.cc \
+     ../src/Inotify.cc \
+     ../src/NWindow.cc \
+     ../src/SetBG.cc \
+     ../src/Thumbview.cc \
+     ../src/Util.cc \
+     ../src/main.cc
