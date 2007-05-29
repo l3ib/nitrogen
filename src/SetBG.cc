@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SetBG.h"
 #include "main.h"
 #include <X11/Xatom.h>
+#include "gcs-i18n.h"
 
 /**
  * Sets the background to the image in the file specified.
@@ -46,7 +47,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	// open display and screen
 	_display = (disp == "") ? Gdk::DisplayManager::get()->get_default_display() : Gdk::Display::open(disp);
 	if (!_display) {
-		std::cerr << "Could not open display " << disp << "\n";
+		std::cerr << _("Could not open display") << " " << disp << "\n";
 		return false;
 	}
 
@@ -79,7 +80,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	try {
 		pixbuf = Gdk::Pixbuf::create_from_file(file);	
 	} catch (Glib::FileError e) {
-		std::cerr << "ERROR: Could not load file in bg set: " << e.what() << "\n";
+		std::cerr << _("ERROR: Could not load file in bg set") << ": " << e.what() << "\n";
 		return false;
 	}
 
@@ -108,7 +109,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 			break;
 			
 		default:
-			std::cerr << "Unknown mode for saved bg on " << disp << std::endl;
+			std::cerr << _("Unknown mode for saved bg on") << " " << disp << std::endl;
 			return false;
 	};
 
@@ -152,7 +153,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
 
 	if (prop_root == None || prop_esetroot == None) {
-		std::cerr << "ERROR: BG set could not make atoms.\n";
+		std::cerr << _("ERROR: BG set could not make atoms.") << "\n";
 		return false;
 	}
 
@@ -203,7 +204,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 				xin_offset = i;
 
 		if (xin_offset == -1) {
-			std::cerr << "Could not find Xinerama screen # " << xin_screen_num << " in xinerama info!\n";
+			std::cerr << _("Could not find Xinerama screen number") << " " << xin_screen_num << "\n";
 			return false;
 		}
 	}
@@ -211,7 +212,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	// open display and screen
 	_display = Gdk::DisplayManager::get()->get_default_display();
 	if (!_display) {
-		std::cerr << "Could not open display\n";
+		std::cerr << _("Could not open display") << "\n";
 		return false;
 	}
 
@@ -282,7 +283,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	try {
 		pixbuf = Gdk::Pixbuf::create_from_file(file);	
 	} catch (Glib::FileError e) {
-		std::cerr << "ERROR: Could not load file in bg set: " << e.what() << "\n";
+		std::cerr << _("ERROR: Could not load file in bg set") << ": " << e.what() << "\n";
 		return false;
 	}
 	
@@ -311,7 +312,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 			break;
 			
 		default:
-			std::cerr << "Unknown mode for saved bg " << std::endl;
+			std::cerr << _("Unknown mode for saved bg") << " " << std::endl;
 			return false;
 	};
 
@@ -324,7 +325,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
 
 	if (prop_root == None || prop_esetroot == None) {
-		std::cerr << "ERROR: BG set could not make atoms.\n";
+		std::cerr << _("ERROR: BG set could not make atoms.") << "\n";
 		return false;
 	}
 
@@ -403,7 +404,7 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
 
 	if (res == FALSE)
 	{
-		std::cerr << "erreur occured\n" << error->message << "\n";
+		std::cerr << _("ERROR") << "\n" << error->message << "\n";
 		g_clear_error(&error);
 		
 		for (int i=0; i<9; i++)
@@ -575,16 +576,16 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 	
 	switch ( mode ) {
 		case SET_SCALE:
-			ret = Glib::ustring("Scale");
+			ret = Glib::ustring(_("Scale"));
 			break;
 		case SET_CENTER:
-			ret = Glib::ustring("Center");
+			ret = Glib::ustring(_("Center"));
 			break;
 		case SET_TILE:
-			ret = Glib::ustring("Tile");
+			ret = Glib::ustring(_("Tile"));
 			break;
 		case SET_BEST:
-			ret = Glib::ustring("Best");
+			ret = Glib::ustring(_("Best"));
 			break;
 	};
 	
@@ -597,13 +598,13 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
  */
 SetBG::SetMode SetBG::string_to_mode( const Glib::ustring str ) {
 
-	if ( str == Glib::ustring("Scale") )
+	if ( str == Glib::ustring(_("Scale")) )
 		return SetBG::SET_SCALE;
-	else if ( str == Glib::ustring("Center") )
+	else if ( str == Glib::ustring(_("Center")) )
 		return SetBG::SET_CENTER;
-	else if ( str == Glib::ustring("Tile") )
+	else if ( str == Glib::ustring(_("Tile")) )
 		return SetBG::SET_TILE;
-	else if ( str == Glib::ustring("Best") )
+	else if ( str == Glib::ustring(_("Best")) )
 		return SetBG::SET_BEST;
 
 	// shouldn't get here

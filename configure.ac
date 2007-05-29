@@ -8,6 +8,11 @@ AC_HEADER_STDC++
 AC_PROG_CXX
 AC_PROG_RANLIB
 AC_PROG_INSTALL
+
+ALL_LINGUAS=""
+AM_GNU_GETTEXT([external])
+AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/${DATADIRNAME}/locale", [Name of gettext locale directory])
+
 AC_LANG([C++])
 AC_LANG_COMPILER_REQUIRE
 AC_HEADER_STDC([])
@@ -54,7 +59,7 @@ fi
 AC_SUBST(NITROGEN_LIBS)
 AC_SUBST(NITROGEN_CFLAGS)
 
-AC_CONFIG_FILES(Makefile src/Makefile data/Makefile data/icons/Makefile)
+AC_CONFIG_FILES(Makefile src/Makefile data/Makefile data/icons/Makefile po/Makefile.in)
 AC_OUTPUT
 
 dnl syscrash says don't test for inotify support in kernel for some reason

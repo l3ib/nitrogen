@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SetBG.h"
 #include "ArgParser.h"
 #include "Util.h"
-
+//#include "gettext.h"
+//#include <inti/i18n.h> 
+#include "gcs-i18n.h"
 
 void restore_bgs()
 {
@@ -64,10 +66,19 @@ bool poll_inotify(void) {
 int main (int argc, char ** argv) {
 
 	if (argc < 2) {
-		std::cerr << "Usage: " << argv[0] << " [dir]\n";
+		std::cerr << _("Usage: nitrogen [dir]") << "\n";
 		exit(1);
 	}
-	
+
+	// set up i18n
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
+	textdomain(PACKAGE);
+
+   /* i18n::set_text_domain_dir(PACKAGE, LOCALEDIR);
+    i18n::set_text_domain(PACKAGE);*/
+
+
 	Gtk::Main kit(argc, argv);
 	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR G_DIR_SEPARATOR_S "icons");
 	Glib::thread_init();
@@ -76,7 +87,7 @@ int main (int argc, char ** argv) {
 
 	// parse command line
 	if ( ! parser->parse(argc, argv) ) {
-		std::cerr << "Error parsing command line: " << parser->get_error() << "\n";
+		std::cerr << _("Error parsing command line") << ": " << parser->get_error() << "\n";
 		return -1;
 	}
 
@@ -95,7 +106,7 @@ int main (int argc, char ** argv) {
 	// get the starting dir
 	std::string startdir = parser->get_extra_args();
 	if (startdir.length() <= 0) {
-		std::cerr << "Must specify a starting directory or background file.\n";
+		std::cerr << _("Must specify a starting directory or background file.") << "\n";
 		return 0;
 	}
 	startdir = Util::fix_start_dir(std::string(startdir));

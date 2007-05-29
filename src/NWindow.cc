@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "gcs-i18n.h"
 
 #ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -30,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save("Sa_ve"), is_multihead(false), is_xinerama(false)  {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save(_("Sa_ve")), is_multihead(false), is_xinerama(false)  {
 	
 	set_border_width (5);
 	set_default_size (350, 500);
@@ -166,7 +167,7 @@ void NWindow::setup_select_boxes() {
 	} catch (...) {
 		icon = genericicon;
 	}
-	this->select_mode.add_image_row( icon, "Scaled", SetBG::mode_to_string(SetBG::SET_SCALE), true );
+	this->select_mode.add_image_row( icon, _("Scaled"), SetBG::mode_to_string(SetBG::SET_SCALE), true );
 
 	try {
 		icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
@@ -174,7 +175,7 @@ void NWindow::setup_select_boxes() {
 	} catch (...) {
 		icon = genericicon;
 	}
-	this->select_mode.add_image_row( icon, "Centered", SetBG::mode_to_string(SetBG::SET_CENTER), false );
+	this->select_mode.add_image_row( icon, _("Centered"), SetBG::mode_to_string(SetBG::SET_CENTER), false );
 
 	try {
 		icon = icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG);
@@ -182,7 +183,7 @@ void NWindow::setup_select_boxes() {
 	} catch (...) {
 		icon = genericicon;
 	}
-	this->select_mode.add_image_row( icon, "Tiled", SetBG::mode_to_string(SetBG::SET_TILE), false );
+	this->select_mode.add_image_row( icon, _("Tiled"), SetBG::mode_to_string(SetBG::SET_TILE), false );
 
 	try {
 		icon = icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG);
@@ -191,7 +192,7 @@ void NWindow::setup_select_boxes() {
 		icon = genericicon;
 	}
 
-	this->select_mode.add_image_row( icon, "Best Fit", SetBG::mode_to_string(SetBG::SET_BEST), false );
+	this->select_mode.add_image_row( icon, _("Best Fit"), SetBG::mode_to_string(SetBG::SET_BEST), false );
 
 	// displays
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
@@ -204,7 +205,7 @@ void NWindow::setup_select_boxes() {
 		for (int i=0; i<disp->get_n_screens(); i++) {
 			Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
 			std::ostringstream ostr;
-			ostr << "Screen " << i;
+			ostr << _("Screen") << " " << i;
 			bool on = (screen == disp->get_default_screen());
 				
 			this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), screen->make_display_name(), on );
@@ -226,11 +227,11 @@ void NWindow::setup_select_boxes() {
 			this->is_xinerama = true;
 
 			// add the big one
-			this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), "Full Screen", "xin_-1", true);
+			this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), _("Full Screen"), "xin_-1", true);
 
 			for (int i=0; i<xinerama_num_screens; i++) {
 				std::ostringstream ostr, valstr;
-				ostr << "Screen " << xinerama_info[i].screen_number+1;
+				ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
 				valstr << "xin_" << xinerama_info[i].screen_number;
 						
 				this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), valstr.str(), false);
@@ -244,7 +245,7 @@ void NWindow::setup_select_boxes() {
 	// if we made it here, we do not have any kidn of multihead
 	// we still need to insert an entry to the display selector or we will die harshly
 	
-	this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), "Default", disp->get_default_screen()->make_display_name(), true);
+	this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), _("Default"), disp->get_default_screen()->make_display_name(), true);
 
 	return;
 }

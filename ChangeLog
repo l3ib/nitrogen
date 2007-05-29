@@ -1,3 +1,15 @@
+Mon May 28 22:41:39 EDT 2007	Dave Foster <daf@minuslab.net>
+	* Attempted to add i18n support, cheers to Agave for
+	  the header file.  Translators should start from the
+	  po/nitrogen.pot file.
+
+2007-05-25  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add po.
+	(ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath, m4/ChangeLog.
+	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in.
+
 Mon May 14 18:07:10 EDT 2007 	Dave Foster <daf@minuslab.net>
 	* Removed the old images.cc crap file.
 	* Releasing 1.0!

@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Config.h"
 #include <glib/gstdio.h>
+#include "gcs-i18n.h"
 
 /**
  * Constructor, initializes default settings.
@@ -58,7 +59,7 @@ Config* Config::get_instance()
 bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMode &mode, Gdk::Color &bgcolor) {
 
 	if ( ! Config::check_dir() ) {
-		std::cerr << "Could not open config directory." << std::endl;
+		std::cerr << _("Could not open config directory.") << std::endl;
 		return false;
 	}
 
@@ -68,7 +69,7 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 	GError *ge = NULL;
 	if ( g_key_file_load_from_file(kf, cfgfile.c_str(), G_KEY_FILE_NONE, &ge) == FALSE ) {
 		
-		std::cerr << "ERROR: Unable to load config file (" << cfgfile << "): " << ge->message << "\n";
+		std::cerr << _("ERROR: Unable to load config file") << " (" << cfgfile << "): " << ge->message << "\n";
 		g_clear_error(&ge);
 		g_key_file_free(kf);
 		return false;
@@ -79,7 +80,7 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 		// there is no config entry for this display.
 		// abort.
 		g_key_file_free(kf);
-		std::cerr << "No group for " << disp << " was found." << std::endl;
+		std::cerr << _("Couldn't find group for") << " " << disp << "." << std::endl;
 		return false;
 	}
 	
@@ -91,7 +92,7 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 		free(fileptr);
 	} else {
 		g_key_file_free(kf);
-		std::cerr << "Could not get filename from config file." << std::endl;
+		std::cerr << _("Could not get filename from config file.") << std::endl;
 		return false;
 	}
 		//error = true;
@@ -100,7 +101,7 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 	if (ge) {
 		g_clear_error(&ge);
 		g_key_file_free(kf);
-		std::cerr << "Could not get mode from config file." << std::endl;
+		std::cerr << _("Could not get mode from config file.") << std::endl;
 		return false;
 	}
 
@@ -157,10 +158,10 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 
 		// only give an error if it doesn't exist
 		if ( ! ( ge->code == G_FILE_ERROR_NOENT || ge->code == G_KEY_FILE_ERROR_NOT_FOUND ) ) {
-			std::cerr << "ERROR: Unable to load config file (" << cfgfile << "): " << ge->message << "\n";
+			std::cerr << _("ERROR: Unable to load config file") << " (" << cfgfile << "): " << ge->message << "\n";
 			#ifdef DEBUG
-			std::cerr << "The error code returned was " << ge->code << "\n";
-			std::cerr << "We expected " << G_FILE_ERROR_NOENT << " or " << G_KEY_FILE_ERROR_NOT_FOUND << " to occur.\n";
+			std::cerr << _("The error code returned was") << " " << ge->code << "\n";
+			std::cerr << _("We expected") << " " << G_FILE_ERROR_NOENT << " " << _("or") << " " << G_KEY_FILE_ERROR_NOT_FOUND << "\n";
 			#endif
 			g_key_file_free(kf);
 			g_clear_error(&ge);

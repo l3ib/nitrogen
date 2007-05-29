@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <iostream>
 #include <stdio.h>
+#include "gcs-i18n.h"
 
 namespace Util {
 
@@ -89,7 +90,7 @@ void restore_saved_bgs() {
 	Config *cfg = Config::get_instance();
 
 	if ( cfg->get_bg_groups(displist) == false ) {
-		std::cerr << "Could not get bg groups from config file." << std::endl;
+		std::cerr << _("Could not get bg groups from config file.") << std::endl;
 		return;
 	}
 
@@ -120,7 +121,7 @@ void restore_saved_bgs() {
 				SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, Glib::ustring("xin_-1"), file, mode, bgcolor); 
 				program_log("done setting full xinerama screen");
 			} else {
-				std::cerr << "Could not get bg info for fullscreen xinerama" << std::endl;
+				std::cerr << _("Could not get bg info for fullscreen xinerama") << std::endl;
 			}
 		} else {
 
@@ -132,7 +133,7 @@ void restore_saved_bgs() {
 						SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, (*i), file, mode, bgcolor);
 						program_log("done setting %s", (*i).c_str());
 					} else {
-						std::cerr << "Could not get bg info for " << (*i) << std::endl;
+						std::cerr << _("Could not get bg info for") << " " << (*i) << std::endl;
 					}
 				}
 			}
@@ -157,7 +158,7 @@ void restore_saved_bgs() {
 			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
 				
 		} else {
-			std::cerr << "Could not get bg info" << std::endl;
+			std::cerr << _("Could not get bg info") << std::endl;
 		}
 	}
 
@@ -172,16 +173,18 @@ void restore_saved_bgs() {
 ArgParser* create_arg_parser() {
 
 	ArgParser* parser = new ArgParser();
-	parser->register_option("restore", "Restore saved backgrounds");
-	parser->register_option("no-recurse", "Do not recurse into subdirectories");
-	parser->register_option("sort", "How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)", true);
+	parser->register_option("restore", _("Restore saved backgrounds"));
+	parser->register_option("no-recurse", _("Do not recurse into subdirectories"));
+	parser->register_option("sort", _("How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)"), true);
 
 	// command line set modes
-	parser->register_option("set-scaled", "Sets the background to the given file (scaled)");
-	parser->register_option("set-tiled", "Sets the background to the given file (tiled)");
-	parser->register_option("set-best", "Sets the background to the given file (best-fit)");
-	parser->register_option("set-centered", "Sets the background to the given file (centered)");
-	parser->register_option("save", "Saves the background permanently");
+	Glib::ustring openp(" (");
+	Glib::ustring closep(")");
+	parser->register_option("set-scaled", _("Sets the background to the given file") + openp + _("scaled") + closep);
+	parser->register_option("set-tiled", _("Sets the background to the given file") + openp + _("tiled") + closep);
+	parser->register_option("set-best", _("Sets the background to the given file") + openp + _("best-fit") + closep);
+	parser->register_option("set-centered", _("Sets the background to the given file") + openp + _("centered") + closep);
+	parser->register_option("save", _("Saves the background permanently"));
 	
 	std::vector<std::string> vecsetopts;
 	vecsetopts.push_back("set-scaled");

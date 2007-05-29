@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unistd.h>
 #include "Config.h"
 #include "Util.h"
+#include "gcs-i18n.h"
 
 /**
  * Returns the last modified time of a file.
@@ -174,7 +175,7 @@ void Thumbview::load_dir(std::string dir) {
 			Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
 
 		} catch (Glib::FileError e) {
-			std::cerr << "Could not open dir " << this->dir << ": " << e.what() << "\n";
+			std::cerr << _("Could not open dir") << " " << this->dir << ": " << e.what() << "\n";
 			continue;
 		}
 
@@ -215,7 +216,7 @@ void Thumbview::load_dir(std::string dir) {
 			try {
 				fullstr += /*Glib::filename_to_utf8(*/*i;//);
 			} catch (Glib::ConvertError& error) {
-				std::cerr << "Invalid UTF-8 encountered. Skipping file " << *i << std::endl;
+				std::cerr << _("Invalid UTF-8 encountered. Skipping file") << " " << *i << std::endl;
 				continue;
 			}
 

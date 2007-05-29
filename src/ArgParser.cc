@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "ArgParser.h"
+#include "gcs-i18n.h"
 
 bool ArgParser::parse 
 			(int argc, char ** argv) {
@@ -62,7 +63,7 @@ bool ArgParser::parse
 		if ((iter = expected_args.find (key)) == expected_args.end ()) {
 			// ignore this argument and set the error string
 			retval = false;
-			error_str += "Unexpected argument " + key + "\n";
+			error_str += _("Unexpected argument ") + key + "\n";
 			continue;
 		} else {
 			current = iter->second;
@@ -71,16 +72,16 @@ bool ArgParser::parse
 		if (current.get_has_arg () && !value.length ()) {
 			// this expects an arg, but has received none.
 			retval = false;
-			error_str += key + " expected an argument.\n";
+			error_str += key + _(" expects an argument.") + "\n";
 		} else if (value.length () && !current.get_has_arg ()) {
 			retval = false;
-			error_str += key + " does not expect an argument.\n";
+			error_str += key + _(" does not expect an argument.") + "\n";
 		}
 
 		if (conflicts (key)) {
 			// use the previously supplied argument
 			retval = false;
-			error_str += key + " conflicts with another argument.\n";
+			error_str += key + _(" conflicts with another argument.") + "\n";
 			continue;
 		}
 		
@@ -92,7 +93,7 @@ bool ArgParser::parse
 }
 
 std::string ArgParser::help_text (void) const {
-	std::string ret_str = "Usage:";
+	std::string ret_str = _("Usage:");
 
 	std::map<std::string, Arg>::const_iterator iter;
 
