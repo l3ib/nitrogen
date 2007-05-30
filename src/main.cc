@@ -65,11 +65,6 @@ bool poll_inotify(void) {
 
 int main (int argc, char ** argv) {
 
-	/*if (argc < 2) {
-		std::cerr << _("Usage: nitrogen [dir]") << "\n";
-		exit(1);
-	}*/
-
 	// set up i18n
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
@@ -106,8 +101,6 @@ int main (int argc, char ** argv) {
 	// get the starting dir
 	std::string startdir = parser->get_extra_args();
 	if (startdir.length() <= 0) {
-		//std::cerr << _("Must specify a starting directory or background file.") << "\n";
-		//return 0;
 		startdir = ".";
 	}
 	startdir = Util::fix_start_dir(std::string(startdir));
