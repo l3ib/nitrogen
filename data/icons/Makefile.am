@@ -10,7 +10,8 @@ theme_icons = \
 	actions,wallpaper-bestfit-16.png \
 	actions,wallpaper-centered-16.png \
 	actions,wallpaper-scaled-16.png \
-	actions,wallpaper-tiled-16.png
+	actions,wallpaper-tiled-16.png \
+	mimetypes,image-x-generic-16.png
 
 install_icon_exec = $(top_srcdir)/data/icon-theme-installer \
 					-t "$(theme)" \

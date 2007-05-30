@@ -1,3 +1,8 @@
+Tue May 29 22:59:46 EDT 2007	Dave Foster <daf@minuslab.net>
+	* Added generic image icon (from tango theme).  Should
+	  clear up any icon theme loading errors should you not
+	  have an icon theme installed.
+
 Mon May 28 22:41:39 EDT 2007	Dave Foster <daf@minuslab.net>
 	* Attempted to add i18n support, cheers to Agave for
 	  the header file.  Translators should start from the
