@@ -217,6 +217,3 @@ msgstr ""
 msgid "Error parsing command line"
 msgstr ""
 
-#: ../src/main.cc:109
-msgid "Must specify a starting directory or background file."
-msgstr ""

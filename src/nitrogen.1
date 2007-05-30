@@ -5,9 +5,9 @@ nitrogen \- X11 background previewer and setter
 .B nitrogen [
 .I OPTIONS
 .B ]
-.I DIRECTORY
+.I DIRECTORY?
 .SH DESCRIPTION
-In normal working mode, provides an interface which displays all pictures in the given DIRECTORY.  From this interface, it is possible to set the X11 root pixmap either temporarily or set and store the picture, drawing mode, and X display for restoration later.
+In normal working mode, provides an interface which displays all pictures in the given DIRECTORY.  From this interface, it is possible to set the X11 root pixmap either temporarily or set and store the picture, drawing mode, and X display for restoration later.  If no directory is specified, it uses the current working dir.
 .P
 When the --restore option is passed, nitrogen sets all backgrounds that it has a configuration for and exits immediatly, for use in an .xinitrc or .xsession file.
 .SH OPTIONS
