@@ -1,3 +1,8 @@
+Tue Jun 26 23:22:06 EDT 2007	Dave Foster <daf@minuslab.net>
+	* Added dirty hack to make sure Xinerama codepath is not
+	  taken when in restore mode.  Was having a problem where
+	  my setup claimed I had a 1 screen Xinerama layout!
+
 Tue May 29 22:59:46 EDT 2007	Dave Foster <daf@minuslab.net>
 	* Added generic image icon (from tango theme).  Should
 	  clear up any icon theme loading errors should you not
