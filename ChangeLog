@@ -1,3 +1,6 @@
+Sun Aug  5 16:59:44 EDT 2007 Javeed Shaikh <syscrash2k@gmail.com>
+	* Test commit for my git hook script.
+
 Tue Jun 26 23:22:06 EDT 2007	Dave Foster <daf@minuslab.net>
 	* Added dirty hack to make sure Xinerama codepath is not
 	  taken when in restore mode.  Was having a problem where
