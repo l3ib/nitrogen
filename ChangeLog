@@ -1,4 +1,7 @@
-Sun Aug  5 16:59:44 EDT 2007 Javeed Shaikh <syscrash2k@gmail.com>
+Fri Aug 10 13:42:24 EDT 2007	Javeed Shaikh <syscrash2k@gmail.com>
+	* Fixed false-positive in xinerama detection.
+
+Sun Aug  5 16:59:44 EDT 2007	Javeed Shaikh <syscrash2k@gmail.com>
 	* Test commit for my git hook script.
 
 Tue Jun 26 23:22:06 EDT 2007	Dave Foster <daf@minuslab.net>

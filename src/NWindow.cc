@@ -222,7 +222,7 @@ void NWindow::setup_select_boxes() {
 		xinerama = XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()));
 		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
 
-		if (xinerama_num_screens > 0) {
+		if (xinerama_num_screens > 1) {
 			this->is_multihead = true;
 			this->is_xinerama = true;
 
