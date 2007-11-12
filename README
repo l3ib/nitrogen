@@ -1,6 +1,6 @@
 NITROGEN:
 
-Webpage: http://l3ib.org/nitrogen/
+Webpage: http://projects.l3ib.org/nitrogen/
 
 
 Requirements:
@@ -38,7 +38,7 @@ DIRECTORY is the directory containing the backgrounds you wish to preview.  It
 adds files recursively from here (so long as --no-recurse hasn't been supplied),
 generating preview images asynchronously.
 
-If you want to tell us about the many bugs that we have, drop by #gentoo.et on
+If you want to tell us about the many bugs that we have, drop by #l3ib on
 irc.freenode.net, and talk to nightm4re or syscrash2k.
 
 
