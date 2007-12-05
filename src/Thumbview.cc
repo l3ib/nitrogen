@@ -99,7 +99,7 @@ Thumbview::Thumbview() : dir("") {
 	// load loading image, which not all themes seem to provide
 	try {
 		this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
-	} catch (...) {}
+	} catch (Gtk::IconThemeError e) {}
 
 	// make our async queues
 	this->aqueue_createthumbs = g_async_queue_new();
