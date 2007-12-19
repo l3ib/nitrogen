@@ -1,3 +1,10 @@
+Tue Dec 18 20:28:09 EST 2007	Dave Foster <daf@minuslab.net>
+	* Fixed the nasty bug that was plauging people with the
+	  mysterious Gtk/Glib critical errors and X error.  
+	  Was related to Xinerama codepath.  Cheers to
+	  Lars Kinn Ekroll for debugging help.
+	* Ready for 1.1 release.
+
 Fri Aug 10 13:42:24 EDT 2007	Javeed Shaikh <syscrash2k@gmail.com>
 	* Fixed false-positive in xinerama detection.
 

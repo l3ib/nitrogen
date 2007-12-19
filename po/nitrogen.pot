@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR l3ib.org
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-28 22:33-0400\n"
+"Report-Msgid-Bugs-To: daf@minuslab.net\n"
+"POT-Creation-Date: 2007-12-18 20:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,167 +16,167 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/ArgParser.cc:66
+#: src/ArgParser.cc:66
 msgid "Unexpected argument "
 msgstr ""
 
-#: ../src/ArgParser.cc:75
+#: src/ArgParser.cc:75
 msgid " expects an argument."
 msgstr ""
 
-#: ../src/ArgParser.cc:78
+#: src/ArgParser.cc:78
 msgid " does not expect an argument."
 msgstr ""
 
-#: ../src/ArgParser.cc:84
+#: src/ArgParser.cc:84
 msgid " conflicts with another argument."
 msgstr ""
 
-#: ../src/ArgParser.cc:96
+#: src/ArgParser.cc:96
 msgid "Usage:"
 msgstr ""
 
-#: ../src/Config.cc:62
+#: src/Config.cc:62
 msgid "Could not open config directory."
 msgstr ""
 
-#: ../src/Config.cc:72 ../src/Config.cc:161
+#: src/Config.cc:72 src/Config.cc:161
 msgid "ERROR: Unable to load config file"
 msgstr ""
 
-#: ../src/Config.cc:83
+#: src/Config.cc:83
 msgid "Couldn't find group for"
 msgstr ""
 
-#: ../src/Config.cc:95
+#: src/Config.cc:95
 msgid "Could not get filename from config file."
 msgstr ""
 
-#: ../src/Config.cc:104
+#: src/Config.cc:104
 msgid "Could not get mode from config file."
 msgstr ""
 
-#: ../src/Config.cc:163
+#: src/Config.cc:163
 msgid "The error code returned was"
 msgstr ""
 
-#: ../src/Config.cc:164
+#: src/Config.cc:164
 msgid "We expected"
 msgstr ""
 
-#: ../src/Config.cc:164
+#: src/Config.cc:164
 msgid "or"
 msgstr ""
 
-#: ../src/NWindow.cc:34
+#: src/NWindow.cc:34
 msgid "Sa_ve"
 msgstr ""
 
-#: ../src/NWindow.cc:170
+#: src/NWindow.cc:180
 msgid "Scaled"
 msgstr ""
 
-#: ../src/NWindow.cc:178
+#: src/NWindow.cc:188
 msgid "Centered"
 msgstr ""
 
-#: ../src/NWindow.cc:186
+#: src/NWindow.cc:196
 msgid "Tiled"
 msgstr ""
 
-#: ../src/NWindow.cc:195
+#: src/NWindow.cc:205
 msgid "Best Fit"
 msgstr ""
 
-#: ../src/NWindow.cc:208 ../src/NWindow.cc:234
+#: src/NWindow.cc:218 src/NWindow.cc:244
 msgid "Screen"
 msgstr ""
 
-#: ../src/NWindow.cc:230
+#: src/NWindow.cc:240
 msgid "Full Screen"
 msgstr ""
 
-#: ../src/NWindow.cc:248
+#: src/NWindow.cc:258
 msgid "Default"
 msgstr ""
 
-#: ../src/SetBG.cc:50 ../src/SetBG.cc:215
+#: src/SetBG.cc:50 src/SetBG.cc:215
 msgid "Could not open display"
 msgstr ""
 
-#: ../src/SetBG.cc:83 ../src/SetBG.cc:286
+#: src/SetBG.cc:83 src/SetBG.cc:286
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: ../src/SetBG.cc:112
+#: src/SetBG.cc:112
 msgid "Unknown mode for saved bg on"
 msgstr ""
 
-#: ../src/SetBG.cc:156 ../src/SetBG.cc:328
+#: src/SetBG.cc:156 src/SetBG.cc:328
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: ../src/SetBG.cc:207
+#: src/SetBG.cc:207
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
-#: ../src/SetBG.cc:315
+#: src/SetBG.cc:315
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: ../src/SetBG.cc:407
+#: src/SetBG.cc:407
 msgid "ERROR"
 msgstr ""
 
-#: ../src/SetBG.cc:579 ../src/SetBG.cc:601
+#: src/SetBG.cc:579 src/SetBG.cc:601
 msgid "Scale"
 msgstr ""
 
-#: ../src/SetBG.cc:582 ../src/SetBG.cc:603
+#: src/SetBG.cc:582 src/SetBG.cc:603
 msgid "Center"
 msgstr ""
 
-#: ../src/SetBG.cc:585 ../src/SetBG.cc:605
+#: src/SetBG.cc:585 src/SetBG.cc:605
 msgid "Tile"
 msgstr ""
 
-#: ../src/SetBG.cc:588 ../src/SetBG.cc:607
+#: src/SetBG.cc:588 src/SetBG.cc:607
 msgid "Best"
 msgstr ""
 
-#: ../src/Thumbview.cc:178
+#: src/Thumbview.cc:180
 msgid "Could not open dir"
 msgstr ""
 
-#: ../src/Thumbview.cc:219
+#: src/Thumbview.cc:221
 msgid "Invalid UTF-8 encountered. Skipping file"
 msgstr ""
 
-#: ../src/Util.cc:93
+#: src/Util.cc:93
 msgid "Could not get bg groups from config file."
 msgstr ""
 
-#: ../src/Util.cc:124
+#: src/Util.cc:125
 msgid "Could not get bg info for fullscreen xinerama"
 msgstr ""
 
-#: ../src/Util.cc:136
+#: src/Util.cc:137
 msgid "Could not get bg info for"
 msgstr ""
 
-#: ../src/Util.cc:161
+#: src/Util.cc:163
 msgid "Could not get bg info"
 msgstr ""
 
-#: ../src/Util.cc:176
+#: src/Util.cc:178
 msgid "Restore saved backgrounds"
 msgstr ""
 
-#: ../src/Util.cc:177
+#: src/Util.cc:179
 msgid "Do not recurse into subdirectories"
 msgstr ""
 
-#: ../src/Util.cc:178
+#: src/Util.cc:180
 msgid ""
 "How to sort the backgrounds. Valid options are:\n"
 "\t\t\t* alpha, for alphanumeric sort\n"
@@ -185,35 +185,30 @@ msgid ""
 "\t\t\t* rtime, for reverse last modified time sort (newest first)"
 msgstr ""
 
-#: ../src/Util.cc:183 ../src/Util.cc:184 ../src/Util.cc:185 ../src/Util.cc:186
+#: src/Util.cc:185 src/Util.cc:186 src/Util.cc:187 src/Util.cc:188
 msgid "Sets the background to the given file"
 msgstr ""
 
-#: ../src/Util.cc:183
+#: src/Util.cc:185
 msgid "scaled"
 msgstr ""
 
-#: ../src/Util.cc:184
+#: src/Util.cc:186
 msgid "tiled"
 msgstr ""
 
-#: ../src/Util.cc:185
+#: src/Util.cc:187
 msgid "best-fit"
 msgstr ""
 
-#: ../src/Util.cc:186
+#: src/Util.cc:188
 msgid "centered"
 msgstr ""
 
-#: ../src/Util.cc:187
+#: src/Util.cc:189
 msgid "Saves the background permanently"
 msgstr ""
 
-#: ../src/main.cc:69
-msgid "Usage: nitrogen [dir]"
-msgstr ""
-
-#: ../src/main.cc:90
+#: src/main.cc:86
 msgid "Error parsing command line"
 msgstr ""
-
