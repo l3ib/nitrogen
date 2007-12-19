@@ -236,13 +236,13 @@ void NWindow::setup_select_boxes() {
 						
 				this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), valstr.str(), false);
 			}
+            
+            return;
 		}
-
-		return;
 	}
 #endif
 
-	// if we made it here, we do not have any kidn of multihead
+	// if we made it here, we do not have any kind of multihead
 	// we still need to insert an entry to the display selector or we will die harshly
 	
 	this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), _("Default"), disp->get_default_screen()->make_display_name(), true);
