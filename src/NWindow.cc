@@ -75,7 +75,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save(_("Sa_ve")), is_mul
 		Glib::ListHandle<Glib::RefPtr<Gdk::Pixbuf> > lister(vec);
 
 		this->set_icon_list(lister);
-	} catch  (...) {
+	} catch  (Gtk::IconThemeError e) {
 		// don't even worry about it!
 	}
 	
@@ -156,15 +156,25 @@ NWindow::~NWindow () {}
 void NWindow::setup_select_boxes() {
 		
 	Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
-	Glib::RefPtr<Gdk::Pixbuf> icon, genericicon;
+	Glib::RefPtr<Gdk::Pixbuf> icon, genericicon, video_display_icon;
 
-	genericicon = icontheme->load_icon("image-x-generic", 16, Gtk::ICON_LOOKUP_NO_SVG);
+	try {
+		genericicon = icontheme->load_icon("image-x-generic", 16, Gtk::ICON_LOOKUP_NO_SVG);
+	} catch (Gtk::IconThemeError e) {
+		genericicon = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 16, 16);
+	}
+
+	try {
+		video_display_icon = icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG);
+	} catch (Gtk::IconThemeError e) {
+		video_display_icon = genericicon;
+	}
 
 	// modes
 	try {
 		icon = icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (...) {
+	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Scaled"), SetBG::mode_to_string(SetBG::SET_SCALE), true );
@@ -172,7 +182,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (...) {
+	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Centered"), SetBG::mode_to_string(SetBG::SET_CENTER), false );
@@ -180,7 +190,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (...) {
+	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Tiled"), SetBG::mode_to_string(SetBG::SET_TILE), false );
@@ -188,7 +198,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (...) {
+	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
 
@@ -208,7 +218,7 @@ void NWindow::setup_select_boxes() {
 			ostr << _("Screen") << " " << i;
 			bool on = (screen == disp->get_default_screen());
 				
-			this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), screen->make_display_name(), on );
+			this->select_display.add_image_row( video_display_icon, ostr.str(), screen->make_display_name(), on );
 		}
 
 		return;
@@ -222,19 +232,19 @@ void NWindow::setup_select_boxes() {
 		xinerama = XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()));
 		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
 
-		if (xinerama_num_screens > 0) {
+		if (xinerama_num_screens > 1) {
 			this->is_multihead = true;
 			this->is_xinerama = true;
 
 			// add the big one
-			this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), _("Full Screen"), "xin_-1", true);
+			this->select_display.add_image_row(video_display_icon, _("Full Screen"), "xin_-1", true);
 
 			for (int i=0; i<xinerama_num_screens; i++) {
 				std::ostringstream ostr, valstr;
 				ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
 				valstr << "xin_" << xinerama_info[i].screen_number;
 						
-				this->select_display.add_image_row(icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), ostr.str(), valstr.str(), false);
+				this->select_display.add_image_row(video_display_icon, ostr.str(), valstr.str(), false);
 			}
             
             return;
@@ -245,7 +255,7 @@ void NWindow::setup_select_boxes() {
 	// if we made it here, we do not have any kind of multihead
 	// we still need to insert an entry to the display selector or we will die harshly
 	
-	this->select_display.add_image_row( icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG), _("Default"), disp->get_default_screen()->make_display_name(), true);
+	this->select_display.add_image_row( video_display_icon, _("Default"), disp->get_default_screen()->make_display_name(), true);
 
 	return;
 }

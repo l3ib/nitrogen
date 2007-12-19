@@ -75,7 +75,8 @@ int main (int argc, char ** argv) {
 
 
 	Gtk::Main kit(argc, argv);
-	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR G_DIR_SEPARATOR_S "icons");
+	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR
+	                                                  G_DIR_SEPARATOR_S "icons");
 	Glib::thread_init();
 	Config *cfg = Config::get_instance();
 	ArgParser *parser = Util::create_arg_parser();
@@ -138,7 +139,7 @@ int main (int argc, char ** argv) {
 	if ( parser->has_argument("sort") ) {
 		Glib::ustring sort_mode = parser->get_value ("sort");
 		Thumbview::SortMode mode;
-		
+	
 		if (sort_mode == "alpha") {
 			mode = Thumbview::SORT_ALPHA;
 		} else if (sort_mode == "ralpha") {
@@ -148,10 +149,10 @@ int main (int argc, char ** argv) {
 		} else {
 			mode = Thumbview::SORT_RTIME;
 		}
-		
+	
 		main_window->view.set_sort_mode (mode);
 	}
-	
+
 	// remove parser
 	delete parser;
 
@@ -161,7 +162,7 @@ int main (int argc, char ** argv) {
 #ifdef USE_INOTIFY
 	Glib::signal_timeout().connect(sigc::ptr_fun(&poll_inotify), (unsigned)1e3);
 #endif
-	
+
 	Gtk::Main::run (*main_window);
 	return 0;
 }
