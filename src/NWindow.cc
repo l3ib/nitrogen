@@ -230,24 +230,26 @@ void NWindow::setup_select_boxes() {
 	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
 	if (xinerama) {
 		xinerama = XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()));
-		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
+		if (xinerama) {
+			xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
 
-		if (xinerama_num_screens > 1) {
-			this->is_multihead = true;
-			this->is_xinerama = true;
+			if (xinerama_num_screens > 1) {
+				this->is_multihead = true;
+				this->is_xinerama = true;
 
-			// add the big one
-			this->select_display.add_image_row(video_display_icon, _("Full Screen"), "xin_-1", true);
+				// add the big one
+				this->select_display.add_image_row(video_display_icon, _("Full Screen"), "xin_-1", true);
 
-			for (int i=0; i<xinerama_num_screens; i++) {
-				std::ostringstream ostr, valstr;
-				ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
-				valstr << "xin_" << xinerama_info[i].screen_number;
-						
-				this->select_display.add_image_row(video_display_icon, ostr.str(), valstr.str(), false);
+				for (int i=0; i<xinerama_num_screens; i++) {
+					std::ostringstream ostr, valstr;
+					ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
+					valstr << "xin_" << xinerama_info[i].screen_number;
+							
+					this->select_display.add_image_row(video_display_icon, ostr.str(), valstr.str(), false);
+				}
+							
+							return;
 			}
-            
-            return;
 		}
 	}
 #endif
