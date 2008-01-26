@@ -1,3 +1,6 @@
+Sat Jan 26 15:16:51 EST 2008 	Dave Foster <daf@minuslab.net>
+	* Tagged 1.2 release (sitting on my hd for some reason?)
+
 Tue Dec 18 20:28:09 EST 2007	Dave Foster <daf@minuslab.net>
 	* Fixed the nasty bug that was plauging people with the
 	  mysterious Gtk/Glib critical errors and X error.  
