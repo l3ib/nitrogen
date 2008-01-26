@@ -50,13 +50,15 @@ class NWindow : public Gtk::Window {
 	protected:        
 		
 		Gtk::VBox main_vbox;
-		Gtk::HBox bot_hbox;
+		Gtk::HBox bot_hbox, top_hbox;
 
 		ImageCombo select_mode, select_display;
 
 		Gtk::Button apply;
         Gtk::Button btn_prefs;
 		Gtk::ColorButton button_bgcolor;
+        Gtk::Button btn_back;
+        Gtk::Button btn_forward;
 
         bool m_dirty;       // set if the user double clicks to preview but forgets to press apply
 
@@ -67,6 +69,14 @@ class NWindow : public Gtk::Window {
         void sighandle_btn_prefs();
 
         virtual bool on_delete_event(GdkEventAny *event);
+        
+        std::vector<Gtk::TreeModel::iterator> vec_history;
+        std::vector<Gtk::TreeModel::iterator>::iterator history_cur;
+
+        void history_add(Gtk::TreeModel::iterator it);
+        void history_back(void);
+        void history_forward(void);
+        void history_update_buttons();
 
 #ifdef USE_XINERAMA
 		// xinerama stuff

@@ -34,13 +34,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES) {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES), btn_back(Gtk::Stock::GO_BACK), btn_forward(Gtk::Stock::GO_FORWARD) {
 	
 	set_border_width (5);
 	set_default_size (450, 500);
 
 	main_vbox.set_spacing (5);
 	add (main_vbox);
+
+    // nav buttons
+    btn_back.set_sensitive (false);
+    btn_forward.set_sensitive (false);
+	btn_back.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::history_back));
+	btn_forward.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::history_forward));
+
+    // top hbox
+    top_hbox.set_spacing (5);
+    top_hbox.pack_start (btn_back, FALSE, FALSE, 0);
+    top_hbox.pack_start (btn_forward, FALSE, FALSE, 0);
 
 	// setup imagecombos
 	this->setup_select_boxes();
@@ -55,6 +66,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
     bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
 
 	// add to main box
+    main_vbox.pack_start (top_hbox, FALSE, FALSE, 0);
 	main_vbox.pack_start (view, TRUE, TRUE, 0);
 	main_vbox.pack_start (bot_hbox, FALSE, FALSE, 0);
 
@@ -90,6 +102,9 @@ void NWindow::show (void) {
 	if ( this->is_multihead ) select_display.show();
 	apply.show ();
 	bot_hbox.show ();
+    top_hbox.show ();
+    btn_forward.show ();
+    btn_back.show ();
 	main_vbox.show ();
 	button_bgcolor.show();
     btn_prefs.show();
@@ -109,6 +124,7 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 
     // preview - set dirty flag
     m_dirty = true;
+    history_add(iter);
 }
 
 /**
@@ -166,6 +182,7 @@ void NWindow::sighandle_click_apply (void) {
             (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
 
+    history_add(iter);
 }
 
 bool NWindow::on_delete_event(GdkEventAny *event)
@@ -441,6 +458,72 @@ void NWindow::sighandle_btn_prefs()
         for (VecStrs::iterator i = vec_load.begin(); i != vec_load.end(); i++)
             view.load_dir(*i);
     }
+}
 
+void NWindow::history_add(Gtk::TreeModel::iterator it)
+{
+    // kill from current to end
+    if (history_cur != vec_history.end())
+    {
+        vec_history.erase(history_cur, vec_history.end());
+    }
+
+    // push it on
+    vec_history.push_back(it);
+
+    // set current location
+    history_cur = vec_history.end();
+
+    // update current buttons
+    history_update_buttons();
+}
+
+void NWindow::history_back(void)
+{
+    if (history_cur == vec_history.begin() + 1)
+        return;
+
+    history_cur--;
+    Gtk::TreeModel::iterator iter = *(history_cur-1);
+
+ 	Gtk::TreeModel::Row row = *iter;
+	this->set_bg(row[view.record.Filename]);
+
+    Gtk::TreePath path(iter);
+    view.view.scroll_to_row(path, 0.5f);
+    view.view.set_cursor(path);
+
+    history_update_buttons();
+}
+
+void NWindow::history_forward(void)
+{
+    if (history_cur == vec_history.end())
+        return;
+
+    history_cur++;
+    Gtk::TreeModel::iterator iter = *(history_cur-1);
+
+ 	Gtk::TreeModel::Row row = *iter;
+	this->set_bg(row[view.record.Filename]);
+
+    Gtk::TreePath path(iter);
+    view.view.scroll_to_row(path, 0.5f);
+    view.view.set_cursor(path);
+
+    history_update_buttons();
+}
+
+void NWindow::history_update_buttons()
+{
+    if (history_cur > vec_history.begin() + 1)
+        btn_back.set_sensitive(true);
+    else
+        btn_back.set_sensitive(false);
+
+    if (history_cur == vec_history.end())
+        btn_forward.set_sensitive(false);
+    else
+        btn_forward.set_sensitive(true);
 }
 
