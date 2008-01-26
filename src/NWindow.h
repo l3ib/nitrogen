@@ -59,6 +59,8 @@ class NWindow : public Gtk::Window {
 		Gtk::ColorButton button_bgcolor;
         Gtk::Button btn_back;
         Gtk::Button btn_forward;
+        Gtk::Button btn_random;
+        Gtk::Image img_random;
 
         bool m_dirty;       // set if the user double clicks to preview but forgets to press apply
 
@@ -77,6 +79,8 @@ class NWindow : public Gtk::Window {
         void history_back(void);
         void history_forward(void);
         void history_update_buttons();
+
+        void random(void);
 
 #ifdef USE_XINERAMA
 		// xinerama stuff

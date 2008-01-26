@@ -47,11 +47,17 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
     btn_forward.set_sensitive (false);
 	btn_back.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::history_back));
 	btn_forward.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::history_forward));
+    btn_random.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::random));
+
+    img_random.set(Gtk::Stock::DIALOG_INFO, Gtk::ICON_SIZE_SMALL_TOOLBAR);
+    btn_random.set_label(_("Random"));
+    btn_random.set_image(img_random);
 
     // top hbox
     top_hbox.set_spacing (5);
     top_hbox.pack_start (btn_back, FALSE, FALSE, 0);
     top_hbox.pack_start (btn_forward, FALSE, FALSE, 0);
+    top_hbox.pack_end (btn_random, FALSE, FALSE, 0);    
 
 	// setup imagecombos
 	this->setup_select_boxes();
@@ -105,6 +111,7 @@ void NWindow::show (void) {
     top_hbox.show ();
     btn_forward.show ();
     btn_back.show ();
+    btn_random.show ();
 	main_vbox.show ();
 	button_bgcolor.show();
     btn_prefs.show();
@@ -527,3 +534,21 @@ void NWindow::history_update_buttons()
         btn_forward.set_sensitive(true);
 }
 
+void NWindow::random()
+{
+    Glib::Rand rand(time(NULL));
+    int rand_row = rand.get_int_range(0, view.store->children().size());
+    
+    Gtk::TreeModel::iterator iter = view.store->children().begin(); 
+    for (int i =0; i<rand_row; i++)
+        iter++;
+
+	Gtk::TreeModel::Row row = *iter;
+	this->set_bg(row[view.record.Filename]);
+
+    Gtk::TreePath path(iter);
+    view.view.scroll_to_row(path, 0.5f);
+    view.view.set_cursor(path);
+
+    history_add(iter);
+}
