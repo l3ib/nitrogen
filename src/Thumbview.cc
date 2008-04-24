@@ -55,8 +55,27 @@ static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
 
 void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const
 {
-    printf("hi %s %d\n", get_path(iter).to_string().c_str(), column);
-    return Gtk::ListStore::get_value_vfunc(iter, column, value);
+    Gtk::ListStore::get_value_vfunc(iter, column, value);
+
+    Gtk::TreeModel::Row row = *iter;
+    if (column == 0)
+    {
+        Glib::Value< Glib::RefPtr<Gdk::Pixbuf> > base;
+        Gtk::ListStore::get_value_vfunc(iter, column, base);
+
+        Glib::RefPtr<Gdk::Pixbuf> thumb = base.get();
+
+        if (thumb == thumbview->loading_image)
+        {
+            TreePair* tp = new TreePair();
+            tp->file = row[thumbview->filename];
+            tp->iter = iter;
+
+            Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
+
+            queue_thumbs->push(tp);
+        }
+    }
 }
 
 /**
@@ -72,6 +91,8 @@ Thumbview::Thumbview() : dir("") {
 	record.add (time);
 
 	store = DelayLoadingStore::create (record);
+    store->set_queue(&queue_thumbs);
+    store->set_thumbview(this);
 	
 	view.set_model (store);
 	view.set_headers_visible (FALSE);
@@ -158,11 +179,11 @@ void Thumbview::add_file(std::string filename) {
 	Util::program_log("add_file(): Adding file %s\n", filename.c_str());
 
 	// push it on the thumb queue
-	TreePair *tp = new TreePair();
-	tp->file = filename;
-	tp->iter = iter;
+//	TreePair *tp = new TreePair();
+//	tp->file = filename;
+//	tp->iter = iter;
 
-	queue_thumbs.push(tp);
+//	queue_thumbs.push(tp);
 }
 
 
@@ -322,12 +343,16 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
 bool Thumbview::load_cache_images() {
 
 	// check for exit condition!
-	if (this->queue_thumbs.empty()) {
+/*	if (this->queue_thumbs.empty()) {
 		// create our new idle func
 		if (g_async_queue_length(this->aqueue_createthumbs) > 0)
 			Glib::Thread::create(sigc::mem_fun(this, &Thumbview::create_cache_images), true);
 		return false;
-	}
+	}*/
+
+    // no worries if there is nothing to do yet
+    if (this->queue_thumbs.empty())
+        return true;
 
 	// remove first item
 	TreePair *p = this->queue_thumbs.front();
@@ -369,7 +394,7 @@ void Thumbview::create_cache_images()
 	g_async_queue_ref(this->aqueue_donethumbs); 
 
 	// check for exit condition
-	while (g_async_queue_length(this->aqueue_createthumbs) > 0) {
+	while (1) { //g_async_queue_length(this->aqueue_createthumbs) > 0) {
 
 		// remove first item
 		TreePair *p = (TreePair*)g_async_queue_pop(this->aqueue_createthumbs);
@@ -531,7 +556,7 @@ void Thumbview::file_changed_callback(std::string filename) {
 		add_file(filename);
 	}
 	// restart the idle function
-	Glib::signal_idle().connect(sigc::mem_fun(this, &Thumbview::load_cache_images));
+	//Glib::signal_idle().connect(sigc::mem_fun(this, &Thumbview::load_cache_images));
 }
 
 /**

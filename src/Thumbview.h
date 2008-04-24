@@ -33,6 +33,8 @@ struct TreePair {
 	Glib::RefPtr<Gdk::Pixbuf> thumb;
 };
 
+class Thumbview;
+
 class DelayLoadingStore : public Gtk::ListStore
 {
     public:
@@ -47,6 +49,15 @@ class DelayLoadingStore : public Gtk::ListStore
 
     protected:
         virtual void 	get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const;
+
+    public:
+        void set_queue(std::queue<TreePair*> *queue) { queue_thumbs = queue; }
+        void set_thumbview(Thumbview *view) { thumbview = view; }
+
+    protected:
+ 		std::queue<TreePair*> *queue_thumbs;
+        Thumbview *thumbview;
+
 
 };
 
@@ -84,6 +95,9 @@ class Thumbview : public Gtk::ScrolledWindow {
 		void set_sort_mode (SortMode mode);
 		// search compare function
 		bool search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter);
+
+        // loading image
+		Glib::RefPtr<Gdk::Pixbuf> loading_image;
 		
 	protected:
 
@@ -119,6 +133,4 @@ class Thumbview : public Gtk::ScrolledWindow {
 		GAsyncQueue* aqueue_createthumbs;
 		GAsyncQueue* aqueue_donethumbs;
 
-		// loading image
-		Glib::RefPtr<Gdk::Pixbuf> loading_image;
 };
