@@ -91,16 +91,16 @@ Thumbview::Thumbview() : dir("") {
 	record.add (description);
 	record.add (filename);
 	record.add (time);
-    record.add (loadingthumb);
+	record.add (loadingthumb);
 
 	store = DelayLoadingStore::create (record);
-    store->set_queue(&queue_thumbs);
-    store->set_thumbview(this);
+	store->set_queue(&queue_thumbs);
+	store->set_thumbview(this);
 	
 	view.set_model (store);
 	view.set_headers_visible (FALSE);
 	view.set_fixed_height_mode (TRUE);
-    view.set_rules_hint (TRUE);
+	view.set_rules_hint (TRUE);
 	
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
 	rend.set_property ("ellipsize", Pango::ELLIPSIZE_END);
@@ -361,33 +361,7 @@ bool Thumbview::load_cache_images() {
 		g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
 	} else {
 		// load thumb
-		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file));
-        // 100, 80, true
-
-        // resize if we need to
-        if (pb->get_width() > 100 || pb->get_height() > 80)
-        {
-            int pbwidth = pb->get_width();
-            int pbheight = pb->get_height();
-            float ratio = (float)pbwidth / (float)pbheight;
-            
-            int newwidth, newheight;
-
-            if (abs(100 - pbwidth) > abs(80 - pbheight))
-            {
-                // cap to vertical
-                newheight = 80;
-                newwidth = newheight * ratio;
-            }
-            else
-            {
-                // cap to horiz
-                newwidth = 100;
-                newheight = newwidth / ratio;
-            }
-
-            pb = pb->scale_simple(newwidth, newheight, Gdk::INTERP_NEAREST);
-        }
+		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), -1, 80);
 
 		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
 			// the thumbnail is old. we need to make a new one.
