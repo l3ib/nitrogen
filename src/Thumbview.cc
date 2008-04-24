@@ -65,11 +65,13 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 
         Glib::RefPtr<Gdk::Pixbuf> thumb = base.get();
 
-        if (thumb == thumbview->loading_image)
+        if (thumb == thumbview->loading_image && !row[thumbview->loadingthumb])
         {
             TreePair* tp = new TreePair();
             tp->file = row[thumbview->filename];
             tp->iter = iter;
+
+            row[thumbview->loadingthumb] = true;
 
             Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
 
@@ -89,6 +91,7 @@ Thumbview::Thumbview() : dir("") {
 	record.add (description);
 	record.add (filename);
 	record.add (time);
+    record.add (loadingthumb);
 
 	store = DelayLoadingStore::create (record);
     store->set_queue(&queue_thumbs);

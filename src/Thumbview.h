@@ -80,6 +80,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Gtk::TreeModelColumn<Glib::ustring> description;
 		Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> >  thumbnail;
 		Gtk::TreeModelColumn<time_t> time;
+		Gtk::TreeModelColumn<bool> loadingthumb;
 		
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
