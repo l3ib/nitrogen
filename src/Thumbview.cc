@@ -108,7 +108,7 @@ Thumbview::Thumbview() : dir("") {
 	// make the text bold
 	rend.property_weight () = Pango::WEIGHT_BOLD;
 
-    rend_img.set_fixed_size(100, 80);    
+    rend_img.set_fixed_size(105, 82);    
 	
 	this->col_thumb = new Gtk::TreeViewColumn("thumbnail", this->rend_img);
 	this->col_desc = new Gtk::TreeViewColumn("description", this->rend);
@@ -361,7 +361,34 @@ bool Thumbview::load_cache_images() {
 		g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
 	} else {
 		// load thumb
-		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 100, 80, true);
+		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file));
+        // 100, 80, true
+
+        // resize if we need to
+        if (pb->get_width() > 100 || pb->get_height() > 80)
+        {
+            int pbwidth = pb->get_width();
+            int pbheight = pb->get_height();
+            float ratio = (float)pbwidth / (float)pbheight;
+            
+            int newwidth, newheight;
+
+            if (abs(100 - pbwidth) > abs(80 - pbheight))
+            {
+                // cap to vertical
+                newheight = 80;
+                newwidth = newheight * ratio;
+            }
+            else
+            {
+                // cap to horiz
+                newwidth = 100;
+                newheight = newwidth / ratio;
+            }
+
+            pb = pb->scale_simple(newwidth, newheight, Gdk::INTERP_NEAREST);
+        }
+
 		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
 			// the thumbnail is old. we need to make a new one.
 			pb.clear();
