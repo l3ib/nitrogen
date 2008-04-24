@@ -345,14 +345,6 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
  */
 bool Thumbview::load_cache_images() {
 
-	// check for exit condition!
-/*	if (this->queue_thumbs.empty()) {
-		// create our new idle func
-		if (g_async_queue_length(this->aqueue_createthumbs) > 0)
-			Glib::Thread::create(sigc::mem_fun(this, &Thumbview::create_cache_images), true);
-		return false;
-	}*/
-
     // no worries if there is nothing to do yet
     if (this->queue_thumbs.empty())
         return true;
@@ -396,10 +388,10 @@ void Thumbview::create_cache_images()
 	g_async_queue_ref(this->aqueue_createthumbs); 
 	g_async_queue_ref(this->aqueue_donethumbs); 
 
-	// check for exit condition
-	while (1) { //g_async_queue_length(this->aqueue_createthumbs) > 0) {
+	// always work! 
+	while (1) {
 
-		// remove first item
+		// remove first item (blocks when no items occur)
 		TreePair *p = (TreePair*)g_async_queue_pop(this->aqueue_createthumbs);
 
 		// get filenames
