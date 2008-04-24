@@ -53,6 +53,12 @@ static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
 	return mtime;
 }
 
+void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const
+{
+    printf("hi %s %d\n", get_path(iter).to_string().c_str(), column);
+    return Gtk::ListStore::get_value_vfunc(iter, column, value);
+}
+
 /**
  * Constructor, sets up gtk stuff, inits data and queues
  */
@@ -65,7 +71,7 @@ Thumbview::Thumbview() : dir("") {
 	record.add (filename);
 	record.add (time);
 
-	store = Gtk::ListStore::create (record);
+	store = DelayLoadingStore::create (record);
 	
 	view.set_model (store);
 	view.set_headers_visible (FALSE);

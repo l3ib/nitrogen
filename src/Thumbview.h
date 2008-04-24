@@ -33,6 +33,23 @@ struct TreePair {
 	Glib::RefPtr<Gdk::Pixbuf> thumb;
 };
 
+class DelayLoadingStore : public Gtk::ListStore
+{
+    public:
+        static Glib::RefPtr<DelayLoadingStore> create(const Gtk::TreeModelColumnRecord& columns)
+        {
+            return Glib::RefPtr<DelayLoadingStore>(new DelayLoadingStore(columns));
+        }
+
+    protected:
+        DelayLoadingStore() : Gtk::ListStore() {}
+        DelayLoadingStore(const Gtk::TreeModelColumnRecord& columns) : Gtk::ListStore(columns) {}
+
+    protected:
+        virtual void 	get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const;
+
+};
+
 class Thumbview : public Gtk::ScrolledWindow {
 	public:
 		Thumbview ();
@@ -53,7 +70,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> >  thumbnail;
 		Gtk::TreeModelColumn<time_t> time;
 		
-		Glib::RefPtr<Gtk::ListStore> store;
+		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
 
 		// dispatcher 
