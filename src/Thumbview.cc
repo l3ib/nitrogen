@@ -69,25 +69,32 @@ Thumbview::Thumbview() : dir("") {
 	
 	view.set_model (store);
 	view.set_headers_visible (FALSE);
-	view.set_rules_hint (TRUE);
+	view.set_fixed_height_mode (TRUE);
+    view.set_rules_hint (TRUE);
 	
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
 	rend.set_property ("ellipsize", Pango::ELLIPSIZE_END);
 
 	// make the text bold
 	rend.property_weight () = Pango::WEIGHT_BOLD;
+
+    rend_img.set_fixed_size(100, 80);    
 	
 	this->col_thumb = new Gtk::TreeViewColumn("thumbnail", this->rend_img);
 	this->col_desc = new Gtk::TreeViewColumn("description", this->rend);
 	
-	col_desc->add_attribute (rend, "text", 1);
-	col_thumb->pack_start (thumbnail);
+	col_thumb->add_attribute (rend_img, "pixbuf", thumbnail);
+    col_thumb->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
+    col_thumb->set_fixed_width(100);
+	col_desc->add_attribute (rend, "text", description);
 	col_desc->set_sort_column (filename);
 	col_desc->set_sort_indicator (true);
 	col_desc->set_sort_order (Gtk::SORT_ASCENDING);
+    col_desc->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
 	
 	view.append_column (*col_thumb);
 	view.append_column (*col_desc);
+
 
 	// enable search
 	view.set_search_column (description);
@@ -328,7 +335,7 @@ bool Thumbview::load_cache_images() {
 		g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
 	} else {
 		// load thumb
-		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 100, 100, true);
+		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file), 100, 80, true);
 		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
 			// the thumbnail is old. we need to make a new one.
 			pb.clear();
