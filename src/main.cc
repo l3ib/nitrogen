@@ -71,12 +71,12 @@ int main (int argc, char ** argv) {
 	textdomain(PACKAGE);
 
    /* i18n::set_text_domain_dir(PACKAGE, LOCALEDIR);
-    i18n::set_text_domain(PACKAGE);*/
+	i18n::set_text_domain(PACKAGE);*/
 
 
 	Gtk::Main kit(argc, argv);
 	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR
-	                                                  G_DIR_SEPARATOR_S "icons");
+													  G_DIR_SEPARATOR_S "icons");
 	Glib::thread_init();
 	Config *cfg = Config::get_instance();
 	ArgParser *parser = Util::create_arg_parser();
@@ -157,8 +157,8 @@ int main (int argc, char ** argv) {
 	delete parser;
 
 	// rig up idle/thread routines
-    Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images), true);
-    Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::create_cache_images), true);
+	Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images), true);
+	Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::create_cache_images), true);
 
 #ifdef USE_INOTIFY
 	Glib::signal_timeout().connect(sigc::ptr_fun(&poll_inotify), (unsigned)1e3);

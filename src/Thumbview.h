@@ -37,26 +37,26 @@ class Thumbview;
 
 class DelayLoadingStore : public Gtk::ListStore
 {
-    public:
-        static Glib::RefPtr<DelayLoadingStore> create(const Gtk::TreeModelColumnRecord& columns)
-        {
-            return Glib::RefPtr<DelayLoadingStore>(new DelayLoadingStore(columns));
-        }
+	public:
+		static Glib::RefPtr<DelayLoadingStore> create(const Gtk::TreeModelColumnRecord& columns)
+		{
+			return Glib::RefPtr<DelayLoadingStore>(new DelayLoadingStore(columns));
+		}
 
-    protected:
-        DelayLoadingStore() : Gtk::ListStore() {}
-        DelayLoadingStore(const Gtk::TreeModelColumnRecord& columns) : Gtk::ListStore(columns) {}
+	protected:
+		DelayLoadingStore() : Gtk::ListStore() {}
+		DelayLoadingStore(const Gtk::TreeModelColumnRecord& columns) : Gtk::ListStore(columns) {}
 
-    protected:
-        virtual void 	get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const;
+	protected:
+		virtual void 	get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const;
 
-    public:
-        void set_queue(GAsyncQueue *queue) { aqueue_loadthumbs = queue; }
-        void set_thumbview(Thumbview *view) { thumbview = view; }
+	public:
+		void set_queue(GAsyncQueue *queue) { aqueue_loadthumbs = queue; }
+		void set_thumbview(Thumbview *view) { thumbview = view; }
 
-    protected:
- 		GAsyncQueue *aqueue_loadthumbs;
-        Thumbview *thumbview;
+	protected:
+		GAsyncQueue *aqueue_loadthumbs;
+		Thumbview *thumbview;
 
 
 };
@@ -97,7 +97,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// search compare function
 		bool search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter);
 
-        // loading image
+		// loading image
 		Glib::RefPtr<Gdk::Pixbuf> loading_image;
 		
 	protected:
@@ -130,7 +130,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		std::string dir;
 
 		// load thumbnail queue
-        GAsyncQueue* aqueue_loadthumbs;
+		GAsyncQueue* aqueue_loadthumbs;
 		GAsyncQueue* aqueue_createthumbs;
 		GAsyncQueue* aqueue_donethumbs;
 
