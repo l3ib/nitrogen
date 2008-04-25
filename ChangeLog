@@ -1,3 +1,8 @@
+Fri Apr 25 10:00:01 EDT 2008	Dave Foster <daf@minuslab.net>
+	* Prepared 1.3-rc
+	* Made thumbnail loading "lazy" so it doesn't load everything
+	  in one shot.  This should save on memory usage!
+
 Sat Jan 26 15:16:51 EST 2008 	Dave Foster <daf@minuslab.net>
 	* Tagged 1.2 release (sitting on my hd for some reason?)
 
