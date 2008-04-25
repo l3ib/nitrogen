@@ -115,7 +115,7 @@ Thumbview::Thumbview() : dir("") {
 	
 	col_thumb->add_attribute (rend_img, "pixbuf", thumbnail);
     col_thumb->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
-    col_thumb->set_fixed_width(100);
+    col_thumb->set_fixed_width(105);
 	col_desc->add_attribute (rend, "text", description);
 	col_desc->set_sort_column (filename);
 	col_desc->set_sort_indicator (true);
