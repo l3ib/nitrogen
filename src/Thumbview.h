@@ -51,11 +51,11 @@ class DelayLoadingStore : public Gtk::ListStore
         virtual void 	get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const;
 
     public:
-        void set_queue(std::queue<TreePair*> *queue) { queue_thumbs = queue; }
+        void set_queue(GAsyncQueue *queue) { aqueue_loadthumbs = queue; }
         void set_thumbview(Thumbview *view) { thumbview = view; }
 
     protected:
- 		std::queue<TreePair*> *queue_thumbs;
+ 		GAsyncQueue *aqueue_loadthumbs;
         Thumbview *thumbview;
 
 
@@ -89,7 +89,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Glib::Dispatcher dispatch_thumb;
 
 		// thread/idle funcs
-		bool load_cache_images();
+		void load_cache_images();
 		void create_cache_images();
 		void load_dir(std::string dir = "");
 
@@ -130,7 +130,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		std::string dir;
 
 		// load thumbnail queue
-		std::queue<TreePair*> queue_thumbs;
+        GAsyncQueue* aqueue_loadthumbs;
 		GAsyncQueue* aqueue_createthumbs;
 		GAsyncQueue* aqueue_donethumbs;
 

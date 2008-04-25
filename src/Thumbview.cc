@@ -55,6 +55,7 @@ static time_t get_fdo_thumbnail_mtime(Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
 
 void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib::ValueBase& value) const
 {
+    g_async_queue_ref(aqueue_loadthumbs);
     Gtk::ListStore::get_value_vfunc(iter, column, value);
 
     Gtk::TreeModel::Row row = *iter;
@@ -75,9 +76,10 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 
             Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
 
-            queue_thumbs->push(tp);
+            g_async_queue_push(aqueue_loadthumbs, (gpointer)tp);
         }
     }
+    g_async_queue_unref(aqueue_loadthumbs);
 }
 
 /**
@@ -87,29 +89,37 @@ Thumbview::Thumbview() : dir("") {
 	set_policy (Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
 	set_shadow_type (Gtk::SHADOW_IN);
 
+    // make our async queues
+    this->aqueue_loadthumbs = g_async_queue_new();
+	this->aqueue_createthumbs = g_async_queue_new();
+	this->aqueue_donethumbs = g_async_queue_new();	
+
+    // build model record
 	record.add (thumbnail);
 	record.add (description);
 	record.add (filename);
 	record.add (time);
     record.add (loadingthumb);
 
+    // create store
 	store = DelayLoadingStore::create (record);
-    store->set_queue(&queue_thumbs);
+    store->set_queue(aqueue_loadthumbs);
     store->set_thumbview(this);
 	
+    // setup view
 	view.set_model (store);
 	view.set_headers_visible (FALSE);
 	view.set_fixed_height_mode (TRUE);
     view.set_rules_hint (TRUE);
 	
+    // set cell renderer proprties
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
 	rend.set_property ("ellipsize", Pango::ELLIPSIZE_END);
-
-	// make the text bold
 	rend.property_weight () = Pango::WEIGHT_BOLD;
 
     rend_img.set_fixed_size(105, 82);    
 	
+    // make treeviewcolumns
 	this->col_thumb = new Gtk::TreeViewColumn("thumbnail", this->rend_img);
 	this->col_desc = new Gtk::TreeViewColumn("description", this->rend);
 	
@@ -125,22 +135,14 @@ Thumbview::Thumbview() : dir("") {
 	view.append_column (*col_thumb);
 	view.append_column (*col_desc);
 
-
 	// enable search
 	view.set_search_column (description);
 	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
-
-	// enable alphanumeric sorting
-	// store->set_sort_column (short_filename, Gtk::SORT_ASCENDING);
 
 	// load loading image, which not all themes seem to provide
 	try {
 		this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
 	} catch (Gtk::IconThemeError e) {}
-
-	// make our async queues
-	this->aqueue_createthumbs = g_async_queue_new();
-	this->aqueue_donethumbs = g_async_queue_new();	
 
 	// init dispatcher 
 	this->dispatch_thumb.connect(sigc::mem_fun(this, &Thumbview::handle_dispatch_thumb)); 
@@ -157,6 +159,7 @@ Thumbview::Thumbview() : dir("") {
  * Destructor
  */
 Thumbview::~Thumbview() {
+    g_async_queue_unref(this->aqueue_loadthumbs);
 	g_async_queue_unref(this->aqueue_createthumbs);
 	g_async_queue_unref(this->aqueue_donethumbs);
 }
@@ -343,66 +346,74 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
 /**
  * Creates cache images that show up in its queue.  
  */
-bool Thumbview::load_cache_images() {
+void Thumbview::load_cache_images() 
+{
+	g_async_queue_ref(this->aqueue_loadthumbs); 
+	g_async_queue_ref(this->aqueue_donethumbs); 
 
-    // no worries if there is nothing to do yet
-    if (this->queue_thumbs.empty())
-        return true;
+    while(1)
+    {
+        // remove first item (blocks until an item occurs)
+        TreePair *p = (TreePair*)g_async_queue_pop(this->aqueue_loadthumbs);
 
-	// remove first item
-	TreePair *p = this->queue_thumbs.front();
-	this->queue_thumbs.pop();
-	
-	Glib::ustring file = p->file;
-	Glib::ustring cachefile = this->cache_file(file);
+        Glib::ustring file = p->file;
+        Glib::ustring cachefile = this->cache_file(file);
 
-	// branch to see if we need to load or create cache file
-	if ( !Glib::file_test(cachefile, Glib::FILE_TEST_EXISTS) ) {
-		g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
-	} else {
-		// load thumb
-		Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file));
-        // 100, 80, true
+        // branch to see if we need to load or create cache file
+        if ( !Glib::file_test(cachefile, Glib::FILE_TEST_EXISTS) ) {
+            g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
+        } else {
+            // load thumb
+            Glib::RefPtr<Gdk::Pixbuf> pb = Gdk::Pixbuf::create_from_file(this->cache_file(file));
 
-        // resize if we need to
-        if (pb->get_width() > 100 || pb->get_height() > 80)
-        {
-            int pbwidth = pb->get_width();
-            int pbheight = pb->get_height();
-            float ratio = (float)pbwidth / (float)pbheight;
-            
-            int newwidth, newheight;
-
-            if (abs(100 - pbwidth) > abs(80 - pbheight))
+            // resize if we need to
+            if (pb->get_width() > 100 || pb->get_height() > 80)
             {
-                // cap to vertical
-                newheight = 80;
-                newwidth = newheight * ratio;
-            }
-            else
-            {
-                // cap to horiz
-                newwidth = 100;
-                newheight = newwidth / ratio;
+                int pbwidth = pb->get_width();
+                int pbheight = pb->get_height();
+                float ratio = (float)pbwidth / (float)pbheight;
+                
+                int newwidth, newheight;
+
+                if (abs(100 - pbwidth) > abs(80 - pbheight))
+                {
+                    // cap to vertical
+                    newheight = 80;
+                    newwidth = newheight * ratio;
+                }
+                else
+                {
+                    // cap to horiz
+                    newwidth = 100;
+                    newheight = newwidth / ratio;
+                }
+
+                pb = pb->scale_simple(newwidth, newheight, Gdk::INTERP_NEAREST);
             }
 
-            pb = pb->scale_simple(newwidth, newheight, Gdk::INTERP_NEAREST);
+            if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
+                // the thumbnail is old. we need to make a new one.
+                pb.clear();
+                g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
+            } else {
+                // display it
+                TreePair *sendp = new TreePair();
+		        sendp->file = file;
+		        sendp->iter = p->iter;
+                sendp->thumb = pb;
+
+                g_async_queue_push(this->aqueue_donethumbs, (gpointer)sendp);
+
+                this->dispatch_thumb.emit();
+
+                delete p;
+            }
         }
-
-		if (get_fdo_thumbnail_mtime(pb) < get_file_mtime(file)) {
-			// the thumbnail is old. we need to make a new one.
-			pb.clear();
-			g_async_queue_push(this->aqueue_createthumbs,(gpointer)p);
-		} else {
-			// display it
-			this->update_thumbnail(file, p->iter, pb);
-			// only delete here
-			delete p;	
-		}
-
-	}
-
-	return true;
+    }
+    
+    g_async_queue_unref(this->aqueue_loadthumbs); 
+	g_async_queue_unref(this->aqueue_donethumbs); 
+	throw Glib::Thread::Exit();
 }
 
 /**
@@ -461,7 +472,6 @@ void Thumbview::create_cache_images()
 		thumb->save(cachefile, "png", opts, vals);
 
 		// send it to the display
-		//this->update_thumbnail(file, p->iter, thumb);
 		TreePair *sendp = new TreePair();
 		sendp->file = file;
 		sendp->iter = p->iter;
@@ -470,7 +480,6 @@ void Thumbview::create_cache_images()
 
 		// emit dispatcher
 		this->dispatch_thumb.emit();
-		
 
 		delete p;
 	}

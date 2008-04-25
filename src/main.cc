@@ -157,7 +157,7 @@ int main (int argc, char ** argv) {
 	delete parser;
 
 	// rig up idle/thread routines
-	Glib::signal_idle().connect(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images));
+    Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images), true);
     Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::create_cache_images), true);
 
 #ifdef USE_INOTIFY
