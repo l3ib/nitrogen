@@ -5,8 +5,7 @@
 
 #include "Inotify.h"
 
-#include "inotify.h"
-#include "inotify-syscalls.h"
+#include <sys/inotify.h>
 
 #include <errno.h>
 #include <sys/select.h>
