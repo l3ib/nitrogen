@@ -4,5 +4,5 @@ nitrogen_LDFLAGS = @NITROGEN_LIBS@
 INCLUDES = @NITROGEN_CFLAGS@ \
 	-DNITROGEN_DATA_DIR=\"$(pkgdatadir)\"
 man_MANS = nitrogen.1
-noinst_HEADERS = Config.h NWindow.h SetBG.h main.h md5.h Thumbview.h ImageCombo.h ArgParser.h Inotify.h inotify.h inotify-syscalls.h Util.h gcs-i18n.h
+noinst_HEADERS = Config.h NWindow.h SetBG.h main.h md5.h Thumbview.h ImageCombo.h ArgParser.h Inotify.h Util.h gcs-i18n.h
 EXTRA_DIST = $(man_MANS)
