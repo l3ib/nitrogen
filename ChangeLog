@@ -1,3 +1,9 @@
+Mon May 12 21:58:34 EDT 2008	Dave Foster <daf@minuslab.net>
+	* Made the program not recurse when no directory argument is
+	  given, thus not loading your entire home dir when you least
+	  expect it!
+	* Releasing 1.3.
+
 Fri Apr 25 10:00:01 EDT 2008	Dave Foster <daf@minuslab.net>
 	* Prepared 1.3-rc
 	* Made thumbnail loading "lazy" so it doesn't load everything
