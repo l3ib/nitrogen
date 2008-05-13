@@ -103,6 +103,7 @@ int main (int argc, char ** argv) {
 	std::string startdir = parser->get_extra_args();
 	if (startdir.length() <= 0) {
 		startdir = ".";
+        cfg->set_recurse(false);
 	}
 	startdir = Util::fix_start_dir(std::string(startdir));
 	
