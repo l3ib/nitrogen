@@ -353,13 +353,19 @@ bool SetBG::nautilus_running(Glib::RefPtr<Gdk::Window> rootwin)
     gint format;
     gint length;
 	guchar *data;
+    gboolean retval;
 
-	return (TRUE == gdk_property_get(rootwin->gobj(), 
-								 gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
-								 gdk_atom_intern("WINDOW", FALSE),
-								 0,
-								 4, /* wtf is a length of a window */
-								 FALSE, &type, &format, &length, &data));
+	retval = gdk_property_get(rootwin->gobj(), 
+						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
+                              gdk_atom_intern("WINDOW", FALSE),
+							  0,
+							  4, /* wtf is a length of a window */
+							  FALSE, &type, &format, &length, &data);
+
+    if (retval)
+        g_free(data);
+
+    return retval;
 }
 
 /**
