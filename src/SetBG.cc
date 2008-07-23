@@ -104,8 +104,8 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 			outpixbuf = SetBG::make_center(pixbuf, winw, winh, bgcolor);
 			break;
 
-		case SetBG::SET_BEST:
-			outpixbuf = SetBG::make_best(pixbuf, winw, winh, bgcolor);
+		case SetBG::SET_ZOOM:
+			outpixbuf = SetBG::make_zoom(pixbuf, winw, winh, bgcolor);
 			break;
 			
 		default:
@@ -307,8 +307,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 			outpixbuf = SetBG::make_center(pixbuf, tarw, tarh, bgcolor);
 			break;
 
-		case SetBG::SET_BEST:
-			outpixbuf = SetBG::make_best(pixbuf, tarw, tarh, bgcolor);
+		case SetBG::SET_ZOOM:
+			outpixbuf = SetBG::make_zoom(pixbuf, tarw, tarh, bgcolor);
 			break;
 			
 		default:
@@ -384,7 +384,7 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
 		case SetBG::SET_SCALE:  strmode = "stretched";  break;
 		case SetBG::SET_TILE:   strmode = "wallpaper"; break; 
 		case SetBG::SET_CENTER: strmode = "centered"; break;
-		case SetBG::SET_BEST:   strmode = "scaled"; break;
+		case SetBG::SET_ZOOM:   strmode = "scaled"; break;
 	};
 
 	gchar** argv = (gchar**)g_malloc(sizeof(gchar*)*10);
@@ -517,14 +517,14 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_center(const Glib::RefPtr<Gdk::Pixbuf> ori
 }
 
 /**
- * Handles SET_BEST mode.
+ * Handles SET_ZOOM mode.
  *
  * @param	orig	The original pixbuf
  * @param	winw	Width of the window
  * @param	winh	Height of the window
  * @param	bgcolor	Background color
  */
-Glib::RefPtr<Gdk::Pixbuf> SetBG::make_best(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
+Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
 		
 	int x, y, resx, resy;
 	x = y = 0;
@@ -590,8 +590,8 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 		case SET_TILE:
 			ret = Glib::ustring(_("Tile"));
 			break;
-		case SET_BEST:
-			ret = Glib::ustring(_("Best"));
+		case SET_ZOOM:
+			ret = Glib::ustring(_("Zoom"));
 			break;
 	};
 	
@@ -610,8 +610,8 @@ SetBG::SetMode SetBG::string_to_mode( const Glib::ustring str ) {
 		return SetBG::SET_CENTER;
 	else if ( str == Glib::ustring(_("Tile")) )
 		return SetBG::SET_TILE;
-	else if ( str == Glib::ustring(_("Best")) )
-		return SetBG::SET_BEST;
+	else if ( str == Glib::ustring(_("Zoom")) )
+		return SetBG::SET_ZOOM;
 
 	// shouldn't get here
 	return SetBG::SET_SCALE;

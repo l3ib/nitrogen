@@ -118,8 +118,8 @@ int main (int argc, char ** argv) {
 		return 0;
 	}
 
-	if ( parser->has_argument("set-best") )	{
-		set_bg_once(startdir, SetBG::SET_BEST, parser->has_argument("save"));
+	if ( parser->has_argument("set-zoom") )	{
+		set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"));
 		return 0;
 	}
 

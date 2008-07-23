@@ -196,13 +196,13 @@ void NWindow::setup_select_boxes() {
 	this->select_mode.add_image_row( icon, _("Tiled"), SetBG::mode_to_string(SetBG::SET_TILE), false );
 
 	try {
-		icon = icontheme->load_icon("wallpaper-bestfit", 16, Gtk::ICON_LOOKUP_NO_SVG);
+		icon = icontheme->load_icon("wallpaper-zoomed", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
 	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
 
-	this->select_mode.add_image_row( icon, _("Best Fit"), SetBG::mode_to_string(SetBG::SET_BEST), false );
+	this->select_mode.add_image_row( icon, _("Zoomed"), SetBG::mode_to_string(SetBG::SET_ZOOM), false );
 
 	// displays
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
