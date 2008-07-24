@@ -48,7 +48,6 @@ class NWindow : public Gtk::Window {
 		ImageCombo select_mode, select_display;
 
 		Gtk::Button apply;
-		Gtk::CheckButton cb_save;
 		Gtk::ColorButton button_bgcolor;
 
 		void set_bg(Glib::ustring file);

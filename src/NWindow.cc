@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save(_("Sa_ve")), is_multihead(false), is_xinerama(false)  {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false)  {
 	
 	set_border_width (5);
 	set_default_size (350, 500);
@@ -39,10 +39,6 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save(_("Sa_ve")), is_mul
 	main_vbox.set_spacing (5);
 	add (main_vbox);
 
-	// save button
-	cb_save.set_use_underline(true);
-	cb_save.set_active(true);
-	
 	// setup imagecombos
 	this->setup_select_boxes();
 
@@ -53,7 +49,6 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), cb_save(_("Sa_ve")), is_mul
 	bot_hbox.pack_start(button_bgcolor, FALSE, FALSE, 0);
 	
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
-	bot_hbox.pack_end(cb_save, FALSE, FALSE, 0);
 
 	// add to main box
 	main_vbox.pack_start (view, TRUE, TRUE, 0);
@@ -88,7 +83,6 @@ void NWindow::show (void) {
 	select_mode.show ();
 	if ( this->is_multihead ) select_display.show();
 	apply.show ();
-	cb_save.show();
 	bot_hbox.show ();
 	main_vbox.show ();
 	button_bgcolor.show();
@@ -110,21 +104,29 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path, Gtk::Tr
 
 /**
  * Handles the user pressing the apply button.  Grabs the selected items and
- * calls set_bg on it.
+ * calls set_bg on it. It also saves the bg and closes the application.
  */
 void NWindow::sighandle_click_apply (void) {
 	
 	// find out which image is currently selected
 	Gtk::TreeModel::iterator iter = view.view.get_selection()->get_selected ();
 	Gtk::TreeModel::Row row = *iter;
-	this->set_bg(row[view.filename]);
-	
+    Glib::ustring file = row[view.filename];
+	this->set_bg(file);
+
+    SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
+	Glib::ustring thedisp = this->select_display.get_active_data(); 
+	Gdk::Color bgcolor = this->button_bgcolor.get_color();
+
+	// save	
+    Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
+
+    // quit
+    Gtk::Main::quit();
 }
 
 /**
- * Queries the necessary widgets to get the data needed to set a bg.  It also
- * saves the bg if the save button is checked.
- * 
+ * Queries the necessary widgets to get the data needed to set a bg.  * 
  * @param	file	The file to set the bg to
  */
 void NWindow::set_bg(const Glib::ustring file) {
@@ -142,9 +144,6 @@ void NWindow::set_bg(const Glib::ustring file) {
 #endif
 		SetBG::set_bg(thedisp, file, mode, bgcolor);
 	
-	// should we save?
-	if (this->cb_save.get_active())
-		Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 }
 
 // leethax destructor
