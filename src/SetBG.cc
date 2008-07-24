@@ -90,6 +90,10 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 		pixbuf->get_height(), Gdk::INTERP_NEAREST, 255, 1, bgcolor.get_pixel(),
 		bgcolor.get_pixel());
 
+    // if automatic, figure out what mode we really want
+    if (mode == SetBG::SET_AUTO)
+        mode = SetBG::get_real_mode(pixbuf, winw, winh);
+
 	switch(mode) {
 	
 		case SetBG::SET_SCALE:
@@ -293,7 +297,11 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		pixbuf->get_height(), Gdk::INTERP_NEAREST, 255, 1, bgcolor.get_pixel(),
 		bgcolor.get_pixel());
 
-	switch(mode) {
+	// if automatic, figure out what mode we really want
+    if (mode == SetBG::SET_AUTO)
+        mode = SetBG::get_real_mode(pixbuf, winw, winh);
+
+    switch(mode) {
 	
 		case SetBG::SET_SCALE:
 			outpixbuf = SetBG::make_scale(pixbuf, tarw, tarh, bgcolor);
@@ -593,6 +601,9 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 		case SET_ZOOM:
 			ret = Glib::ustring(_("Zoom"));
 			break;
+        case SET_AUTO:
+            ret = Glib::ustring(_("Auto"));
+            break;
 	};
 	
 	return ret;
@@ -612,9 +623,11 @@ SetBG::SetMode SetBG::string_to_mode( const Glib::ustring str ) {
 		return SetBG::SET_TILE;
 	else if ( str == Glib::ustring(_("Zoom")) )
 		return SetBG::SET_ZOOM;
+    else if ( str == Glib::ustring(_("Auto")) )
+        return SetBG::SET_AUTO;
 
 	// shouldn't get here
-	return SetBG::SET_SCALE;
+	return SetBG::SET_AUTO;
 }
 
 /**
@@ -634,5 +647,33 @@ guint32 SetBG::GdkColorToUint32(const Gdk::Color col)
 	ret |= 255;
 	
 	return ret;
+}
+
+/**
+ * Determines the best set mode for the pixbuf based on its size relative to
+ * the window size.
+ *
+ * @param   pixbuf  The loaded pixbuf from the file, before it has been sized.
+ * @param   width   The width of the root window.
+ * @param   height  The height of the root window.
+ */
+SetBG::SetMode SetBG::get_real_mode(const Glib::RefPtr<Gdk::Pixbuf> pixbuf, const gint width, const gint height)
+{
+    SetBG::SetMode mode = SetBG::SET_ZOOM;
+    float ratio = ((float)pixbuf->get_width()) / ((float)pixbuf->get_height());
+
+    float f2t = 1.333f;
+    float f2f = 1.25f;
+
+    if (fabsf(ratio - f2t) < 0.001)
+        mode = SetBG::SET_SCALE;
+    else if (fabsf(ratio - f2f) < 0.001)
+        mode = SetBG::SET_SCALE;
+    else if (ratio == 1.0 && pixbuf->get_width() <= 640)
+        mode = SetBG::SET_TILE;
+    else if (pixbuf->get_width() <= width && pixbuf->get_height() <= height)
+        mode = SetBG::SET_CENTER;
+
+    return mode;
 }
 

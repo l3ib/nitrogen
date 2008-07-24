@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2008-04-25 10:25-0400\n"
+"POT-Creation-Date: 2008-07-23 21:33-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,76 +72,84 @@ msgstr ""
 msgid "Sa_ve"
 msgstr ""
 
-#: src/NWindow.cc:180
+#: src/NWindow.cc:175
+msgid "Automatic"
+msgstr ""
+
+#: src/NWindow.cc:182
 msgid "Scaled"
 msgstr ""
 
-#: src/NWindow.cc:188
+#: src/NWindow.cc:190
 msgid "Centered"
 msgstr ""
 
-#: src/NWindow.cc:196
+#: src/NWindow.cc:198
 msgid "Tiled"
 msgstr ""
 
-#: src/NWindow.cc:205
-msgid "Best Fit"
+#: src/NWindow.cc:207
+msgid "Zoomed"
 msgstr ""
 
-#: src/NWindow.cc:218 src/NWindow.cc:245
+#: src/NWindow.cc:220 src/NWindow.cc:247
 msgid "Screen"
 msgstr ""
 
-#: src/NWindow.cc:241
+#: src/NWindow.cc:243
 msgid "Full Screen"
 msgstr ""
 
-#: src/NWindow.cc:260
+#: src/NWindow.cc:262
 msgid "Default"
 msgstr ""
 
-#: src/SetBG.cc:50 src/SetBG.cc:215
+#: src/SetBG.cc:50 src/SetBG.cc:219
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:83 src/SetBG.cc:286
+#: src/SetBG.cc:83 src/SetBG.cc:290
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:112
+#: src/SetBG.cc:116
 msgid "Unknown mode for saved bg on"
 msgstr ""
 
-#: src/SetBG.cc:156 src/SetBG.cc:328
+#: src/SetBG.cc:160 src/SetBG.cc:336
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:207
+#: src/SetBG.cc:211
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
-#: src/SetBG.cc:315
+#: src/SetBG.cc:323
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:407
+#: src/SetBG.cc:421
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:579 src/SetBG.cc:601
+#: src/SetBG.cc:593 src/SetBG.cc:618
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:582 src/SetBG.cc:603
+#: src/SetBG.cc:596 src/SetBG.cc:620
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:585 src/SetBG.cc:605
+#: src/SetBG.cc:599 src/SetBG.cc:622
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:588 src/SetBG.cc:607
-msgid "Best"
+#: src/SetBG.cc:602 src/SetBG.cc:624
+msgid "Zoom"
+msgstr ""
+
+#: src/SetBG.cc:605 src/SetBG.cc:626
+msgid "Auto"
 msgstr ""
 
 #: src/Thumbview.cc:220

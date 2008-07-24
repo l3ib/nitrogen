@@ -171,13 +171,15 @@ void NWindow::setup_select_boxes() {
 	}
 
 	// modes
+    icon = genericicon;
+    this->select_mode.add_image_row( icon, _("Automatic"), SetBG::mode_to_string(SetBG::SET_AUTO), true );
 	try {
 		icon = icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
 	} catch (Gtk::IconThemeError e) {
 		icon = genericicon;
 	}
-	this->select_mode.add_image_row( icon, _("Scaled"), SetBG::mode_to_string(SetBG::SET_SCALE), true );
+	this->select_mode.add_image_row( icon, _("Scaled"), SetBG::mode_to_string(SetBG::SET_SCALE), false );
 
 	try {
 		icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
