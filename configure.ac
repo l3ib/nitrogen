@@ -42,6 +42,12 @@ NITROGEN_CFLAGS="$GLIB2_CFLAGS $GTK2_CFLAGS $GTKMM2_CFLAGS $GTHREAD2_CFLAGS"
 dnl do some autotools picen to get inotify
 AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify watching of dirs (default: enabled)], [enable_inotify=$enableval],[enable_inotify=yes])
 
+AC_ARG_ENABLE(debug, [  --enable-debug       enable debugging flags ])
+
+if test "$enable_debug" = "yes"; then
+ CXXFLAGS+=" -g -g3 -ggdb"
+fi
+
 if test x$enable_inotify = xyes; then
 	AC_DEFINE(USE_INOTIFY, 1, [Define to enable inotify dir watching])
 fi
