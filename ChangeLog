@@ -1,3 +1,13 @@
+Thu Jul 24 09:59:07 EDT 2008	Dave Foster <daf@minuslab.net>
+	* Renamed "best fit" to "zoomed".
+	* Added "automatic" scaling mode - figures out likely mode that
+	  an image should be set at.  Is selected by default, but not when
+	  you have a saved config file that has another mode set in it
+	  already.
+	* Removed checkbox which originally controlled saving.  Double-clicking
+	  an image now always only previews it.  The Save button saves the 
+	  image, applies it, and closes the window.
+
 Mon May 12 21:58:34 EDT 2008	Dave Foster <daf@minuslab.net>
 	* Made the program not recurse when no directory argument is
 	  given, thus not loading your entire home dir when you least
