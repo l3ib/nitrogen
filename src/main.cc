@@ -166,5 +166,6 @@ int main (int argc, char ** argv) {
 #endif
 
 	Gtk::Main::run (*main_window);
+
 	return 0;
 }

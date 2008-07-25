@@ -121,6 +121,8 @@ void NWindow::sighandle_click_apply (void) {
 	// save	
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
+		hide();
+
     // quit
     Gtk::Main::quit();
 }
