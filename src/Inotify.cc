@@ -82,7 +82,7 @@ void Watch::poll(suseconds_t timeout) {
 		i += sizeof(uint32_t);
 		uint32_t len = *((uint32_t*)&buffer[i]);
 		i += sizeof(uint32_t);
-		std::string name(&buffer[i]);
+		std::string name(&buffer[i], len);
 		i += len;
 
 		if (watch_descriptors.find(wd) == watch_descriptors.end()) continue;
