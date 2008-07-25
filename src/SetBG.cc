@@ -271,11 +271,19 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	// alloc our background color 
 	colormap->alloc_color(bgcolor, false, true);
 
-	if (xoldpm != NULL) {
+	if (xoldpm) {
 		// grab the old pixmap and ref it into a gdk pixmap
 		pixmap = Gdk::Pixmap::create(_display, *xoldpm);
-	
-		} else {
+		// check that this pixmap is the right size
+		int width, height;
+		pixmap->get_size(width, height);
+
+		if ((width != winw) || (height != winh) || (pixmap->get_depth() != window->get_depth()) ) {
+			xoldpm = NULL;
+		}
+	}
+
+	if (!xoldpm) {
 		// we have to create it
 		pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
 	}
