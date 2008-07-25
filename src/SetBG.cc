@@ -279,6 +279,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		pixmap->get_size(width, height);
 
 		if ((width != winw) || (height != winh) || (pixmap->get_depth() != window->get_depth()) ) {
+			XKillClient(xdisp, *((Pixmap *) data_root));
 			xoldpm = NULL;
 		}
 	}
