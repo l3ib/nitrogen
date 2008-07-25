@@ -45,7 +45,7 @@ AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify wa
 AC_ARG_ENABLE(debug, [  --enable-debug       enable debugging flags ])
 
 if test "$enable_debug" = "yes"; then
- CXXFLAGS+=" -g -g3 -ggdb"
+ CXXFLAGS+=" -g -g3 -ggdb -DDEBUG"
 fi
 
 if test x$enable_inotify = xyes; then

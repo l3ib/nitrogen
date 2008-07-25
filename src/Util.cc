@@ -30,8 +30,11 @@ namespace Util {
 
 // parafarmance testing / bug finding
 // http://primates.ximian.com/~federico/news-2006-03.html#09
+//
+// Must compile with --enable-debug for this function to have a body.
 void program_log (const char *format, ...)
 {
+#ifdef DEBUG
 	va_list args;
     char *formatted, *str;
 
@@ -44,6 +47,7 @@ void program_log (const char *format, ...)
 
 	access (str, F_OK);
     g_free (str);
+#endif    
 } 
 
 // Converts a relative path to an absolute path.
