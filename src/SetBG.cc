@@ -288,6 +288,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		int width, height;
 		pixmap->get_size(width, height);
 
+        program_log("xin old pixmap (%x) is %d x %d", *xoldpm, width, height);
+
 		if ((width != winw) || (height != winh) || (pixmap->get_depth() != window->get_depth()) ) {
             program_log("xin killing too small pixmap (%d x %d)", width, height);
 			XKillClient(xdisp, *((Pixmap *) data_root));
@@ -298,11 +300,14 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	if (!xoldpm) {
 		// we have to create it
 		pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
-        program_log("created new xin pixmap %x", GDK_PIXMAP_XID(pixmap->gobj()));
+        int width, height;
+        pixmap->get_size(width, height);
+        program_log("created new xin pixmap %x (%d x %d)", GDK_PIXMAP_XID(pixmap->gobj()), width, height);
 	}
 
 	// set the colormap 
 	pixmap->set_colormap(colormap);
+    program_log("xin set colormap of pixmap");
 
 	// get our pixbuf from the file
 	try {
