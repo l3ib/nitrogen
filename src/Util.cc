@@ -25,16 +25,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdio.h>
 #include "gcs-i18n.h"
+#include <glib/gprintf.h>
 
 namespace Util {
 
 // parafarmance testing / bug finding
 // http://primates.ximian.com/~federico/news-2006-03.html#09
 //
-// Must compile with --enable-debug for this function to have a body.
+// this functiona always does something.  If the enable-debug flag is
+// on when configured, this prints out to stdout.  if not, it tries to 
+// access() a string which is useful for the link above.
 void program_log (const char *format, ...)
 {
-#ifdef DEBUG
 	va_list args;
     char *formatted, *str;
 
@@ -45,9 +47,12 @@ void program_log (const char *format, ...)
     str = g_strdup_printf ("MARK: %s: %s", g_get_prgname(), formatted);
     g_free (formatted);
 
+#ifdef DEBUG
+    g_printf("%s\n", str);
+#else
 	access (str, F_OK);
-    g_free (str);
 #endif    
+    g_free (str);
 } 
 
 // Converts a relative path to an absolute path.
