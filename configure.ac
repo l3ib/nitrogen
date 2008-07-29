@@ -1,5 +1,5 @@
 AC_PREREQ(2.59)
-AC_INIT([nitrogen],[1.4-rc],[daf@minuslab.net])
+AC_INIT([nitrogen],[1.4],[daf@minuslab.net])
 AC_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 AC_ISC_POSIX
