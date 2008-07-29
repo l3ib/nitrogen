@@ -104,7 +104,8 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path, Gtk::Tr
 
 /**
  * Handles the user pressing the apply button.  Grabs the selected items and
- * calls set_bg on it. It also saves the bg and closes the application.
+ * calls set_bg on it. It also saves the bg and closes the application if 
+ * the app is not multiheaded, or the full xin desktop is selected.
  */
 void NWindow::sighandle_click_apply (void) {
 	
@@ -121,10 +122,11 @@ void NWindow::sighandle_click_apply (void) {
 	// save	
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
-		hide();
-
-    // quit
-    Gtk::Main::quit();
+    if (!this->is_multihead || thedisp == "xin_-1")
+    {
+        hide();
+        Gtk::Main::quit();
+    }
 }
 
 /**
