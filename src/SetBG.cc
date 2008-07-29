@@ -232,8 +232,6 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	window = screen->get_root_window();
 	window->get_geometry(winx,winy,winw,winh,wind);
 
-    program_log("got xin root window %x", GDK_WINDOW_XWINDOW(window->gobj()));
-
 	// determine our target dimensions
 	gint tarx, tary, tarw, tarh;
 	if (xin_screen_num == -1) {
@@ -247,8 +245,6 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		tarw = xinerama_info[xin_offset].width;
 		tarh = xinerama_info[xin_offset].height;
 	}
-
-    program_log("determined xinerama x/y w/h to be %d, %d and %d x %d", tarx, tary, tarw, tarh);
 
 	Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
 	XSetCloseDownMode(xdisp, RetainPermanent);
@@ -270,7 +266,6 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 			if (data_root && data_esetroot)
 				if (type == XA_PIXMAP && *((Pixmap *) data_root) == *((Pixmap *) data_esetroot)) {
 					xoldpm = (Pixmap*)data_root;
-                    program_log("previously set xin pixmap is %x", *((Pixmap*) data_root));
 				}
 		}
 	}
@@ -288,10 +283,7 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		int width, height;
 		pixmap->get_size(width, height);
 
-        program_log("xin old pixmap (%x) is %d x %d", *xoldpm, width, height);
-
 		if ((width != winw) || (height != winh) || (pixmap->get_depth() != window->get_depth()) ) {
-            program_log("xin killing too small pixmap (%d x %d)", width, height);
 			XKillClient(xdisp, *((Pixmap *) data_root));
 			xoldpm = NULL;
 		}
@@ -302,12 +294,10 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
         int width, height;
         pixmap->get_size(width, height);
-        program_log("created new xin pixmap %x (%d x %d)", GDK_PIXMAP_XID(pixmap->gobj()), width, height);
 	}
 
 	// set the colormap 
 	pixmap->set_colormap(colormap);
-    program_log("xin set colormap of pixmap");
 
 	// get our pixbuf from the file
 	try {
@@ -317,8 +307,6 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		return false;
 	}
 
-    program_log("xin loaded pixbuf from file %s", file.c_str());
-	
 	// apply the bg color to pixbuf here, because every make_ method would
 	// have to do it anyway.
 	pixbuf = pixbuf->composite_color_simple(pixbuf->get_width(),
@@ -352,13 +340,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 			return false;
 	};
 
-    program_log("xin made pixmap into appropriate size");
-
 	// render it to the pixmap
 	pixmap->draw_pixbuf(gc_, outpixbuf, 0,0, tarx, tary, tarw, tarh, Gdk::RGB_DITHER_NONE,0,0);
-
-    program_log("xin rendered pixbuf (%d x %d) onto pixmap (%d, %d and %d x %d)", 
-                 outpixbuf->get_width(), outpixbuf->get_height(), tarx, tary, tarw, tarh);
 
 	Pixmap xpm = GDK_PIXMAP_XID(pixmap->gobj());
 
@@ -373,13 +356,9 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	XChangeProperty(xdisp, xwin, prop_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
 	XChangeProperty(xdisp, xwin, prop_esetroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
 
-    program_log("set _XROOTPMAP_ID and ESETROOT_PMAP_ID atoms to %x", xpm);
-
 	// set it gtk style
 	window->set_back_pixmap(pixmap, false);
 	window->clear();
-
-    program_log("set background pixmap of xin window %x", GDK_WINDOW_XWINDOW(window->gobj()));
 
     _display->close();
 
