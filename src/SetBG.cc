@@ -48,7 +48,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	Glib::RefPtr<Gdk::Pixmap> pixmap;
 
 	// open display and screen
-	_display = (disp == "") ? Gdk::DisplayManager::get()->get_default_display() : Gdk::Display::open(disp);
+	_display = (disp == "") ? Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name()) : Gdk::Display::open(disp);
 	if (!_display) {
 		std::cerr << _("Could not open display") << " " << disp << "\n";
 		return false;
@@ -218,8 +218,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		}
 	}
 
-	// open display and screen
-	_display = Gdk::DisplayManager::get()->get_default_display();
+	// open display and screen (make sure it is a copy of the default display)
+	_display = Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name());
 	if (!_display) {
 		std::cerr << _("Could not open display") << "\n";
 		return false;
@@ -380,6 +380,8 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	window->clear();
 
     program_log("set background pixmap of xin window %x", GDK_WINDOW_XWINDOW(window->gobj()));
+
+    _display->close();
 
 	return true;
 	
