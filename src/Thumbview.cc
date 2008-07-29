@@ -66,13 +66,13 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 
 		Glib::RefPtr<Gdk::Pixbuf> thumb = base.get();
 
-		if (thumb == thumbview->loading_image && !row[thumbview->loadingthumb])
+		if (thumb == thumbview->loading_image && !row[thumbview->record.LoadingThumb])
 		{
 			TreePair* tp = new TreePair();
-			tp->file = row[thumbview->filename];
+			tp->file = row[thumbview->record.Filename];
 			tp->iter = iter;
 
-			row[thumbview->loadingthumb] = true;
+			row[thumbview->record.LoadingThumb] = true;
 
 			Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
 
@@ -93,13 +93,6 @@ Thumbview::Thumbview() : dir("") {
 	this->aqueue_loadthumbs = g_async_queue_new();
 	this->aqueue_createthumbs = g_async_queue_new();
 	this->aqueue_donethumbs = g_async_queue_new();	
-
-	// build model record
-	record.add (thumbnail);
-	record.add (description);
-	record.add (filename);
-	record.add (time);
-	record.add (loadingthumb);
 
 	// create store
 	store = DelayLoadingStore::create (record);
@@ -123,11 +116,11 @@ Thumbview::Thumbview() : dir("") {
 	this->col_thumb = new Gtk::TreeViewColumn("thumbnail", this->rend_img);
 	this->col_desc = new Gtk::TreeViewColumn("description", this->rend);
 	
-	col_thumb->add_attribute (rend_img, "pixbuf", thumbnail);
+	col_thumb->add_attribute (rend_img, "pixbuf", record.Thumbnail);
 	col_thumb->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
 	col_thumb->set_fixed_width(105);
-	col_desc->add_attribute (rend, "text", description);
-	col_desc->set_sort_column (filename);
+	col_desc->add_attribute (rend, "text", record.Description);
+	col_desc->set_sort_column (record.Filename);
 	col_desc->set_sort_indicator (true);
 	col_desc->set_sort_order (Gtk::SORT_ASCENDING);
 	col_desc->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
@@ -136,7 +129,7 @@ Thumbview::Thumbview() : dir("") {
 	view.append_column (*col_desc);
 
 	// enable search
-	view.set_search_column (description);
+	view.set_search_column (record.Description);
 	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
 
 	// load loading image, which not all themes seem to provide
@@ -175,12 +168,12 @@ void Thumbview::add_file(std::string filename) {
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
 	Glib::RefPtr<Gdk::Pixbuf> thumb = this->loading_image; 
-	row[thumbnail] = thumb;
-	row[this->filename] = filename;
-	row[description] = Glib::ustring(filename, filename.rfind ("/")+1);
+	row[record.Thumbnail] = thumb;
+	row[record.Filename] = filename;
+	row[record.Description] = Glib::ustring(filename, filename.rfind ("/")+1);
 
 	// for modified time
-	row[time] = get_file_mtime(filename);
+	row[record.Time] = get_file_mtime(filename);
 
 	Util::program_log("add_file(): Adding file %s\n", filename.c_str());
 
@@ -506,9 +499,9 @@ void Thumbview::handle_dispatch_thumb() {
 void Thumbview::update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb)
 {
 	Gtk::TreeModel::Row row = *iter;
-	row[thumbnail] = pb;
+	row[record.Thumbnail] = pb;
 	// desc
-	row[description] = Glib::ustring(file, file.rfind("/")+1);
+	row[record.Description] = Glib::ustring(file, file.rfind("/")+1);
 
 	// emit a changed signal
 	store->row_changed(store->get_path(iter), iter);	
@@ -518,7 +511,7 @@ void Thumbview::update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator it
  * Used by GTK to see whether or not an iterator matches a search string.
  */
 bool Thumbview::search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter) {
-	Glib::ustring target = (*iter)[description];
+	Glib::ustring target = (*iter)[record.Description];
 	if (target.find (key) != Glib::ustring::npos) {
 		return false;
 	}
@@ -531,16 +524,16 @@ bool Thumbview::search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int c
 void Thumbview::set_sort_mode (Thumbview::SortMode mode) {
 	switch (mode) {
 		case SORT_ALPHA:
-			store->set_sort_column (description, Gtk::SORT_ASCENDING);
+			store->set_sort_column (record.Description, Gtk::SORT_ASCENDING);
 			break;
 		case SORT_RALPHA:
-			store->set_sort_column (description, Gtk::SORT_DESCENDING);
+			store->set_sort_column (record.Description, Gtk::SORT_DESCENDING);
 			break;
 		case SORT_TIME:
-			store->set_sort_column (time, Gtk::SORT_ASCENDING);
+			store->set_sort_column (record.Time, Gtk::SORT_ASCENDING);
 			break;
 		case SORT_RTIME:
-			store->set_sort_column (time, Gtk::SORT_DESCENDING);
+			store->set_sort_column (record.Time, Gtk::SORT_DESCENDING);
 			break;
 	}
 }
@@ -561,7 +554,7 @@ void Thumbview::file_deleted_callback(std::string filename) {
 	Gtk::TreeIter iter;
 	Gtk::TreeModel::Children children = store->children();
 	for (iter = children.begin(); iter != children.end(); iter++) {
-		Glib::ustring this_filename = (*iter)[this->filename];
+		Glib::ustring this_filename = (*iter)[record.Filename];
 		if (this_filename == filename) {
 			// remove this iter.
 			store->erase(iter);

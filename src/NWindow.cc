@@ -98,7 +98,7 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path, Gtk::Tr
 	// find out which image was double clicked
 	Gtk::TreeModel::iterator iter = (view.store)->get_iter(path);
 	Gtk::TreeModel::Row row = *iter;
-	this->set_bg(row[view.filename]);
+	this->set_bg(row[view.record.Filename]);
 
 }
 
@@ -112,7 +112,7 @@ void NWindow::sighandle_click_apply (void) {
 	// find out which image is currently selected
 	Gtk::TreeModel::iterator iter = view.view.get_selection()->get_selected ();
 	Gtk::TreeModel::Row row = *iter;
-    Glib::ustring file = row[view.filename];
+    Glib::ustring file = row[view.record.Filename];
 	this->set_bg(file);
 
     SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
@@ -300,7 +300,7 @@ void NWindow::set_default_selections()
 		// iterate through filename list
 		for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
 		{
-			if ( (*iter)[view.filename] == default_selection) {
+			if ( (*iter)[view.record.Filename] == default_selection) {
 				view.view.get_selection()->select(iter);
 				view.view.scroll_to_row(Gtk::TreeModel::Path(iter), 0.5);
 				break;

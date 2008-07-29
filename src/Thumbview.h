@@ -61,6 +61,35 @@ class DelayLoadingStore : public Gtk::ListStore
 
 };
 
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Column record for the Thumbview store.
+ */
+class ThumbviewRecord : public Gtk::TreeModelColumnRecord
+{
+    public:
+        ThumbviewRecord()
+        {
+            add(Thumbnail);
+            add(Description);
+            add(Filename);
+            add(Time);
+            add(LoadingThumb);
+            add(CurBGOnDisp);
+        }
+
+		Gtk::TreeModelColumn<Glib::ustring> Filename;
+		Gtk::TreeModelColumn<Glib::ustring> Description;
+		Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> > Thumbnail;
+		Gtk::TreeModelColumn<time_t> Time;
+		Gtk::TreeModelColumn<bool> LoadingThumb;
+        Gtk::TreeModelColumn<Glib::ustring> CurBGOnDisp;
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
+
 class Thumbview : public Gtk::ScrolledWindow {
 	public:
 		Thumbview ();
@@ -75,16 +104,10 @@ class Thumbview : public Gtk::ScrolledWindow {
 		
 		void set_dir(std::string indir) { this->dir = indir; }
 		
-		// TODO: make private?
-		Gtk::TreeModelColumn<Glib::ustring> filename;
-		Gtk::TreeModelColumn<Glib::ustring> description;
-		Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> >  thumbnail;
-		Gtk::TreeModelColumn<time_t> time;
-		Gtk::TreeModelColumn<bool> loadingthumb;
-		
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
-
+        ThumbviewRecord record;
+	
 		// dispatcher 
 		Glib::Dispatcher dispatch_thumb;
 
@@ -99,7 +122,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// loading image
 		Glib::RefPtr<Gdk::Pixbuf> loading_image;
-		
+	
 	protected:
 
 #ifdef USE_INOTIFY
@@ -111,8 +134,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		void add_file(std::string filename);
 		void handle_dispatch_thumb();
-
-		Gtk::TreeModel::ColumnRecord record;
 		
 		Gtk::TreeViewColumn *col_thumb;
 		Gtk::TreeViewColumn *col_desc;
