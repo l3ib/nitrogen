@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "gcs-i18n.h"
+#include "Util.h"
 
 #ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -147,7 +148,7 @@ void NWindow::sighandle_click_apply (void) {
             (*i)[view.record.Description] = Glib::ustring(filename, filename.rfind("/")+1);
         }
         else
-            (*i)[view.record.Description] = Glib::ustring(filename, filename.rfind("/")+1) + "\n<small><i>" + _("Currently set background for") + (*mapiter).first + "</i></small>";
+            (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
 
     if (!this->is_multihead || thedisp == "xin_-1")
@@ -252,6 +253,8 @@ void NWindow::setup_select_boxes() {
 			bool on = (screen == disp->get_default_screen());
 				
 			this->select_display.add_image_row( video_display_icon, ostr.str(), screen->make_display_name(), on );
+
+            map_displays[screen->make_display_name()] = ostr.str();
 		}
 
 		return;
@@ -273,12 +276,16 @@ void NWindow::setup_select_boxes() {
 				// add the big one
 				this->select_display.add_image_row(video_display_icon, _("Full Screen"), "xin_-1", true);
 
+                map_displays["xin_-1"] = _("Full Screen");
+
 				for (int i=0; i<xinerama_num_screens; i++) {
 					std::ostringstream ostr, valstr;
 					ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
 					valstr << "xin_" << xinerama_info[i].screen_number;
 							
 					this->select_display.add_image_row(video_display_icon, ostr.str(), valstr.str(), false);
+
+                    map_displays[valstr.str()] = ostr.str();
 				}
 							
 							return;

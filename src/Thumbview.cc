@@ -168,6 +168,7 @@ Thumbview::~Thumbview() {
  *
  */
 void Thumbview::add_file(std::string filename) {
+    Gtk::Window *window = dynamic_cast<Gtk::Window*>(get_toplevel());
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
 	Glib::RefPtr<Gdk::Pixbuf> thumb = this->loading_image; 
@@ -180,7 +181,7 @@ void Thumbview::add_file(std::string filename) {
         if (filename == (*i).second)
         {
             row[record.CurBGOnDisp] = (*i).first;
-            row[record.Description] = Glib::ustring(filename, filename.rfind("/")+1) + "\n<i>" + _("Currently set background for") + " " + (*i).first + "</i>";
+            row[record.Description] = Util::make_current_set_string(window, filename, (*i).first);
         }
     }
 

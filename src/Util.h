@@ -32,6 +32,9 @@ namespace Util {
 	void restore_saved_bgs();
 	ArgParser* create_arg_parser();
 	std::string fix_start_dir(std::string startdir);
+
+    bool is_display_relevant(Gtk::Window* window, Glib::ustring display);
+    Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filename, Glib::ustring display);
 }
 
 #endif

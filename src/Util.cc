@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include "gcs-i18n.h"
 #include <glib/gprintf.h>
+#include "NWindow.h"
 
 namespace Util {
 
@@ -225,6 +226,54 @@ std::string fix_start_dir(std::string startdir) {
 	}
 
 	return startdir;
+}
+
+/**
+ * Determines if the passed display is one that is currently seen by the program.
+ *
+ * Displays are passed in here to determine if they need to be shown as the "current
+ * background".
+ */
+bool is_display_relevant(Gtk::Window* window, Glib::ustring display)
+{
+    // cast window to an NWindow.  we have to do this to avoid a circular dep
+    NWindow *nwindow = dynamic_cast<NWindow*>(window);
+    if (!nwindow->is_multihead)
+    {
+        Glib::ustring curdisp = Gdk::DisplayManager::get()->get_default_display()->get_default_screen()->make_display_name();
+        return (curdisp == display);
+    }
+
+    // window IS multihead, check to see if this display is in the map
+    return (nwindow->map_displays.find(display) != nwindow->map_displays.end());
+}
+
+/**
+ * Makes a string for the UI to indicate it is the currently selected background.
+ *
+ * Checks to make sure the display is relevant with is_display_relevant(). If it is
+ * not relevent, it simply returns the filename.
+ *
+ * ex: "filename\nCurrently set background for Screen 1"
+ */
+Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filename, Glib::ustring display)
+{
+    // cast window to an NWindow.  we have to do this to avoid a circular dep
+    NWindow *nwindow = dynamic_cast<NWindow*>(window);
+    
+    Glib::ustring shortfile(filename, filename.rfind("/")+1);
+    if (!is_display_relevant(window, display))
+        return shortfile;
+
+    std::ostringstream ostr;
+    ostr << shortfile << "\n\n" << "<i>" << _("Currently set background");
+
+    if (nwindow->is_multihead)
+        ostr << " " << _("for") << " " << nwindow->map_displays[display];
+   
+    ostr << "</i>";
+
+    return ostr.str();
 }
 
 }

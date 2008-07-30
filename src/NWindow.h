@@ -39,7 +39,12 @@ class NWindow : public Gtk::Window {
 		void sighandle_mode_change(void);
 
 		void set_default_selections();
+
+        std::map<Glib::ustring, Glib::ustring> map_displays;        // a map of current displays on the running instance to their display names
 		
+		bool is_multihead;
+		bool is_xinerama;
+
 	protected:
 		
 		Gtk::VBox main_vbox;
@@ -52,9 +57,6 @@ class NWindow : public Gtk::Window {
 
 		void set_bg(Glib::ustring file);
 		void setup_select_boxes();
-
-		bool is_multihead;
-		bool is_xinerama;
 
 #ifdef USE_XINERAMA
 		// xinerama stuff
