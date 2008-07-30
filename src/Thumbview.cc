@@ -87,7 +87,10 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
  */
 Thumbview::Thumbview() : dir("") {
 	set_policy (Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
-	set_shadow_type (Gtk::SHADOW_IN);
+	set_shadow_type (Gtk::SHADOW_IN); 
+
+    // load map of setbgs (need this for add_file)
+    load_map_setbgs();
 
 	// make our async queues
 	this->aqueue_loadthumbs = g_async_queue_new();
@@ -119,7 +122,7 @@ Thumbview::Thumbview() : dir("") {
 	col_thumb->add_attribute (rend_img, "pixbuf", record.Thumbnail);
 	col_thumb->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
 	col_thumb->set_fixed_width(105);
-	col_desc->add_attribute (rend, "text", record.Description);
+	col_desc->add_attribute (rend, "markup", record.Description);
 	col_desc->set_sort_column (record.Filename);
 	col_desc->set_sort_indicator (true);
 	col_desc->set_sort_order (Gtk::SORT_ASCENDING);
@@ -171,6 +174,15 @@ void Thumbview::add_file(std::string filename) {
 	row[record.Thumbnail] = thumb;
 	row[record.Filename] = filename;
 	row[record.Description] = Glib::ustring(filename, filename.rfind ("/")+1);
+
+    for (std::map<Glib::ustring, Glib::ustring>::iterator i = map_setbgs.begin(); i!=map_setbgs.end(); i++)
+    {
+        if (filename == (*i).second)
+        {
+            row[record.CurBGOnDisp] = (*i).first;
+            row[record.Description] = Glib::ustring(filename, filename.rfind("/")+1) + "\n<i>" + _("Currently set background for") + " " + (*i).first + "</i>";
+        }
+    }
 
 	// for modified time
 	row[record.Time] = get_file_mtime(filename);
@@ -501,7 +513,7 @@ void Thumbview::update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator it
 	Gtk::TreeModel::Row row = *iter;
 	row[record.Thumbnail] = pb;
 	// desc
-	row[record.Description] = Glib::ustring(file, file.rfind("/")+1);
+	//row[record.Description] = Glib::ustring(file, file.rfind("/")+1);
 
 	// emit a changed signal
 	store->row_changed(store->get_path(iter), iter);	
@@ -536,6 +548,36 @@ void Thumbview::set_sort_mode (Thumbview::SortMode mode) {
 			store->set_sort_column (record.Time, Gtk::SORT_DESCENDING);
 			break;
 	}
+}
+
+/**
+ * Loads the map of displays and their set bgs. Used to indicate which
+ * files are currently set as a background.
+ */
+void Thumbview::load_map_setbgs()
+{
+    map_setbgs.clear();
+    
+    std::vector<Glib::ustring> vecgroups;
+    bool ret = Config::get_instance()->get_bg_groups(vecgroups);
+    if (!ret)
+        return;
+
+    for (std::vector<Glib::ustring>::iterator i = vecgroups.begin(); i!=vecgroups.end(); i++)
+    {
+        Glib::ustring file;
+        SetBG::SetMode mode;
+        Gdk::Color bgcolor;
+
+        ret = Config::get_instance()->get_bg(*i, file, mode, bgcolor);
+        if (!ret)
+        {
+            std::cerr << "(load_map_setbgs) Could not get background stored info for " << *i << "\n";
+            return;
+        }
+
+        map_setbgs[*i] = file;
+    }
 }
 
 #ifdef USE_INOTIFY

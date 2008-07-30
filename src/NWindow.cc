@@ -122,6 +122,34 @@ void NWindow::sighandle_click_apply (void) {
 	// save	
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
+    // tell the row that he's now on thedisp
+    row[view.record.CurBGOnDisp] = thedisp;
+
+    // reload config "cache"
+    view.load_map_setbgs();
+
+    // find items removed by this config set. typically 0 or 1 items, which is the
+    // old background on thedisp, but could be 2 items if xinerama individual bgs
+    // are replaced by the fullscreen xinerama.
+    for (Gtk::TreeIter i = view.store->children().begin(); i != view.store->children().end(); i++)
+	{
+        Glib::ustring curbgondisp = (*i)[view.record.CurBGOnDisp];
+        if (curbgondisp == "")
+            continue;
+
+        std::map<Glib::ustring, Glib::ustring>::iterator mapiter = view.map_setbgs.find(curbgondisp);
+
+        // if filenames don't match, this row must be blanked out!
+        Glib::ustring filename = (*i)[view.record.Filename];
+        if (filename != (*mapiter).second)
+        {
+            (*i)[view.record.CurBGOnDisp] = "";
+            (*i)[view.record.Description] = Glib::ustring(filename, filename.rfind("/")+1);
+        }
+        else
+            (*i)[view.record.Description] = Glib::ustring(filename, filename.rfind("/")+1) + "\n<small><i>" + _("Currently set background for") + (*mapiter).first + "</i></small>";
+    }
+
     if (!this->is_multihead || thedisp == "xin_-1")
     {
         hide();

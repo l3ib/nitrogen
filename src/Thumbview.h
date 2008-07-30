@@ -122,6 +122,10 @@ class Thumbview : public Gtk::ScrolledWindow {
 
 		// loading image
 		Glib::RefPtr<Gdk::Pixbuf> loading_image;
+
+        // "cache" of config - maps displays to full filenames
+        std::map<Glib::ustring, Glib::ustring> map_setbgs;
+        void load_map_setbgs();
 	
 	protected:
 
