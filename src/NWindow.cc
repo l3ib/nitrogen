@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/wait.h>
 #include "gcs-i18n.h"
 #include "Util.h"
+#include <algorithm>
 
 #ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -311,19 +312,42 @@ void NWindow::set_default_selections()
 	// grab the current config (if there is one)
 	Config *cfg = Config::get_instance();
 	std::vector<Glib::ustring> cfg_displays;
-	if( cfg->get_bg_groups(cfg_displays) ) {
-	
-		SetBG::SetMode m;		
-		Gdk::Color c;
+	if( cfg->get_bg_groups(cfg_displays) ) 
+    {	
+        SetBG::SetMode m;
+        Gdk::Color c;
 		Glib::ustring default_selection;
+        Glib::ustring file;
 
 		// get default display
-		Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-		Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
-		Glib::RefPtr<Gdk::Screen> screen = disp->get_default_screen();
+        if (this->is_xinerama)
+        {
+            // we want the lowest numbered xinerama display (slightly hacky)
+            int max = 99;
+            for (std::vector<Glib::ustring>::iterator i = cfg_displays.begin(); i != cfg_displays.end(); i++)
+            {
+                if ((*i).substr(0, 4) != "xin_")
+                    continue;
 
-		// TODO: will be a bug if default has no config entry :P		
-		if (!cfg->get_bg(screen->make_display_name(), default_selection, m, c)) {
+                std::stringstream stream((*i).substr(4));
+                int newmax;
+                stream >> newmax;
+                if (newmax < max)
+                    max = newmax;
+            }
+
+            std::ostringstream ostr;
+            ostr << "xin_" << max;
+            default_selection = ostr.str();
+        }
+        else
+            default_selection = Gdk::DisplayManager::get()->get_default_display()->get_default_screen()->make_display_name();
+
+        // make sure whatever we came up with is in the config file, if not, just return
+        if (find(cfg_displays.begin(), cfg_displays.end(), default_selection) == cfg_displays.end())
+            return;
+
+		if (!cfg->get_bg(default_selection, file, m, c)) {
 			// failed. return?
 			return;
 		}
@@ -335,7 +359,7 @@ void NWindow::set_default_selections()
 		// iterate through filename list
 		for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
 		{
-			if ( (*iter)[view.record.Filename] == default_selection) {
+			if ( (*iter)[view.record.CurBGOnDisp] == default_selection) {
 				view.view.get_selection()->select(iter);
 				view.view.scroll_to_row(Gtk::TreeModel::Path(iter), 0.5);
 				break;
