@@ -1,3 +1,10 @@
+Wed Jul 30 20:01:46 EDT 2008	Dave Foster <daf@minuslab.net>
+	* Fixed nasty bug concerning various X errors that would 
+	  sometimes pop up.  A lot of problems with Xinerama setting
+	  was fixed as well.
+	* UI shows in text what backgrounds are set to which display.
+	* Made the apply button only quit the app in certain circumstances.
+
 Thu Jul 24 09:59:07 EDT 2008	Dave Foster <daf@minuslab.net>
 	* Renamed "best fit" to "zoomed".
 	* Added "automatic" scaling mode - figures out likely mode that
