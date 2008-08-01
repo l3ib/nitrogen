@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2008-07-23 21:33-0400\n"
+"POT-Creation-Date: 2008-07-31 21:51-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,123 +68,119 @@ msgstr ""
 msgid "or"
 msgstr ""
 
-#: src/NWindow.cc:34
-msgid "Sa_ve"
-msgstr ""
-
-#: src/NWindow.cc:175
+#: src/NWindow.cc:208
 msgid "Automatic"
 msgstr ""
 
-#: src/NWindow.cc:182
+#: src/NWindow.cc:215
 msgid "Scaled"
 msgstr ""
 
-#: src/NWindow.cc:190
+#: src/NWindow.cc:223
 msgid "Centered"
 msgstr ""
 
-#: src/NWindow.cc:198
+#: src/NWindow.cc:231
 msgid "Tiled"
 msgstr ""
 
-#: src/NWindow.cc:207
+#: src/NWindow.cc:240
 msgid "Zoomed"
 msgstr ""
 
-#: src/NWindow.cc:220 src/NWindow.cc:247
+#: src/NWindow.cc:253 src/NWindow.cc:284
 msgid "Screen"
 msgstr ""
 
-#: src/NWindow.cc:243
+#: src/NWindow.cc:278 src/NWindow.cc:280
 msgid "Full Screen"
 msgstr ""
 
-#: src/NWindow.cc:262
+#: src/NWindow.cc:301
 msgid "Default"
 msgstr ""
 
-#: src/SetBG.cc:50 src/SetBG.cc:219
+#: src/SetBG.cc:53 src/SetBG.cc:224
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:83 src/SetBG.cc:290
+#: src/SetBG.cc:86 src/SetBG.cc:306
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:116
+#: src/SetBG.cc:119
 msgid "Unknown mode for saved bg on"
 msgstr ""
 
-#: src/SetBG.cc:160 src/SetBG.cc:336
+#: src/SetBG.cc:163 src/SetBG.cc:352
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:211
+#: src/SetBG.cc:216
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
-#: src/SetBG.cc:323
+#: src/SetBG.cc:339
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:421
+#: src/SetBG.cc:439
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:593 src/SetBG.cc:618
+#: src/SetBG.cc:611 src/SetBG.cc:636
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:596 src/SetBG.cc:620
+#: src/SetBG.cc:614 src/SetBG.cc:638
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:599 src/SetBG.cc:622
+#: src/SetBG.cc:617 src/SetBG.cc:640
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:602 src/SetBG.cc:624
+#: src/SetBG.cc:620 src/SetBG.cc:642
 msgid "Zoom"
 msgstr ""
 
-#: src/SetBG.cc:605 src/SetBG.cc:626
+#: src/SetBG.cc:623 src/SetBG.cc:644
 msgid "Auto"
 msgstr ""
 
-#: src/Thumbview.cc:220
+#: src/Thumbview.cc:226
 msgid "Could not open dir"
 msgstr ""
 
-#: src/Thumbview.cc:261
+#: src/Thumbview.cc:267
 msgid "Invalid UTF-8 encountered. Skipping file"
 msgstr ""
 
-#: src/Util.cc:93
+#: src/Util.cc:103
 msgid "Could not get bg groups from config file."
 msgstr ""
 
-#: src/Util.cc:125
+#: src/Util.cc:135
 msgid "Could not get bg info for fullscreen xinerama"
 msgstr ""
 
-#: src/Util.cc:137
+#: src/Util.cc:147
 msgid "Could not get bg info for"
 msgstr ""
 
-#: src/Util.cc:163
+#: src/Util.cc:173
 msgid "Could not get bg info"
 msgstr ""
 
-#: src/Util.cc:178
+#: src/Util.cc:188
 msgid "Restore saved backgrounds"
 msgstr ""
 
-#: src/Util.cc:179
+#: src/Util.cc:189
 msgid "Do not recurse into subdirectories"
 msgstr ""
 
-#: src/Util.cc:180
+#: src/Util.cc:190
 msgid ""
 "How to sort the backgrounds. Valid options are:\n"
 "\t\t\t* alpha, for alphanumeric sort\n"
@@ -193,28 +189,36 @@ msgid ""
 "\t\t\t* rtime, for reverse last modified time sort (newest first)"
 msgstr ""
 
-#: src/Util.cc:185 src/Util.cc:186 src/Util.cc:187 src/Util.cc:188
+#: src/Util.cc:195 src/Util.cc:196 src/Util.cc:197 src/Util.cc:198
 msgid "Sets the background to the given file"
 msgstr ""
 
-#: src/Util.cc:185
+#: src/Util.cc:195
 msgid "scaled"
 msgstr ""
 
-#: src/Util.cc:186
+#: src/Util.cc:196
 msgid "tiled"
 msgstr ""
 
-#: src/Util.cc:187
+#: src/Util.cc:197
 msgid "best-fit"
 msgstr ""
 
-#: src/Util.cc:188
+#: src/Util.cc:198
 msgid "centered"
 msgstr ""
 
-#: src/Util.cc:189
+#: src/Util.cc:199
 msgid "Saves the background permanently"
+msgstr ""
+
+#: src/Util.cc:269
+msgid "Currently set background"
+msgstr ""
+
+#: src/Util.cc:272
+msgid "for"
 msgstr ""
 
 #: src/main.cc:86
