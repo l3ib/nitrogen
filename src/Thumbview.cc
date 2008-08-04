@@ -103,10 +103,11 @@ Thumbview::Thumbview() : dir("") {
 	store->set_thumbview(this);
 	
 	// setup view
-	view.set_model (store);
-	view.set_headers_visible (FALSE);
-	view.set_fixed_height_mode (TRUE);
-	view.set_rules_hint (TRUE);
+    iview.set_model(store);
+//	view.set_model (store);
+//	view.set_headers_visible (FALSE);
+//	view.set_fixed_height_mode (TRUE);
+//	view.set_rules_hint (TRUE);
 	
 	// set cell renderer proprties
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
@@ -128,12 +129,15 @@ Thumbview::Thumbview() : dir("") {
 	col_desc->set_sort_order (Gtk::SORT_ASCENDING);
 	col_desc->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
 	
-	view.append_column (*col_thumb);
-	view.append_column (*col_desc);
+//	view.append_column (*col_thumb);
+//	view.append_column (*col_desc);
+    
+    iview.set_pixbuf_column(record.Thumbnail);
+    iview.set_text_column(record.Description);
 
 	// enable search
-	view.set_search_column (record.Description);
-	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
+//	view.set_search_column (record.Description);
+//	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
 
 	// load loading image, which not all themes seem to provide
 	try {
@@ -145,9 +149,12 @@ Thumbview::Thumbview() : dir("") {
 
 	col_desc->set_expand ();
 
-	add (view);
+//	add (view);
 
-	view.show ();
+//	view.show ();
+    
+    add(iview);
+    iview.show();
 	show ();
 }
 

@@ -106,6 +106,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
+        Gtk::IconView iview;
         ThumbviewRecord record;
 	
 		// dispatcher 
