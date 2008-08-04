@@ -133,7 +133,7 @@ Thumbview::Thumbview() : dir("") {
 //	view.append_column (*col_desc);
     
     iview.set_pixbuf_column(record.Thumbnail);
-    iview.set_text_column(record.Description);
+    iview.set_markup_column(record.Description);
 
 	// enable search
 //	view.set_search_column (record.Description);
