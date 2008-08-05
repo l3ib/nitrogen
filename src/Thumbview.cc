@@ -86,7 +86,7 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
  * Constructor, sets up gtk stuff, inits data and queues
  */
 Thumbview::Thumbview() : dir("") {
-	set_policy (Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
+	set_policy (Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 	set_shadow_type (Gtk::SHADOW_IN); 
 
     // load map of setbgs (need this for add_file)
