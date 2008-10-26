@@ -127,6 +127,10 @@ class Thumbview : public Gtk::ScrolledWindow {
         // "cache" of config - maps displays to full filenames
         std::map<Glib::ustring, Glib::ustring> map_setbgs;
         void load_map_setbgs();
+
+        Gtk::Container *curview;
+
+        Gtk::TreeModel::iterator get_selected();
 	
 	protected:
 

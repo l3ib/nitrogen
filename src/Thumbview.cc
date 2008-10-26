@@ -103,6 +103,7 @@ Thumbview::Thumbview() : dir("") {
 	store->set_thumbview(this);
 	
 	// setup view
+    curview = &iview;
     iview.set_model(store);
 //	view.set_model (store);
 //	view.set_headers_visible (FALSE);
@@ -134,6 +135,9 @@ Thumbview::Thumbview() : dir("") {
     
     iview.set_pixbuf_column(record.Thumbnail);
     iview.set_markup_column(record.Description);
+    iview.set_margin(0);
+    iview.set_column_spacing(1);
+    iview.set_row_spacing(1);
 
 	// enable search
 //	view.set_search_column (record.Description);
@@ -585,6 +589,17 @@ void Thumbview::load_map_setbgs()
         }
 
         map_setbgs[*i] = file;
+    }
+}
+
+/**
+ * Gets the currrently selected image, regardless of which view it came from.
+ */
+Gtk::TreeModel::iterator Thumbview::get_selected()
+{
+    if (curview == &iview)
+    {        
+     //   return iview.
     }
 }
 
