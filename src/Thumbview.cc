@@ -105,10 +105,12 @@ Thumbview::Thumbview() : dir("") {
 	// setup view
     curview = &iview;
     iview.set_model(store);
+    iview.signal_item_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_iview_activated));
 //	view.set_model (store);
 //	view.set_headers_visible (FALSE);
 //	view.set_fixed_height_mode (TRUE);
 //	view.set_rules_hint (TRUE);
+//  view.signal_row_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_view_activated));
 	
 	// set cell renderer proprties
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
@@ -134,7 +136,8 @@ Thumbview::Thumbview() : dir("") {
 //	view.append_column (*col_desc);
     
     iview.set_pixbuf_column(record.Thumbnail);
-    iview.set_markup_column(record.Description);
+//    iview.set_markup_column(record.Description);
+    iview.set_tooltip_column(1);
     iview.set_margin(0);
     iview.set_column_spacing(1);
     iview.set_row_spacing(1);
@@ -598,8 +601,13 @@ void Thumbview::load_map_setbgs()
 Gtk::TreeModel::iterator Thumbview::get_selected()
 {
     if (curview == &iview)
-    {        
-     //   return iview.
+    {    
+        std::list<Gtk::TreePath> selected = iview.get_selected_items();
+        return store->get_iter(*(selected.begin()));
+    }
+    else
+    {
+        return view.get_selection()->get_selected();
     }
 }
 
@@ -659,6 +667,16 @@ void Thumbview::file_created_callback(std::string filename) {
 	if ( Glib::file_test(filename, Glib::FILE_TEST_IS_DIR) ) {
 		file_changed_callback(filename);
 	}
+}
+
+void Thumbview::sighandle_iview_activated(const Gtk::TreePath& path)
+{
+    signal_selected(path);
+}
+
+void Thumbview::sighandle_view_activated(const Gtk::TreePath& path, Gtk::TreeViewColumn *column)
+{
+    signal_selected(path);
 }
 
 #endif

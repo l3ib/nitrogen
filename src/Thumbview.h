@@ -131,8 +131,12 @@ class Thumbview : public Gtk::ScrolledWindow {
         Gtk::Container *curview;
 
         Gtk::TreeModel::iterator get_selected();
+        sigc::signal<void, const Gtk::TreePath&> signal_selected;
 	
 	protected:
+
+        void sighandle_iview_activated(const Gtk::TreePath& path);
+        void sighandle_view_activated(const Gtk::TreePath& path, Gtk::TreeViewColumn *column);
 
 #ifdef USE_INOTIFY
 		void file_deleted_callback(std::string filename);

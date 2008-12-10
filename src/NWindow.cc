@@ -57,7 +57,8 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 	main_vbox.pack_start (bot_hbox, FALSE, FALSE, 0);
 
 	// signals
-	view.view.signal_row_activated ().connect (sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
+	//view.view.signal_row_activated ().connect (sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
+    view.signal_selected.connect(sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
 
 	// set icon
@@ -93,9 +94,9 @@ void NWindow::show (void) {
 }
 
 /**
- * Handles the user double clicking on a row in the treeview.  
+ * Handles the user double clicking on a row in the view. 
  */
-void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn * column) {
+void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 	
 	// find out which image was double clicked
 	Gtk::TreeModel::iterator iter = (view.store)->get_iter(path);
@@ -112,7 +113,7 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path, Gtk::Tr
 void NWindow::sighandle_click_apply (void) {
 	
 	// find out which image is currently selected
-	Gtk::TreeModel::iterator iter = view.view.get_selection()->get_selected ();
+	Gtk::TreeModel::iterator iter = view.get_selected ();
 	Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
 	this->set_bg(file);

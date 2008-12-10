@@ -34,7 +34,7 @@ class NWindow : public Gtk::Window {
 		virtual ~NWindow ();
 
 		Thumbview view;
-		void sighandle_dblclick_item(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn * column);
+		void sighandle_dblclick_item(const Gtk::TreeModel::Path& path);
 		void sighandle_click_apply(void);
 		void sighandle_mode_change(void);
 
@@ -44,6 +44,8 @@ class NWindow : public Gtk::Window {
 		
 		bool is_multihead;
 		bool is_xinerama;
+
+        void set_bg(Glib::ustring file);
 
 	protected:
 		
@@ -55,7 +57,6 @@ class NWindow : public Gtk::Window {
 		Gtk::Button apply;
 		Gtk::ColorButton button_bgcolor;
 
-		void set_bg(Glib::ustring file);
 		void setup_select_boxes();
 
 #ifdef USE_XINERAMA
