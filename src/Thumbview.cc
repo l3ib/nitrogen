@@ -103,14 +103,15 @@ Thumbview::Thumbview() : dir("") {
 	store->set_thumbview(this);
 	
 	// setup view
-    curview = &iview;
+    m_curmode = ICON;
     iview.set_model(store);
     iview.signal_item_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_iview_activated));
-//	view.set_model (store);
-//	view.set_headers_visible (FALSE);
-//	view.set_fixed_height_mode (TRUE);
-//	view.set_rules_hint (TRUE);
-//  view.signal_row_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_view_activated));
+
+	view.set_model (store);
+	view.set_headers_visible (FALSE);
+	view.set_fixed_height_mode (TRUE);
+	view.set_rules_hint (TRUE);
+    view.signal_row_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_view_activated));
 	
 	// set cell renderer proprties
 	rend.property_ellipsize () = Pango::ELLIPSIZE_END;
@@ -132,8 +133,8 @@ Thumbview::Thumbview() : dir("") {
 	col_desc->set_sort_order (Gtk::SORT_ASCENDING);
 	col_desc->set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
 	
-//	view.append_column (*col_thumb);
-//	view.append_column (*col_desc);
+	view.append_column (*col_thumb);
+	view.append_column (*col_desc);
     
     iview.set_pixbuf_column(record.Thumbnail);
 //    iview.set_markup_column(record.Description);
@@ -143,8 +144,8 @@ Thumbview::Thumbview() : dir("") {
     iview.set_row_spacing(1);
 
 	// enable search
-//	view.set_search_column (record.Description);
-//	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
+	view.set_search_column (record.Description);
+	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
 
 	// load loading image, which not all themes seem to provide
 	try {
@@ -157,12 +158,8 @@ Thumbview::Thumbview() : dir("") {
 	col_desc->set_expand ();
 
 //	add (view);
-
-//	view.show ();
-    
     add(iview);
-    iview.show();
-	show ();
+	show_all();
 }
 
 /**
@@ -600,7 +597,7 @@ void Thumbview::load_map_setbgs()
  */
 Gtk::TreeModel::iterator Thumbview::get_selected()
 {
-    if (curview == &iview)
+    if (m_curmode == ICON)
     {    
         std::list<Gtk::TreePath> selected = iview.get_selected_items();
         return store->get_iter(*(selected.begin()));
@@ -667,6 +664,15 @@ void Thumbview::file_created_callback(std::string filename) {
 	if ( Glib::file_test(filename, Glib::FILE_TEST_IS_DIR) ) {
 		file_changed_callback(filename);
 	}
+}
+
+void Thumbview::set_current_display_mode(DisplayMode newmode)
+{
+    remove();
+    if (newmode == LIST)
+        add(view);
+    else if (newmode == ICON)
+        add(iview);    
 }
 
 void Thumbview::sighandle_iview_activated(const Gtk::TreePath& path)

@@ -47,7 +47,7 @@ class NWindow : public Gtk::Window {
 
         void set_bg(Glib::ustring file);
 
-	protected:
+	protected:        
 		
 		Gtk::VBox main_vbox;
 		Gtk::HBox bot_hbox;
@@ -58,6 +58,9 @@ class NWindow : public Gtk::Window {
 		Gtk::ColorButton button_bgcolor;
 
 		void setup_select_boxes();
+
+        void sighandle_togb_list_toggled();
+        void sighandle_togb_icon_toggled();
 
 #ifdef USE_XINERAMA
 		// xinerama stuff

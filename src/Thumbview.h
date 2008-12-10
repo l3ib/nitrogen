@@ -87,6 +87,13 @@ class ThumbviewRecord : public Gtk::TreeModelColumnRecord
         Gtk::TreeModelColumn<Glib::ustring> CurBGOnDisp;
 };
 
+/////////////////////////////////////////////////////////////////////////////
+
+enum DisplayMode
+{
+    LIST,
+    ICON
+};
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -128,7 +135,10 @@ class Thumbview : public Gtk::ScrolledWindow {
         std::map<Glib::ustring, Glib::ustring> map_setbgs;
         void load_map_setbgs();
 
-        Gtk::Container *curview;
+        DisplayMode m_curmode; 
+
+        void set_current_display_mode(DisplayMode newmode);
+        DisplayMode get_current_display_mode() { return m_curmode; }
 
         Gtk::TreeModel::iterator get_selected();
         sigc::signal<void, const Gtk::TreePath&> signal_selected;
