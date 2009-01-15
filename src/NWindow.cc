@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false) {
 	
 	set_border_width (5);
-	set_default_size (500, 500);
+	set_default_size (450, 500);
 
 	main_vbox.set_spacing (5);
 	add (main_vbox);
