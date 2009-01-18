@@ -28,7 +28,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 Config::Config()
 {
-	this->recurse = true;
+	recurse = true;
+
+    m_display_mode = ICON;
+
+    m_posx = -1;
+    m_posy = -1;
+
+    m_sizex = 450;
+    m_sizey = 500;
+
+    m_icon_captions = false;
 }
 
 /**
@@ -281,3 +291,111 @@ Glib::ustring Config::color_to_string(Gdk::Color color) {
 	delete[] c_str;
 	return string;
 }
+
+/**
+ * Gets the last saved position.
+ */
+void Config::get_pos(gint &x, gint &y)
+{
+    x = m_posx;
+    y = m_posy;
+}
+
+/**
+ * Sets the position, to be saved with save_cfg.
+ */
+void Config::set_pos(gint x, gint y)
+{
+    m_posx = x;
+    m_posy = y;
+}
+
+/**
+ * Gets the last saved window size.
+ */
+void Config::get_size(guint &w, guint &h)
+{
+    w = m_sizex;
+    h = m_sizey;
+}
+
+/**
+ * Sets the window size, to be saved with save_cfg.
+ */
+void Config::set_size(guint w, guint h)
+{
+    m_sizex = w;
+    m_sizey = h;
+}
+
+/**
+ * Saves common configuration params to a configuration file.
+ *
+ * Stored in ~/.config/nitrogen/nitrogen.cfg
+ */
+bool Config::save_cfg()
+{
+	if ( ! Config::check_dir() )
+		return false;
+
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("nitrogen.cfg"));
+
+    Glib::KeyFile kf;
+
+    kf.set_integer("geometry", "posx", m_posx);
+    kf.set_integer("geometry", "posy", m_posy);
+    kf.set_integer("geometry", "sizex", m_sizex);
+    kf.set_integer("geometry", "sizey", m_sizey);
+
+    if (m_display_mode == ICON)
+        kf.set_string("nitrogen", "view",  Glib::ustring("icon"));
+    else if (m_display_mode == LIST)
+        kf.set_string("nitrogen", "view",  Glib::ustring("list"));
+
+    kf.set_boolean("nitrogen", "icon_caps", m_icon_captions);
+
+    if (g_file_set_contents(cfgfile.c_str(), kf.to_data().c_str(), -1, NULL) == FALSE)
+        return false;
+
+    return true;
+}
+
+/**
+ * Loads common configuration params from the configuration file.
+ */
+bool Config::load_cfg()
+{
+	if ( ! Config::check_dir() )
+		return false;
+
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("nitrogen.cfg"));
+
+    if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS))
+        return false;
+
+    // TODO: use load_from_data_dirs?    
+    Glib::KeyFile kf;
+    if (!kf.load_from_file(cfgfile))
+        return false;
+
+    if (kf.has_key("geometry", "posx"))     m_posx = kf.get_integer("geometry", "posx");
+    if (kf.has_key("geometry", "posy"))     m_posy = kf.get_integer("geometry", "posy");
+    if (kf.has_key("geometry", "sizex"))    m_sizex = kf.get_integer("geometry", "sizex");
+    if (kf.has_key("geometry", "sizey"))    m_sizey = kf.get_integer("geometry", "sizey");
+
+    if (kf.has_key("nitrogen", "view"))
+    {
+        Glib::ustring mode = kf.get_string("nitrogen", "view");
+        if (mode == Glib::ustring("icon"))
+            m_display_mode = ICON;
+        else if (mode == Glib::ustring("list"))
+            m_display_mode = LIST;
+    }
+
+    if (kf.has_key("nitrogen", "icon_caps"))    m_icon_captions = kf.get_boolean("nitrogen", "icon_caps");
+
+    return true;
+}
+

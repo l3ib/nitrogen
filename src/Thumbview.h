@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
+#ifndef _THUMBVIEW_H_
+#define _THUMBVIEW_H_
+
 #include "main.h"
 #include <queue>
 #include <errno.h>
@@ -179,3 +182,5 @@ class Thumbview : public Gtk::ScrolledWindow {
 		GAsyncQueue* aqueue_donethumbs;
 
 };
+
+#endif
