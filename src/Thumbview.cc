@@ -672,7 +672,9 @@ void Thumbview::set_current_display_mode(DisplayMode newmode)
     if (newmode == LIST)
         add(view);
     else if (newmode == ICON)
-        add(iview);    
+        add(iview);
+
+    show_all();
 }
 
 void Thumbview::sighandle_iview_activated(const Gtk::TreePath& path)
