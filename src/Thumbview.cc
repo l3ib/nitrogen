@@ -103,7 +103,7 @@ Thumbview::Thumbview() : dir("") {
 	store->set_thumbview(this);
 	
 	// setup view
-    m_curmode = ICON;
+    m_curmode = LIST;
     iview.set_model(store);
     iview.signal_item_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_iview_activated));
 
@@ -137,7 +137,8 @@ Thumbview::Thumbview() : dir("") {
 	view.append_column (*col_desc);
     
     iview.set_pixbuf_column(record.Thumbnail);
-//    iview.set_markup_column(record.Description);
+    if (m_icon_captions)
+        iview.set_markup_column(record.Description);
     iview.set_tooltip_column(1);
     iview.set_margin(0);
     iview.set_column_spacing(1);
@@ -675,6 +676,15 @@ void Thumbview::set_current_display_mode(DisplayMode newmode)
         add(iview);
 
     show_all();
+}
+
+void Thumbview::set_icon_captions(gboolean caps)
+{
+    m_icon_captions = caps;
+    if (m_icon_captions)
+        iview.set_markup_column(record.Description);
+    else
+        iview.set_markup_column(-1);  // -1 unsets
 }
 
 void Thumbview::sighandle_iview_activated(const Gtk::TreePath& path)

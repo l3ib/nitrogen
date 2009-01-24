@@ -143,6 +143,9 @@ class Thumbview : public Gtk::ScrolledWindow {
         void set_current_display_mode(DisplayMode newmode);
         DisplayMode get_current_display_mode() { return m_curmode; }
 
+        void set_icon_captions(gboolean caps);
+        gboolean get_icon_captions() { return m_icon_captions; }
+
         Gtk::TreeModel::iterator get_selected();
         sigc::signal<void, const Gtk::TreePath&> signal_selected;
 	
@@ -166,6 +169,8 @@ class Thumbview : public Gtk::ScrolledWindow {
 		
 		Gtk::CellRendererPixbuf rend_img;
 		Gtk::CellRendererText rend;
+
+        gboolean m_icon_captions;
 
 		// utility functions
 		bool is_image(std::string file);
