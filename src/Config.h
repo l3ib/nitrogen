@@ -43,6 +43,7 @@ class Config {
         gint m_posx, m_posy;
         guint m_sizex, m_sizey;
         gboolean m_icon_captions;
+        VecStrs m_vec_dirs;
 		
 		Glib::ustring color_to_string(Gdk::Color color);
 
@@ -70,6 +71,11 @@ class Config {
         void set_pos(gint x, gint y);
         void get_size(guint &w, guint &h);
         void set_size(guint w, guint h);
+
+        VecStrs get_dirs();
+        void set_dirs(const VecStrs& new_dirs);
+        void add_dir(const std::string& dir);
+        void rm_dir(const std::string& dir);
 
         bool save_cfg();            // save non bg related cfg info
         bool load_cfg();

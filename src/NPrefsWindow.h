@@ -43,6 +43,7 @@ class NPrefsWindow : public Gtk::Dialog
         Gtk::RadioButton m_rb_view_icon;
         Gtk::RadioButton m_rb_view_list;
 
+        Gtk::ScrolledWindow m_scrolledwin;
         Gtk::TreeView m_list_dirs;
         Gtk::Button m_btn_adddir;
         Gtk::Button m_btn_deldir;

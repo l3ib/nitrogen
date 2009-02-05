@@ -115,11 +115,13 @@ int main (int argc, char ** argv) {
 
 	// get the starting dir
 	std::string startdir = parser->get_extra_args();
-	if (startdir.length() <= 0) {
-		startdir = ".";
-        cfg->set_recurse(false);
-	}
-	startdir = Util::fix_start_dir(std::string(startdir));
+    bool bcmdlinedir = startdir.length() > 0;
+//	if (!bcmd <= 0) {
+//		startdir = ".";
+//        cfg->set_recurse(false);
+//	}
+    if (bcmdlinedir)
+    	startdir = Util::fix_start_dir(std::string(startdir));
 	
 	// should we set on the command line?
 	if ( parser->has_argument("set-tiled") )	{
@@ -147,7 +149,7 @@ int main (int argc, char ** argv) {
 
     // load configuration if there is one
     cfg->load_cfg();
-	
+
     guint w, h;
     cfg->get_size(w, h);
 
@@ -158,8 +160,13 @@ int main (int argc, char ** argv) {
 	NWindow* main_window = new NWindow();
     main_window->set_default_size(w, h);
     main_window->move(x, y);                    // most likely will be ignored by the wm
-	main_window->view.set_dir(startdir);
-	main_window->view.load_dir();
+
+//	main_window->view.set_dir(startdir);
+    if (bcmdlinedir)
+    	main_window->view.load_dir(startdir);
+    else
+        main_window->view.load_dir(cfg->get_dirs());
+
 	main_window->set_default_selections();
     main_window->view.set_current_display_mode(cfg->get_display_mode());
     main_window->view.set_icon_captions(cfg->get_icon_captions());

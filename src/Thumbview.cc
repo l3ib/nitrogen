@@ -85,7 +85,8 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 /**
  * Constructor, sets up gtk stuff, inits data and queues
  */
-Thumbview::Thumbview() : dir("") {
+Thumbview::Thumbview()
+{
 	set_policy (Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 	set_shadow_type (Gtk::SHADOW_IN); 
 
@@ -210,32 +211,37 @@ void Thumbview::add_file(std::string filename) {
 //	queue_thumbs.push(tp);
 }
 
+void Thumbview::load_dir(std::string dir)
+{
+    VecStrs dirs;
+    dirs.push_back(dir);
+    load_dir(dirs);
+}
 
 /**
  * Opens the internal directory and starts reading files into the async queue.
  */
-void Thumbview::load_dir(std::string dir) {
-	if (!dir.length()) dir = this->dir;
-
-	std::queue<Glib::ustring> subdirs;
+void Thumbview::load_dir(const VecStrs& dirs)
+{
+	std::queue<std::string> queue_dirs;
 	Glib::Dir *dirhandle;	
 
-	// push the initial dir back onto subdirs 
-	subdirs.push(dir);
+    for (VecStrs::const_iterator i = dirs.begin(); i != dirs.end(); i++)
+        queue_dirs.push(*i);
 	
 	// loop it
-	while ( ! subdirs.empty() ) {
+	while ( ! queue_dirs.empty() ) {
 
 		// pop first
-		Glib::ustring curdir = subdirs.front();
-		subdirs.pop();
+		Glib::ustring curdir = queue_dirs.front();
+		queue_dirs.pop();
 		
 		try {
 			dirhandle = new Glib::Dir(curdir);
 			Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
 
 		} catch (Glib::FileError e) {
-			std::cerr << _("Could not open dir") << " " << this->dir << ": " << e.what() << "\n";
+			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";
 			continue;
 		}
 
@@ -283,7 +289,7 @@ void Thumbview::load_dir(std::string dir) {
 			if ( Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR) )
 			{
 				if ( Config::get_instance()->get_recurse() )
-					subdirs.push(fullstr);
+					queue_dirs.push(fullstr);
 			}
 			else {			
 				if ( this->is_image(fullstr) ) {

@@ -355,6 +355,8 @@ bool Config::save_cfg()
 
     kf.set_boolean("nitrogen", "icon_caps", m_icon_captions);
 
+    kf.set_string_list("nitrogen", "dirs", m_vec_dirs);
+
     if (g_file_set_contents(cfgfile.c_str(), kf.to_data().c_str(), -1, NULL) == FALSE)
         return false;
 
@@ -394,8 +396,32 @@ bool Config::load_cfg()
             m_display_mode = LIST;
     }
 
+    if (kf.has_key("nitrogen", "dirs"))         m_vec_dirs = kf.get_string_list("nitrogen", "dirs");
     if (kf.has_key("nitrogen", "icon_caps"))    m_icon_captions = kf.get_boolean("nitrogen", "icon_caps");
 
     return true;
 }
+
+VecStrs Config::get_dirs()
+{
+    return m_vec_dirs;
+}
+
+void Config::set_dirs(const VecStrs& new_dirs)
+{
+    m_vec_dirs = new_dirs;
+}
+
+void Config::add_dir(const std::string& dir)
+{
+    m_vec_dirs.push_back(std::string(dir));
+}
+
+void Config::rm_dir(const std::string& dir)
+{
+    VecStrs::iterator i = std::find(m_vec_dirs.begin(), m_vec_dirs.end(), dir);
+    if (i != m_vec_dirs.end())
+        m_vec_dirs.erase(i);    
+}
+
 

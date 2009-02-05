@@ -58,14 +58,17 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
 
     m_frame_dirs.add(m_align_dirs);
     m_frame_dirs.set_shadow_type(Gtk::SHADOW_NONE);
-    m_vbox_dirs.pack_start(m_list_dirs, true, true);
+    m_vbox_dirs.pack_start(m_scrolledwin, true, true);
     m_vbox_dirs.pack_start(m_hbox_dirbtns, false, true);
+
+    m_scrolledwin.add(m_list_dirs);
+    m_scrolledwin.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
     m_hbox_dirbtns.pack_start(m_btn_adddir, false, true);
     m_hbox_dirbtns.pack_start(m_btn_deldir, false, true);
 
     get_vbox()->pack_start(m_frame_view, false, true);
-    get_vbox()->pack_start(m_frame_dirs, false, true);
+    get_vbox()->pack_start(m_frame_dirs, true, true);
 
     add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     add_button(Gtk::Stock::OK, Gtk::RESPONSE_OK);

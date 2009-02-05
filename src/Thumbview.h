@@ -112,8 +112,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 			SORT_RTIME
 		} SortMode;
 		
-		void set_dir(std::string indir) { this->dir = indir; }
-		
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
         Gtk::IconView iview;
@@ -125,7 +123,8 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// thread/idle funcs
 		void load_cache_images();
 		void create_cache_images();
-		void load_dir(std::string dir = "");
+		void load_dir(std::string dir);
+        void load_dir(const VecStrs& dirs);
 
 		void set_sort_mode (SortMode mode);
 		// search compare function
@@ -177,10 +176,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Glib::ustring cache_file(Glib::ustring file);
 		void update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb);
 		
-		// base dir
-		// TODO: remove when we get a proper db
-		std::string dir;
-
 		// load thumbnail queue
 		GAsyncQueue* aqueue_loadthumbs;
 		GAsyncQueue* aqueue_createthumbs;
