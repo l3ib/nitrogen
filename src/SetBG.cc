@@ -645,36 +645,27 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig,
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
 		
 	int x, y, w, h;
-	x = y = 0;
 		
 	// depends on bigger side
 	unsigned orig_w = orig->get_width();
 	unsigned orig_h = orig->get_height();
 
-    // width and height differences between image and screen
     int dw = winw - orig_w;
     int dh = winh - orig_h;
 
-    // we only increase size, never decrease
-    if (dw > 0 || dh > 0) {
-        if (dw > dh) {
-            // the width difference is greater, so we give the image the same width as the screen
-            x = 0;
-            w = winw;
-            h = winw * orig_h / orig_w;
-            y = (h - winh) / 2;
-        } else {
-            // the height difference is greater, so we give the image the same height as the screen
-            y = 0;
-            h = winh;
-            w = winh * orig_w / h;
-            x = (w - winw) / 2;
-        }
-    } else {
-        w = orig_w;
-        h = orig_h;
-        x = (winw - orig_w) / 2;
-        y = (winh - orig_h) / 2;
+    // what if we expand it to fit the screen width?
+    x = 0;
+    w = winw;
+    h = winw * orig_h / orig_w;
+    y = (h - winh) / 2;
+
+    if (!(h >= winh)) {
+        // the image isn't tall enough that way!
+        // expand it to fit the screen height
+        y = 0;
+        w = winh * orig_w / orig_h;
+        h = winh;
+        x = (w - winw) / 2;
     }
 
 	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(w, h,
@@ -687,7 +678,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> 
 	retval->fill(GdkColorToUint32(bgcolor));
 
 	// copy it in
-	tmp->copy_area(x, y, tmp->get_width() - 2*x, tmp->get_height() - 2*y, retval, 0, 0);
+	tmp->copy_area(x, y, winw, winh, retval, 0, 0);
 
 	return retval;
 }
