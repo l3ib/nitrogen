@@ -43,6 +43,7 @@ class SetBG {
 			SET_TILE,
 			SET_CENTER,
 			SET_ZOOM,
+            SET_ZOOM_FILL,
             SET_AUTO
 		};
 
@@ -86,6 +87,7 @@ class SetBG {
 		static Glib::RefPtr<Gdk::Pixbuf> make_tile(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_center(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_zoom(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
+		static Glib::RefPtr<Gdk::Pixbuf> make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
         static SetMode get_real_mode(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint);
 
 		static guint32 GdkColorToUint32(const Gdk::Color);

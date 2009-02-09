@@ -117,6 +117,10 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 		case SetBG::SET_ZOOM:
 			outpixbuf = SetBG::make_zoom(pixbuf, winw, winh, bgcolor);
 			break;
+
+		case SetBG::SET_ZOOM_FILL:
+			outpixbuf = SetBG::make_zoom_fill(pixbuf, winw, winh, bgcolor);
+			break;
 			
 		default:
 			std::cerr << _("Unknown mode for saved bg on") << " " << disp << std::endl;
@@ -337,6 +341,10 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		case SetBG::SET_ZOOM:
 			outpixbuf = SetBG::make_zoom(pixbuf, tarw, tarh, bgcolor);
 			break;
+
+		case SetBG::SET_ZOOM_FILL:
+			outpixbuf = SetBG::make_zoom_fill(pixbuf, tarw, tarh, bgcolor);
+			break;
 			
 		default:
 			std::cerr << _("Unknown mode for saved bg") << " " << std::endl;
@@ -448,6 +456,7 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
 		case SetBG::SET_TILE:   strmode = "wallpaper"; break; 
 		case SetBG::SET_CENTER: strmode = "centered"; break;
 		case SetBG::SET_ZOOM:   strmode = "scaled"; break;
+		case SetBG::SET_ZOOM_FILL:   strmode = "scaled"; break;
 	};
 
     std::vector<std::string> vecCmdLine;
@@ -626,6 +635,64 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig,
 }		
 
 /**
+ * Handles SET_ZOOM_FILL mode.
+ *
+ * @param	orig	The original pixbuf
+ * @param	winw	Width of the window
+ * @param	winh	Height of the window
+ * @param	bgcolor	Background color
+ */
+Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
+		
+	int x, y, w, h;
+	x = y = 0;
+		
+	// depends on bigger side
+	unsigned orig_w = orig->get_width();
+	unsigned orig_h = orig->get_height();
+
+    // width and height differences between image and screen
+    int dw = winw - orig_w;
+    int dh = winh - orig_h;
+
+    // we only increase size, never decrease
+    if (dw > 0 || dh > 0) {
+        if (dw > dh) {
+            // the width difference is greater, so we give the image the same width as the screen
+            x = 0;
+            w = winw;
+            h = winw * orig_h / orig_w;
+            y = (h - winh) / 2;
+        } else {
+            // the height difference is greater, so we give the image the same height as the screen
+            y = 0;
+            h = winh;
+            w = winh * orig_w / h;
+            x = (w - winw) / 2;
+        }
+    } else {
+        w = orig_w;
+        h = orig_h;
+        x = (winw - orig_w) / 2;
+        y = (winh - orig_h) / 2;
+    }
+
+	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(w, h,
+		Gdk::INTERP_BILINEAR);
+	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(
+		orig->get_colorspace(), orig->get_has_alpha(),
+		orig->get_bits_per_sample(), winw, winh);
+
+	// use passed bg color
+	retval->fill(GdkColorToUint32(bgcolor));
+
+	// copy it in
+	tmp->copy_area(x, y, tmp->get_width() - 2*x, tmp->get_height() - 2*y, retval, 0, 0);
+
+	return retval;
+}
+
+/**
  * Utility function to convert a mode (an enum) to a string. 
  */
 Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
@@ -644,6 +711,9 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 			break;
 		case SET_ZOOM:
 			ret = Glib::ustring(_("Zoom"));
+			break;
+		case SET_ZOOM_FILL:
+			ret = Glib::ustring(_("ZoomFill"));
 			break;
         case SET_AUTO:
             ret = Glib::ustring(_("Auto"));
@@ -667,6 +737,8 @@ SetBG::SetMode SetBG::string_to_mode( const Glib::ustring str ) {
 		return SetBG::SET_TILE;
 	else if ( str == Glib::ustring(_("Zoom")) )
 		return SetBG::SET_ZOOM;
+	else if ( str == Glib::ustring(_("ZoomFill")) )
+		return SetBG::SET_ZOOM_FILL;
     else if ( str == Glib::ustring(_("Auto")) )
         return SetBG::SET_AUTO;
 
