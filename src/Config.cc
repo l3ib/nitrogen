@@ -432,11 +432,22 @@ bool Config::add_dir(const std::string& dir)
     return false;
 }
 
-void Config::rm_dir(const std::string& dir)
+/**
+ * Removes the given directory from the list of directories.
+ *
+ * Returns true if it was able to find and remove it. Otherwise, returns
+ * false.
+ */
+bool Config::rm_dir(const std::string& dir)
 {
     VecStrs::iterator i = std::find(m_vec_dirs.begin(), m_vec_dirs.end(), dir);
     if (i != m_vec_dirs.end())
-        m_vec_dirs.erase(i);    
+    {
+        m_vec_dirs.erase(i);
+        return true;
+    }
+
+    return false;
 }
 
 

@@ -55,6 +55,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
     m_store_dirs = Gtk::ListStore::create(tmcr);
     m_list_dirs.set_model(m_store_dirs);
     m_list_dirs.append_column("Directory", m_tmc_dir);
+    m_list_dirs.set_headers_visible(false);
 
     VecStrs vecdirs = cfg->get_dirs();
     for (VecStrs::iterator i = vecdirs.begin(); i != vecdirs.end(); i++)
@@ -81,6 +82,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
     m_vbox_dirs.pack_start(m_hbox_dirbtns, false, true);
 
     m_scrolledwin.add(m_list_dirs);
+    m_scrolledwin.set_shadow_type(Gtk::SHADOW_IN);
     m_scrolledwin.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
     m_hbox_dirbtns.pack_start(m_btn_adddir, false, true);
@@ -141,6 +143,24 @@ void NPrefsWindow::sighandle_click_adddir()
 
 void NPrefsWindow::sighandle_click_deldir()
 {
+    Gtk::TreeIter iter = m_list_dirs.get_selection()->get_selected();
+    if (!iter)
+        return;
 
+    std::string dir = (*iter)[m_tmc_dir];
+
+    Glib::ustring msg = Glib::ustring::compose(_("Are you sure you want to delete <b>%1</b>?"), dir);
+   
+    Gtk::MessageDialog dialog(*this, msg, true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
+
+    int result = dialog.run();
+    if (result == Gtk::RESPONSE_YES)
+    {
+        Config *cfg = Config::get_instance();
+        if (cfg->rm_dir(dir))
+        {
+            m_store_dirs->erase(iter);
+        }
+    }
 }
 

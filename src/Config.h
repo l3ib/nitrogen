@@ -75,7 +75,7 @@ class Config {
         VecStrs get_dirs();
         void set_dirs(const VecStrs& new_dirs);
         bool add_dir(const std::string& dir);
-        void rm_dir(const std::string& dir);
+        bool rm_dir(const std::string& dir);
 
         bool save_cfg();            // save non bg related cfg info
         bool load_cfg();
