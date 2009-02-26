@@ -43,7 +43,26 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
         m_rb_view_icon.set_active(true);
     else
         m_rb_view_list.set_active(true);
-    
+
+    // signal handlers for directory buttons
+    m_btn_adddir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_adddir));
+    m_btn_deldir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_deldir));
+
+    // fill dir list from config
+    Gtk::TreeModelColumnRecord tmcr;
+    tmcr.add(m_tmc_dir);
+
+    m_store_dirs = Gtk::ListStore::create(tmcr);
+    m_list_dirs.set_model(m_store_dirs);
+    m_list_dirs.append_column("Directory", m_tmc_dir);
+
+    VecStrs vecdirs = cfg->get_dirs();
+    for (VecStrs::iterator i = vecdirs.begin(); i != vecdirs.end(); i++)
+    {
+        Gtk::TreeModel::iterator iter = m_store_dirs->append();
+        (*iter)[m_tmc_dir] = *i;
+    }
+
     // layout stuff
     m_align_view.set_padding(0, 0, 12, 0);
     m_align_view.add(m_vbox_view);
@@ -74,7 +93,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
     add_button(Gtk::Stock::OK, Gtk::RESPONSE_OK);
     set_response_sensitive(Gtk::RESPONSE_CANCEL);
 	
-    set_default_size (300, 250);
+    set_default_size(300, 250);
 
     show_all();
 }
@@ -95,4 +114,33 @@ void NPrefsWindow::on_response(int response_id)
     hide();
 }
 
+/////////////////////////////////////////////////////////////////////////////
+
+void NPrefsWindow::sighandle_click_adddir()
+{
+    Gtk::FileChooserDialog dialog("Folder", Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
+    dialog.set_transient_for(*this);
+
+    dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+
+    int result = dialog.run();
+    if (result == Gtk::RESPONSE_OK)
+    {
+        std::string newdir = dialog.get_filename();
+        Config *cfg = Config::get_instance(); 
+        if (cfg->add_dir(newdir))
+        {
+            Gtk::TreeModel::iterator iter = m_store_dirs->append();
+            (*iter)[m_tmc_dir] = newdir;
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+void NPrefsWindow::sighandle_click_deldir()
+{
+
+}
 

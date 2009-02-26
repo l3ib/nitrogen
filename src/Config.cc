@@ -412,9 +412,24 @@ void Config::set_dirs(const VecStrs& new_dirs)
     m_vec_dirs = new_dirs;
 }
 
-void Config::add_dir(const std::string& dir)
+/**
+ * Adds a directory to the list of directories.
+ *
+ * Does not add if the passed dir already is in the list of dirs.
+ * Returns a boolean to indicate if this call resulted in an add.
+ * If it returns false, it didn't add a new one becuase it already 
+ * existed.
+ */
+bool Config::add_dir(const std::string& dir)
 {
-    m_vec_dirs.push_back(std::string(dir));
+    VecStrs::iterator i = std::find(m_vec_dirs.begin(), m_vec_dirs.end(), dir);
+    if (i == m_vec_dirs.end())
+    {
+        m_vec_dirs.push_back(std::string(dir));
+        return true;
+    }
+
+    return false;
 }
 
 void Config::rm_dir(const std::string& dir)

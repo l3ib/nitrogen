@@ -47,6 +47,14 @@ class NPrefsWindow : public Gtk::Dialog
         Gtk::TreeView m_list_dirs;
         Gtk::Button m_btn_adddir;
         Gtk::Button m_btn_deldir;
+
+        // handlers
+        void sighandle_click_adddir();
+        void sighandle_click_deldir();
+
+        // tree view noise
+        Glib::RefPtr<Gtk::ListStore> m_store_dirs;
+        Gtk::TreeModelColumn<std::string> m_tmc_dir;
 };
 
 #endif
