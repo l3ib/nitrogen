@@ -225,9 +225,16 @@ void Thumbview::load_dir(const VecStrs& dirs)
 {
 	std::queue<std::string> queue_dirs;
 	Glib::Dir *dirhandle;	
+    VecStrs dir_list;       // full list of the dirs we've seen so we don't get dups
 
     for (VecStrs::const_iterator i = dirs.begin(); i != dirs.end(); i++)
-        queue_dirs.push(*i);
+    {
+        if (std::find(dir_list.begin(), dir_list.end(), *i) == dir_list.end())
+        {
+            dir_list.push_back(*i);
+            queue_dirs.push(*i);
+        }
+    }
 	
 	// loop it
 	while ( ! queue_dirs.empty() ) {
@@ -289,7 +296,13 @@ void Thumbview::load_dir(const VecStrs& dirs)
 			if ( Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR) )
 			{
 				if ( Config::get_instance()->get_recurse() )
-					queue_dirs.push(fullstr);
+                {
+                    if (std::find(dir_list.begin(), dir_list.end(), fullstr) == dir_list.end())
+                    {
+                        dir_list.push_back(fullstr);
+    					queue_dirs.push(fullstr);
+                    }
+                }
 			}
 			else {			
 				if ( this->is_image(fullstr) ) {
