@@ -152,11 +152,6 @@ void NWindow::sighandle_click_apply (void) {
             (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
 
-    if (!this->is_multihead || thedisp == "xin_-1")
-    {
-        hide();
-        Gtk::Main::quit();
-    }
 }
 
 /**
