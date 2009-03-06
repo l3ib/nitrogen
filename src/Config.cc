@@ -275,7 +275,7 @@ Glib::ustring Config::color_to_string(Gdk::Color color) {
 
 	char * c_str = new char[7];
 	
-	snprintf(c_str, 7, "%2x%2x%2x", red, green, blue);
+	snprintf(c_str, 7, "%.2x%.2x%.2x", red, green, blue);
 	Glib::ustring string = '#' + Glib::ustring(c_str);
 	
 	delete[] c_str;
