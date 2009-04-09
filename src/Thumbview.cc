@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Thumbview.h"
 #include "md5.h"
 #include <glib/gstdio.h>
-#include <png.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
