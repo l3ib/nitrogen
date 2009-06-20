@@ -159,8 +159,6 @@ Thumbview::Thumbview()
 
 	col_desc->set_expand ();
 
-//	add (view);
-    add(iview);
 	show_all();
 }
 
@@ -613,7 +611,7 @@ void Thumbview::load_map_setbgs()
 }
 
 /**
- * Gets the currrently selected image, regardless of which view it came from.
+ * Gets the currently selected image, regardless of which view it came from.
  */
 Gtk::TreeModel::iterator Thumbview::get_selected()
 {
@@ -694,6 +692,7 @@ void Thumbview::set_current_display_mode(DisplayMode newmode)
     else if (newmode == ICON)
         add(iview);
 
+    m_curmode = newmode;
     show_all();
 }
 
