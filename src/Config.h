@@ -53,6 +53,9 @@ class Config {
 		static Config* get_instance();
 
 		Config();
+
+        Config* clone();
+
 		// get/set for bgs
 		bool get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMode &mode, Gdk::Color &bgcolor);
 		bool set_bg(const Glib::ustring disp, const Glib::ustring file, const SetBG::SetMode mode, Gdk::Color bgcolor);

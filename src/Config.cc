@@ -58,6 +58,26 @@ Config* Config::get_instance()
 }
 
 /**
+ * Creates a clone of this Config instance. Used so the preferences dialog may manipulate the
+ * configuration without disturbing the real one.
+ */
+Config* Config::clone()
+{
+    Config* retVal = new Config();
+
+    retVal->recurse = recurse;
+    retVal->m_display_mode = m_display_mode;
+    retVal->m_posx = m_posx;
+    retVal->m_posy = m_posy;
+    retVal->m_sizex = m_sizex;
+    retVal->m_sizey = m_sizey;
+    retVal->m_icon_captions = m_icon_captions;
+    retVal->m_vec_dirs = VecStrs(m_vec_dirs);
+
+    return retVal;
+}
+
+/**
  * Returns the bg information for a previously stored one
  *
  * @param	disp	The display string to use

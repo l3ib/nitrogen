@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _NPREFSWINDOW_H_
 
 #include "main.h"
+#include "Config.h"
 
 class NPrefsWindow : public Gtk::Dialog 
 {
     public:
-        NPrefsWindow(Gtk::Window& parent);
+        NPrefsWindow(Gtk::Window& parent, Config* cfg);
         virtual ~NPrefsWindow() {}
 
     protected:
@@ -47,6 +48,7 @@ class NPrefsWindow : public Gtk::Dialog
         Gtk::TreeView m_list_dirs;
         Gtk::Button m_btn_adddir;
         Gtk::Button m_btn_deldir;
+        Config* m_cfg;
 
         // handlers
         void sighandle_click_adddir();

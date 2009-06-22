@@ -376,13 +376,39 @@ void NWindow::set_default_selections()
  */
 void NWindow::sighandle_btn_prefs()
 {
-    NPrefsWindow *nw = new NPrefsWindow(*this);
+    Config *cfg = Config::get_instance();
+    Config *clone = cfg->clone();
+
+    NPrefsWindow *nw = new NPrefsWindow(*this, clone);
     int resp = nw->run();
 
     if (resp == Gtk::RESPONSE_OK)
     {
-    	Config *cfg = Config::get_instance();
+        // figure out what directories to reload and what directories to not reload!
+        // do this before we reload the main config!
+
+        VecStrs vec_load;
+        VecStrs vec_unload;
+
+        VecStrs vec_cfg_dirs = cfg->get_dirs();
+        VecStrs vec_clone_dirs = clone->get_dirs();
+        for (VecStrs::iterator i = vec_cfg_dirs.begin(); i != vec_cfg_dirs.end(); i++)
+            if (find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
+                vec_unload.push_back(*i);
+
+        for (VecStrs::iterator i = vec_clone_dirs.begin(); i != vec_clone_dirs.end(); i++)
+            if (find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
+                vec_load.push_back(*i);
+
+        cfg->load_cfg();        // tells the global instance to reload itself from disk, which the prefs dialog
+                                // told our clone to save to
         view.set_current_display_mode(cfg->get_display_mode());
+
+        for (VecStrs::iterator i = vec_unload.begin(); i != vec_unload.end(); i++)
+            view.unload_dir(*i);
+
+        for (VecStrs::iterator i = vec_load.begin(); i != vec_load.end(); i++)
+            view.load_dir(*i);
     }
 
 }

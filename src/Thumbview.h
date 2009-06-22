@@ -80,6 +80,7 @@ class ThumbviewRecord : public Gtk::TreeModelColumnRecord
             add(Time);
             add(LoadingThumb);
             add(CurBGOnDisp);
+            add(RootDir);
         }
 
 		Gtk::TreeModelColumn<Glib::ustring> Filename;
@@ -88,6 +89,7 @@ class ThumbviewRecord : public Gtk::TreeModelColumnRecord
 		Gtk::TreeModelColumn<time_t> Time;
 		Gtk::TreeModelColumn<bool> LoadingThumb;
         Gtk::TreeModelColumn<Glib::ustring> CurBGOnDisp;
+        Gtk::TreeModelColumn<Glib::ustring> RootDir;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -125,6 +127,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		void create_cache_images();
 		void load_dir(std::string dir);
         void load_dir(const VecStrs& dirs);
+        void unload_dir(std::string dir);
 
 		void set_sort_mode (SortMode mode);
 		// search compare function
@@ -160,8 +163,10 @@ class Thumbview : public Gtk::ScrolledWindow {
 		std::map<std::string, Inotify::Watch*> watches;
 #endif
 
-		void add_file(std::string filename);
+		void add_file(std::string filename, std::string rootdir);
 		void handle_dispatch_thumb();
+
+        VecStrs m_list_loaded_rootdirs;
 		
 		Gtk::TreeViewColumn *col_thumb;
 		Gtk::TreeViewColumn *col_desc;

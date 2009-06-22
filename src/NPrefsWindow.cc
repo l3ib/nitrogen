@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Util.h"
 #include "gcs-i18n.h"
 
-NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), parent, true, false), 
+NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Preferences"), parent, true, false),
                                 m_frame_view(_("View Options")),
                                 m_frame_dirs(_("Directories")),
                                 m_rb_view_icon(_("_Icon"), true),
@@ -36,8 +36,8 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
     Gtk::RadioButton::Group group = m_rb_view_icon.get_group();
     m_rb_view_list.set_group(group);
    
-    Config *cfg = Config::get_instance(); 
-    DisplayMode mode = cfg->get_display_mode();
+    m_cfg = cfg;
+    DisplayMode mode = m_cfg->get_display_mode();
 
     if (mode == ICON)
         m_rb_view_icon.set_active(true);
@@ -57,7 +57,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent) : Gtk::Dialog(_("Preferences"), 
     m_list_dirs.append_column("Directory", m_tmc_dir);
     m_list_dirs.set_headers_visible(false);
 
-    VecStrs vecdirs = cfg->get_dirs();
+    VecStrs vecdirs = m_cfg->get_dirs();
     for (VecStrs::iterator i = vecdirs.begin(); i != vecdirs.end(); i++)
     {
         Gtk::TreeModel::iterator iter = m_store_dirs->append();
@@ -106,11 +106,10 @@ void NPrefsWindow::on_response(int response_id)
 {
     if (response_id == Gtk::RESPONSE_OK)
     {
-        Config *cfg = Config::get_instance(); 
         DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
-        cfg->set_display_mode(mode);
+        m_cfg->set_display_mode(mode);
 
-        cfg->save_cfg();
+        m_cfg->save_cfg();
     }
 
     hide();
@@ -130,8 +129,7 @@ void NPrefsWindow::sighandle_click_adddir()
     if (result == Gtk::RESPONSE_OK)
     {
         std::string newdir = dialog.get_filename();
-        Config *cfg = Config::get_instance(); 
-        if (cfg->add_dir(newdir))
+        if (m_cfg->add_dir(newdir))
         {
             Gtk::TreeModel::iterator iter = m_store_dirs->append();
             (*iter)[m_tmc_dir] = newdir;
@@ -156,8 +154,7 @@ void NPrefsWindow::sighandle_click_deldir()
     int result = dialog.run();
     if (result == Gtk::RESPONSE_YES)
     {
-        Config *cfg = Config::get_instance();
-        if (cfg->rm_dir(dir))
+        if (m_cfg->rm_dir(dir))
         {
             m_store_dirs->erase(iter);
         }
