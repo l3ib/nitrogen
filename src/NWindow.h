@@ -55,12 +55,14 @@ class NWindow : public Gtk::Window {
 		ImageCombo select_mode, select_display;
 
 		Gtk::Button apply;
+        Gtk::Button btn_prefs;
 		Gtk::ColorButton button_bgcolor;
 
 		void setup_select_boxes();
 
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
+        void sighandle_btn_prefs();
 
 #ifdef USE_XINERAMA
 		// xinerama stuff

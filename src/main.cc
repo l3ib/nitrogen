@@ -56,6 +56,20 @@ void set_bg_once(Glib::ustring file, SetBG::SetMode mode, bool save)
 	Util::program_log("leaving set_bg_once()");
 }
 
+bool on_window_close_save_pos(GdkEventAny* event, Gtk::Window *window)
+{
+   	Config *cfg = Config::get_instance();
+    int x, y;
+    window->get_position(x, y);
+    cfg->set_pos(x, y);
+
+    int w, h;
+    window->get_size(w, h);
+    cfg->set_size(w, h);
+
+    return false; 
+}
+
 #ifdef USE_INOTIFY
 bool poll_inotify(void) {
 	Inotify::Watch::poll(0);
@@ -101,11 +115,13 @@ int main (int argc, char ** argv) {
 
 	// get the starting dir
 	std::string startdir = parser->get_extra_args();
-	if (startdir.length() <= 0) {
-		startdir = ".";
-        cfg->set_recurse(false);
-	}
-	startdir = Util::fix_start_dir(std::string(startdir));
+    bool bcmdlinedir = startdir.length() > 0;
+//	if (!bcmd <= 0) {
+//		startdir = ".";
+//        cfg->set_recurse(false);
+//	}
+    if (bcmdlinedir)
+    	startdir = Util::fix_start_dir(std::string(startdir));
 	
 	// should we set on the command line?
 	if ( parser->has_argument("set-tiled") )	{
@@ -130,11 +146,31 @@ int main (int argc, char ** argv) {
 
 	if ( parser->has_argument("no-recurse") ) 
 		cfg->set_recurse(false);
-	
+
+    // load configuration if there is one
+    cfg->load_cfg();
+
+    guint w, h;
+    cfg->get_size(w, h);
+
+    gint x, y;
+    cfg->get_pos(x, y);
+
+    // create main window
 	NWindow* main_window = new NWindow();
-	main_window->view.set_dir(startdir);
-	main_window->view.load_dir();
+    main_window->set_default_size(w, h);
+    main_window->move(x, y);                    // most likely will be ignored by the wm
+
+//	main_window->view.set_dir(startdir);
+    if (bcmdlinedir)
+    	main_window->view.load_dir(startdir);
+    else
+        main_window->view.load_dir(cfg->get_dirs());
+
 	main_window->set_default_selections();
+    main_window->view.set_current_display_mode(cfg->get_display_mode());
+    main_window->view.set_icon_captions(cfg->get_icon_captions());
+    main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
 	main_window->show();
 
 	if ( parser->has_argument("sort") ) {
@@ -166,6 +202,8 @@ int main (int argc, char ** argv) {
 #endif
 
 	Gtk::Main::run (*main_window);
+
+    cfg->save_cfg();
 
 	return 0;
 }

@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Util.h"
 #include "gcs-i18n.h"
 
+typedef std::pair<Glib::ustring, Glib::ustring> PairStrs;
+
 /**
  * Returns the last modified time of a file.
  * @param file The name of the file to get the modified time for.
@@ -84,7 +86,8 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 /**
  * Constructor, sets up gtk stuff, inits data and queues
  */
-Thumbview::Thumbview() : dir("") {
+Thumbview::Thumbview()
+{
 	set_policy (Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 	set_shadow_type (Gtk::SHADOW_IN); 
 
@@ -102,7 +105,7 @@ Thumbview::Thumbview() : dir("") {
 	store->set_thumbview(this);
 	
 	// setup view
-    m_curmode = ICON;
+    m_curmode = LIST;
     iview.set_model(store);
     iview.signal_item_activated().connect(sigc::mem_fun(*this, &Thumbview::sighandle_iview_activated));
 
@@ -136,7 +139,8 @@ Thumbview::Thumbview() : dir("") {
 	view.append_column (*col_desc);
     
     iview.set_pixbuf_column(record.Thumbnail);
-//    iview.set_markup_column(record.Description);
+    if (m_icon_captions)
+        iview.set_markup_column(record.Description);
     iview.set_tooltip_column(1);
     iview.set_margin(0);
     iview.set_column_spacing(1);
@@ -156,8 +160,6 @@ Thumbview::Thumbview() : dir("") {
 
 	col_desc->set_expand ();
 
-//	add (view);
-    add(iview);
 	show_all();
 }
 
@@ -175,9 +177,11 @@ Thumbview::~Thumbview() {
  * creation queue.
  *
  * @param filename The name of the file to add.
+ * @param rootdir  The root directory the file came from.
  *
  */
-void Thumbview::add_file(std::string filename) {
+void Thumbview::add_file(std::string filename, std::string rootdir)
+{
     Gtk::Window *window = dynamic_cast<Gtk::Window*>(get_toplevel());
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
@@ -185,6 +189,7 @@ void Thumbview::add_file(std::string filename) {
 	row[record.Thumbnail] = thumb;
 	row[record.Filename] = filename;
 	row[record.Description] = Glib::ustring(filename, filename.rfind ("/")+1);
+    row[record.RootDir] = rootdir;
 
     for (std::map<Glib::ustring, Glib::ustring>::iterator i = map_setbgs.begin(); i!=map_setbgs.end(); i++)
     {
@@ -198,7 +203,7 @@ void Thumbview::add_file(std::string filename) {
 	// for modified time
 	row[record.Time] = get_file_mtime(filename);
 
-	Util::program_log("add_file(): Adding file %s\n", filename.c_str());
+	Util::program_log("add_file(): Adding file %s (from %s)\n", filename.c_str(), rootdir.c_str());
 
 	// push it on the thumb queue
 //	TreePair *tp = new TreePair();
@@ -208,32 +213,48 @@ void Thumbview::add_file(std::string filename) {
 //	queue_thumbs.push(tp);
 }
 
+void Thumbview::load_dir(std::string dir)
+{
+    VecStrs dirs;
+    dirs.push_back(dir);
+    load_dir(dirs);
+}
 
 /**
  * Opens the internal directory and starts reading files into the async queue.
  */
-void Thumbview::load_dir(std::string dir) {
-	if (!dir.length()) dir = this->dir;
-
-	std::queue<Glib::ustring> subdirs;
+void Thumbview::load_dir(const VecStrs& dirs)
+{
+	std::queue<PairStrs> queue_dirs;
 	Glib::Dir *dirhandle;	
+    VecStrs dir_list;       // full list of the dirs we've seen so we don't get dups
 
-	// push the initial dir back onto subdirs 
-	subdirs.push(dir);
+    for (VecStrs::const_iterator i = dirs.begin(); i != dirs.end(); i++)
+    {
+        if (std::find(dir_list.begin(), dir_list.end(), *i) == dir_list.end())
+        {
+            dir_list.push_back(*i);
+            queue_dirs.push(PairStrs(*i, *i));
+            m_list_loaded_rootdirs.push_back(*i);
+        }
+    }
 	
 	// loop it
-	while ( ! subdirs.empty() ) {
+	while ( ! queue_dirs.empty() ) {
 
 		// pop first
-		Glib::ustring curdir = subdirs.front();
-		subdirs.pop();
+        PairStrs curpair = queue_dirs.front();
+
+		Glib::ustring curdir = curpair.first;
+        Glib::ustring rootdir = curpair.second;
+		queue_dirs.pop();
 		
 		try {
 			dirhandle = new Glib::Dir(curdir);
 			Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
 
 		} catch (Glib::FileError e) {
-			std::cerr << _("Could not open dir") << " " << this->dir << ": " << e.what() << "\n";
+			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";
 			continue;
 		}
 
@@ -248,20 +269,15 @@ void Thumbview::load_dir(std::string dir) {
 				// no error occurred.
 
 				// emitted when a file is deleted in this dir.
-				watch->signal_deleted.connect(sigc::mem_fun(this,
-					&Thumbview::file_deleted_callback));
+				watch->signal_deleted.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
 				// emitted when a file is modified or created in this dir.
-				watch->signal_write_closed.connect(sigc::mem_fun(this,
-					&Thumbview::file_changed_callback));
+				watch->signal_write_closed.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
 				// two signals that are emitted when a file is renamed in this dir.
 				// the best way to handle this IMO is to remove the file upon receiving
 				// 'moved_from', and then to add the file upon receiving 'moved_to'.
-				watch->signal_moved_from.connect(sigc::mem_fun(this,
-					&Thumbview::file_deleted_callback));
-				watch->signal_moved_to.connect(sigc::mem_fun(this,
-					&Thumbview::file_changed_callback));
-				watch->signal_created.connect(sigc::mem_fun(this,
-					&Thumbview::file_created_callback));
+				watch->signal_moved_from.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
+				watch->signal_moved_to.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
+				watch->signal_created.connect(sigc::mem_fun(this, &Thumbview::file_created_callback));
 
 				watches[curdir] = watch;
 			}
@@ -281,17 +297,41 @@ void Thumbview::load_dir(std::string dir) {
 			if ( Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR) )
 			{
 				if ( Config::get_instance()->get_recurse() )
-					subdirs.push(fullstr);
+                {
+                    if (std::find(dir_list.begin(), dir_list.end(), fullstr) == dir_list.end())
+                    {
+                        dir_list.push_back(fullstr);
+                        queue_dirs.push(PairStrs(fullstr, rootdir));
+                    }
+                }
 			}
 			else {			
 				if ( this->is_image(fullstr) ) {
-					add_file(fullstr);
+                    add_file(fullstr, rootdir);
 				}
 			}
 		}
 
 		delete dirhandle;
 	}
+}
+
+/**
+ * Unloads a directory from the view.
+ *
+ * This includes all subdirectories if the add was recursive. It looks at the RootDir column
+ * in the model to determine if it is a candidate to remove.
+ */
+void Thumbview::unload_dir(std::string dir)
+{
+    Gtk::TreeIter iter;
+    for (iter = store->children().begin(); iter != store->children().end(); )
+    {
+        if ((*iter)[record.RootDir] == dir)
+            iter = store->erase(iter);
+        else
+            iter++;
+    }
 }
 
 /**
@@ -592,7 +632,7 @@ void Thumbview::load_map_setbgs()
 }
 
 /**
- * Gets the currrently selected image, regardless of which view it came from.
+ * Gets the currently selected image, regardless of which view it came from.
  */
 Gtk::TreeModel::iterator Thumbview::get_selected()
 {
@@ -646,7 +686,8 @@ void Thumbview::file_changed_callback(std::string filename) {
 		load_dir(filename);
 	} else if (is_image(filename)) {
 		// this is a file.
-		add_file(filename);
+        std::string rootdir = "";
+		add_file(filename, rootdir);
 	}
 	// restart the idle function
 	//Glib::signal_idle().connect(sigc::mem_fun(this, &Thumbview::load_cache_images));
@@ -671,7 +712,19 @@ void Thumbview::set_current_display_mode(DisplayMode newmode)
     if (newmode == LIST)
         add(view);
     else if (newmode == ICON)
-        add(iview);    
+        add(iview);
+
+    m_curmode = newmode;
+    show_all();
+}
+
+void Thumbview::set_icon_captions(gboolean caps)
+{
+    m_icon_captions = caps;
+    if (m_icon_captions)
+        iview.set_markup_column(record.Description);
+    else
+        iview.set_markup_column(-1);  // -1 unsets
 }
 
 void Thumbview::sighandle_iview_activated(const Gtk::TreePath& path)

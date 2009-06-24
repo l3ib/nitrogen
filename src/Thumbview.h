@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 */
 
+#ifndef _THUMBVIEW_H_
+#define _THUMBVIEW_H_
+
 #include "main.h"
 #include <queue>
 #include <errno.h>
@@ -77,6 +80,7 @@ class ThumbviewRecord : public Gtk::TreeModelColumnRecord
             add(Time);
             add(LoadingThumb);
             add(CurBGOnDisp);
+            add(RootDir);
         }
 
 		Gtk::TreeModelColumn<Glib::ustring> Filename;
@@ -85,6 +89,7 @@ class ThumbviewRecord : public Gtk::TreeModelColumnRecord
 		Gtk::TreeModelColumn<time_t> Time;
 		Gtk::TreeModelColumn<bool> LoadingThumb;
         Gtk::TreeModelColumn<Glib::ustring> CurBGOnDisp;
+        Gtk::TreeModelColumn<Glib::ustring> RootDir;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -109,8 +114,6 @@ class Thumbview : public Gtk::ScrolledWindow {
 			SORT_RTIME
 		} SortMode;
 		
-		void set_dir(std::string indir) { this->dir = indir; }
-		
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
         Gtk::IconView iview;
@@ -122,7 +125,9 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// thread/idle funcs
 		void load_cache_images();
 		void create_cache_images();
-		void load_dir(std::string dir = "");
+		void load_dir(std::string dir);
+        void load_dir(const VecStrs& dirs);
+        void unload_dir(std::string dir);
 
 		void set_sort_mode (SortMode mode);
 		// search compare function
@@ -140,6 +145,9 @@ class Thumbview : public Gtk::ScrolledWindow {
         void set_current_display_mode(DisplayMode newmode);
         DisplayMode get_current_display_mode() { return m_curmode; }
 
+        void set_icon_captions(gboolean caps);
+        gboolean get_icon_captions() { return m_icon_captions; }
+
         Gtk::TreeModel::iterator get_selected();
         sigc::signal<void, const Gtk::TreePath&> signal_selected;
 	
@@ -155,8 +163,10 @@ class Thumbview : public Gtk::ScrolledWindow {
 		std::map<std::string, Inotify::Watch*> watches;
 #endif
 
-		void add_file(std::string filename);
+		void add_file(std::string filename, std::string rootdir);
 		void handle_dispatch_thumb();
+
+        VecStrs m_list_loaded_rootdirs;
 		
 		Gtk::TreeViewColumn *col_thumb;
 		Gtk::TreeViewColumn *col_desc;
@@ -164,18 +174,18 @@ class Thumbview : public Gtk::ScrolledWindow {
 		Gtk::CellRendererPixbuf rend_img;
 		Gtk::CellRendererText rend;
 
+        gboolean m_icon_captions;
+
 		// utility functions
 		bool is_image(std::string file);
 		Glib::ustring cache_file(Glib::ustring file);
 		void update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb);
 		
-		// base dir
-		// TODO: remove when we get a proper db
-		std::string dir;
-
 		// load thumbnail queue
 		GAsyncQueue* aqueue_loadthumbs;
 		GAsyncQueue* aqueue_createthumbs;
 		GAsyncQueue* aqueue_donethumbs;
 
 };
+
+#endif

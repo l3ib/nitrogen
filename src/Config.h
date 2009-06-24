@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <glib.h>
 #include "SetBG.h"
 #include <vector>
+#include "Thumbview.h"
 
 /**
  * Static class that interfaces with the configuration. 
@@ -38,6 +39,11 @@ class Config {
 		bool check_dir();		
 			
 		bool recurse;
+        DisplayMode m_display_mode;
+        gint m_posx, m_posy;
+        guint m_sizex, m_sizey;
+        gboolean m_icon_captions;
+        VecStrs m_vec_dirs;
 		
 		Glib::ustring color_to_string(Gdk::Color color);
 
@@ -47,16 +53,35 @@ class Config {
 		static Config* get_instance();
 
 		Config();
+
+        Config* clone();
+
 		// get/set for bgs
 		bool get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMode &mode, Gdk::Color &bgcolor);
 		bool set_bg(const Glib::ustring disp, const Glib::ustring file, const SetBG::SetMode mode, Gdk::Color bgcolor);
 
-		// get all groups
+		// get all groups (bg_saved.cfg)
 		bool get_bg_groups(std::vector<Glib::ustring> &groups);
 
 		bool get_recurse() { return Config::recurse; }
 		void set_recurse(bool n) { Config::recurse = n; }
-						
+        DisplayMode get_display_mode() { return m_display_mode; }
+        void set_display_mode(DisplayMode mode) { m_display_mode = mode; }
+        bool get_icon_captions() { return m_icon_captions; }
+        void set_icon_captions(gboolean caps) { m_icon_captions = caps; }
+
+        void get_pos(gint &x, gint &y);
+        void set_pos(gint x, gint y);
+        void get_size(guint &w, guint &h);
+        void set_size(guint w, guint h);
+
+        VecStrs get_dirs();
+        void set_dirs(const VecStrs& new_dirs);
+        bool add_dir(const std::string& dir);
+        bool rm_dir(const std::string& dir);
+
+        bool save_cfg();            // save non bg related cfg info
+        bool load_cfg();
 };
 
 #endif

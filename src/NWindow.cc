@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "gcs-i18n.h"
 #include "Util.h"
 #include <algorithm>
+#include "NPrefsWindow.h"
 
 #ifdef USE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -33,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false) {
+NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES) {
 	
 	set_border_width (5);
 	set_default_size (450, 500);
@@ -51,6 +52,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 	bot_hbox.pack_start(button_bgcolor, FALSE, FALSE, 0);
 	
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
+    bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
 
 	// add to main box
 	main_vbox.pack_start (view, TRUE, TRUE, 0);
@@ -59,8 +61,9 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 	// signals
     view.signal_selected.connect(sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
-
-	// set icon
+    btn_prefs.signal_clicked().connect(sigc::mem_fun(*this, &NWindow::sighandle_btn_prefs));
+	
+    // set icon
 	try {
 		Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
 		std::vector<Glib::RefPtr<Gdk::Pixbuf> > vec;
@@ -88,6 +91,7 @@ void NWindow::show (void) {
 	bot_hbox.show ();
 	main_vbox.show ();
 	button_bgcolor.show();
+    btn_prefs.show();
 
 	this->set_title("Nitrogen");
 }
@@ -96,7 +100,7 @@ void NWindow::show (void) {
  * Handles the user double clicking on a row in the view. 
  */
 void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
-	
+
 	// find out which image was double clicked
 	Gtk::TreeModel::iterator iter = (view.store)->get_iter(path);
 	Gtk::TreeModel::Row row = *iter;
@@ -361,6 +365,51 @@ void NWindow::set_default_selections()
 			}
 		}
 	}
+
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Handles the preferences button being pressed.
+ * Shows the preferences dialog and updates the view as needed.
+ */
+void NWindow::sighandle_btn_prefs()
+{
+    Config *cfg = Config::get_instance();
+    Config *clone = cfg->clone();
+
+    NPrefsWindow *nw = new NPrefsWindow(*this, clone);
+    int resp = nw->run();
+
+    if (resp == Gtk::RESPONSE_OK)
+    {
+        // figure out what directories to reload and what directories to not reload!
+        // do this before we reload the main config!
+
+        VecStrs vec_load;
+        VecStrs vec_unload;
+
+        VecStrs vec_cfg_dirs = cfg->get_dirs();
+        VecStrs vec_clone_dirs = clone->get_dirs();
+        for (VecStrs::iterator i = vec_cfg_dirs.begin(); i != vec_cfg_dirs.end(); i++)
+            if (find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
+                vec_unload.push_back(*i);
+
+        for (VecStrs::iterator i = vec_clone_dirs.begin(); i != vec_clone_dirs.end(); i++)
+            if (find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
+                vec_load.push_back(*i);
+
+        cfg->load_cfg();        // tells the global instance to reload itself from disk, which the prefs dialog
+                                // told our clone to save to
+        view.set_current_display_mode(cfg->get_display_mode());
+
+        for (VecStrs::iterator i = vec_unload.begin(); i != vec_unload.end(); i++)
+            view.unload_dir(*i);
+
+        for (VecStrs::iterator i = vec_load.begin(); i != vec_load.end(); i++)
+            view.load_dir(*i);
+    }
 
 }
 

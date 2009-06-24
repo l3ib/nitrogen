@@ -28,7 +28,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 Config::Config()
 {
-	this->recurse = true;
+	recurse = true;
+
+    m_display_mode = ICON;
+
+    m_posx = -1;
+    m_posy = -1;
+
+    m_sizex = 450;
+    m_sizey = 500;
+
+    m_icon_captions = false;
 }
 
 /**
@@ -45,6 +55,26 @@ Config* Config::get_instance()
 		_instance = new Config();
 
 	return _instance;
+}
+
+/**
+ * Creates a clone of this Config instance. Used so the preferences dialog may manipulate the
+ * configuration without disturbing the real one.
+ */
+Config* Config::clone()
+{
+    Config* retVal = new Config();
+
+    retVal->recurse = recurse;
+    retVal->m_display_mode = m_display_mode;
+    retVal->m_posx = m_posx;
+    retVal->m_posy = m_posy;
+    retVal->m_sizex = m_sizex;
+    retVal->m_sizey = m_sizey;
+    retVal->m_icon_captions = m_icon_captions;
+    retVal->m_vec_dirs = VecStrs(m_vec_dirs);
+
+    return retVal;
 }
 
 /**
@@ -281,3 +311,163 @@ Glib::ustring Config::color_to_string(Gdk::Color color) {
 	delete[] c_str;
 	return string;
 }
+
+/**
+ * Gets the last saved position.
+ */
+void Config::get_pos(gint &x, gint &y)
+{
+    x = m_posx;
+    y = m_posy;
+}
+
+/**
+ * Sets the position, to be saved with save_cfg.
+ */
+void Config::set_pos(gint x, gint y)
+{
+    m_posx = x;
+    m_posy = y;
+}
+
+/**
+ * Gets the last saved window size.
+ */
+void Config::get_size(guint &w, guint &h)
+{
+    w = m_sizex;
+    h = m_sizey;
+}
+
+/**
+ * Sets the window size, to be saved with save_cfg.
+ */
+void Config::set_size(guint w, guint h)
+{
+    m_sizex = w;
+    m_sizey = h;
+}
+
+/**
+ * Saves common configuration params to a configuration file.
+ *
+ * Stored in ~/.config/nitrogen/nitrogen.cfg
+ */
+bool Config::save_cfg()
+{
+	if ( ! Config::check_dir() )
+		return false;
+
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("nitrogen.cfg"));
+
+    Glib::KeyFile kf;
+
+    kf.set_integer("geometry", "posx", m_posx);
+    kf.set_integer("geometry", "posy", m_posy);
+    kf.set_integer("geometry", "sizex", m_sizex);
+    kf.set_integer("geometry", "sizey", m_sizey);
+
+    if (m_display_mode == ICON)
+        kf.set_string("nitrogen", "view",  Glib::ustring("icon"));
+    else if (m_display_mode == LIST)
+        kf.set_string("nitrogen", "view",  Glib::ustring("list"));
+
+    kf.set_boolean("nitrogen", "icon_caps", m_icon_captions);
+
+    kf.set_string_list("nitrogen", "dirs", m_vec_dirs);
+
+    if (g_file_set_contents(cfgfile.c_str(), kf.to_data().c_str(), -1, NULL) == FALSE)
+        return false;
+
+    return true;
+}
+
+/**
+ * Loads common configuration params from the configuration file.
+ */
+bool Config::load_cfg()
+{
+	if ( ! Config::check_dir() )
+		return false;
+
+	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
+	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("nitrogen.cfg"));
+
+    if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS))
+        return false;
+
+    // TODO: use load_from_data_dirs?    
+    Glib::KeyFile kf;
+    if (!kf.load_from_file(cfgfile))
+        return false;
+
+    if (kf.has_key("geometry", "posx"))     m_posx = kf.get_integer("geometry", "posx");
+    if (kf.has_key("geometry", "posy"))     m_posy = kf.get_integer("geometry", "posy");
+    if (kf.has_key("geometry", "sizex"))    m_sizex = kf.get_integer("geometry", "sizex");
+    if (kf.has_key("geometry", "sizey"))    m_sizey = kf.get_integer("geometry", "sizey");
+
+    if (kf.has_key("nitrogen", "view"))
+    {
+        Glib::ustring mode = kf.get_string("nitrogen", "view");
+        if (mode == Glib::ustring("icon"))
+            m_display_mode = ICON;
+        else if (mode == Glib::ustring("list"))
+            m_display_mode = LIST;
+    }
+
+    if (kf.has_key("nitrogen", "dirs"))         m_vec_dirs = kf.get_string_list("nitrogen", "dirs");
+    if (kf.has_key("nitrogen", "icon_caps"))    m_icon_captions = kf.get_boolean("nitrogen", "icon_caps");
+
+    return true;
+}
+
+VecStrs Config::get_dirs()
+{
+    return m_vec_dirs;
+}
+
+void Config::set_dirs(const VecStrs& new_dirs)
+{
+    m_vec_dirs = new_dirs;
+}
+
+/**
+ * Adds a directory to the list of directories.
+ *
+ * Does not add if the passed dir already is in the list of dirs.
+ * Returns a boolean to indicate if this call resulted in an add.
+ * If it returns false, it didn't add a new one becuase it already 
+ * existed.
+ */
+bool Config::add_dir(const std::string& dir)
+{
+    VecStrs::iterator i = std::find(m_vec_dirs.begin(), m_vec_dirs.end(), dir);
+    if (i == m_vec_dirs.end())
+    {
+        m_vec_dirs.push_back(std::string(dir));
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Removes the given directory from the list of directories.
+ *
+ * Returns true if it was able to find and remove it. Otherwise, returns
+ * false.
+ */
+bool Config::rm_dir(const std::string& dir)
+{
+    VecStrs::iterator i = std::find(m_vec_dirs.begin(), m_vec_dirs.end(), dir);
+    if (i != m_vec_dirs.end())
+    {
+        m_vec_dirs.erase(i);
+        return true;
+    }
+
+    return false;
+}
+
+
