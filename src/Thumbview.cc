@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include "Util.h"
 #include "gcs-i18n.h"
+#include "string.h"
 
 typedef std::pair<Glib::ustring, Glib::ustring> PairStrs;
 
