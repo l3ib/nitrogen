@@ -58,11 +58,15 @@ class NWindow : public Gtk::Window {
         Gtk::Button btn_prefs;
 		Gtk::ColorButton button_bgcolor;
 
+        bool m_dirty;       // set if the user double clicks to preview but forgets to press apply
+
 		void setup_select_boxes();
 
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
         void sighandle_btn_prefs();
+
+        virtual bool on_delete_event(GdkEventAny *event);
 
 #ifdef USE_XINERAMA
 		// xinerama stuff

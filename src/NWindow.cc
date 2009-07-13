@@ -79,6 +79,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 		// don't even worry about it!
 	}
 	
+    m_dirty = false;
 }
 
 // shows all of our widgets
@@ -106,6 +107,8 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 	Gtk::TreeModel::Row row = *iter;
 	this->set_bg(row[view.record.Filename]);
 
+    // preview - set dirty flag
+    m_dirty = true;
 }
 
 /**
@@ -120,6 +123,9 @@ void NWindow::sighandle_click_apply (void) {
 	Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
 	this->set_bg(file);
+
+    // apply - remove dirty flag
+    m_dirty = false;
 
     SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
 	Glib::ustring thedisp = this->select_display.get_active_data(); 
@@ -156,6 +162,29 @@ void NWindow::sighandle_click_apply (void) {
             (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
 
+}
+
+bool NWindow::on_delete_event(GdkEventAny *event)
+{
+    if (m_dirty)
+    {
+        Gtk::MessageDialog dialog(*this, "You previewed an image without applying it, would you like to apply it before you close?", false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
+        dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+
+        int result = dialog.run();
+        switch (result)
+        {
+            case Gtk::RESPONSE_YES:
+
+                break;
+            case Gtk::RESPONSE_CANCEL:
+                return true;
+                break;
+        };
+    
+    }
+
+    return Gtk::Window::on_delete_event(event);
 }
 
 /**
