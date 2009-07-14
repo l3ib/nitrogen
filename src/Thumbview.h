@@ -60,8 +60,6 @@ class DelayLoadingStore : public Gtk::ListStore
 	protected:
 		GAsyncQueue *aqueue_loadthumbs;
 		Thumbview *thumbview;
-
-
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -133,7 +131,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// search compare function
 		bool search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter);
 
-        void select(const Gtk::TreeModel::iterator& iter, bool scrollto);
+        bool select(const Gtk::TreeModel::iterator *iter);
 
 		// loading image
 		Glib::RefPtr<Gdk::Pixbuf> loading_image;
@@ -152,8 +150,16 @@ class Thumbview : public Gtk::ScrolledWindow {
 
         Gtk::TreeModel::iterator get_selected();
         sigc::signal<void, const Gtk::TreePath&> signal_selected;
+
+        const Glib::TimeVal& get_last_loaded_time()
+            { return m_last_loaded_time; }
 	
 	protected:
+
+        Glib::TimeVal m_last_loaded_time;
+
+        void update_last_loaded_time()
+            { m_last_loaded_time.assign_current_time(); }
 
         void sighandle_iview_activated(const Gtk::TreePath& path);
         void sighandle_view_activated(const Gtk::TreePath& path, Gtk::TreeViewColumn *column);

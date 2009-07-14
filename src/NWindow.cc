@@ -359,7 +359,7 @@ void NWindow::set_default_selections()
 		for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
 		{
 			if ( (*iter)[view.record.CurBGOnDisp] == default_selection) {
-				view.select(iter, true);
+                Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(view, &Thumbview::select), new Gtk::TreeIter(iter)), 100);
 				break;
 			}
 		}

@@ -337,27 +337,37 @@ void Thumbview::unload_dir(std::string dir)
 
 /**
  * Sets the selection to the passed in tree iterator.
+ * This is a timeout function.
  *
  * Respects the currently selected view mode.
  * @param   iter        The item in the tree model to select.
- * @param   scrollto    If true, scrolls to the selection.
  */
-void Thumbview::select(const Gtk::TreeModel::iterator& iter, bool scrollto)
+bool Thumbview::select(const Gtk::TreeModel::iterator *iter)
 {
-    Gtk::TreeModel::Path path(iter);
+    Gtk::TreeModel::Path path(*iter);
+
+    Glib::TimeVal curtime;
+    curtime.assign_current_time();
+
+    // make sure we've given it enough time
+    curtime.subtract(m_last_loaded_time);
+    if (curtime.as_double() < 0.1)
+        return true;
+
 
     if (m_curmode == ICON)
     {
         iview.select_path(path);
-        if (scrollto)
-            iview.scroll_to_path(path, true, 0.5, 0.5);
+        iview.scroll_to_path(path, true, 0.5, 0.5);
     }
     else
     {
-        view.get_selection()->select(iter);
-        if (scrollto)
-            view.scroll_to_row(path, 0.5);
+        view.get_selection()->select(*iter);
+        view.scroll_to_row(path, 0.5);
     }
+
+    delete iter;
+    return false;
 }
 
 /**
@@ -577,6 +587,8 @@ void Thumbview::handle_dispatch_thumb() {
 	TreePair *donep = (TreePair*)g_async_queue_pop(this->aqueue_donethumbs);
 	this->update_thumbnail(donep->file, donep->iter, donep->thumb);
 	delete donep;
+
+    update_last_loaded_time();
 
 	g_async_queue_unref(this->aqueue_donethumbs);
 }
