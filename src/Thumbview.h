@@ -133,6 +133,8 @@ class Thumbview : public Gtk::ScrolledWindow {
 		// search compare function
 		bool search_compare (const Glib::RefPtr<Gtk::TreeModel>& model, int column, const Glib::ustring& key, const Gtk::TreeModel::iterator& iter);
 
+        void select(const Gtk::TreeModel::iterator& iter, bool scrollto);
+
 		// loading image
 		Glib::RefPtr<Gdk::Pixbuf> loading_image;
 

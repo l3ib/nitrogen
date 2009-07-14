@@ -359,8 +359,7 @@ void NWindow::set_default_selections()
 		for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
 		{
 			if ( (*iter)[view.record.CurBGOnDisp] == default_selection) {
-				view.view.get_selection()->select(iter);
-				view.view.scroll_to_row(Gtk::TreeModel::Path(iter), 0.5);
+				view.select(iter, true);
 				break;
 			}
 		}

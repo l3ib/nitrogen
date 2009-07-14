@@ -336,6 +336,31 @@ void Thumbview::unload_dir(std::string dir)
 }
 
 /**
+ * Sets the selection to the passed in tree iterator.
+ *
+ * Respects the currently selected view mode.
+ * @param   iter        The item in the tree model to select.
+ * @param   scrollto    If true, scrolls to the selection.
+ */
+void Thumbview::select(const Gtk::TreeModel::iterator& iter, bool scrollto)
+{
+    Gtk::TreeModel::Path path(iter);
+
+    if (m_curmode == ICON)
+    {
+        iview.select_path(path);
+        if (scrollto)
+            iview.scroll_to_path(path, true, 0.5, 0.5);
+    }
+    else
+    {
+        view.get_selection()->select(iter);
+        if (scrollto)
+            view.scroll_to_row(path, 0.5);
+    }
+}
+
+/**
  * Tests the file to see if it is an image
  * TODO: come up with less sux way of doing it than extension
  *

@@ -167,8 +167,8 @@ int main (int argc, char ** argv) {
     else
         main_window->view.load_dir(cfg->get_dirs());
 
-	main_window->set_default_selections();
     main_window->view.set_current_display_mode(cfg->get_display_mode());
+	main_window->set_default_selections();
     main_window->view.set_icon_captions(cfg->get_icon_captions());
     main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
 	main_window->show();
