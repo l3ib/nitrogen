@@ -168,8 +168,7 @@ bool NWindow::on_delete_event(GdkEventAny *event)
 {
     if (m_dirty)
     {
-        Gtk::MessageDialog dialog(*this, "You previewed an image without applying it, would you like to apply it before you close?", false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
-        dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+        Gtk::MessageDialog dialog(*this, _("You previewed an image without applying it, exit anyway?"), false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO, true);
 
         int result = dialog.run();
         switch (result)
@@ -177,11 +176,10 @@ bool NWindow::on_delete_event(GdkEventAny *event)
             case Gtk::RESPONSE_YES:
 
                 break;
-            case Gtk::RESPONSE_CANCEL:
+            case Gtk::RESPONSE_NO:
                 return true;
                 break;
         };
-    
     }
 
     return Gtk::Window::on_delete_event(event);
