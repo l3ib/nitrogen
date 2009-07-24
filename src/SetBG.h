@@ -45,7 +45,13 @@ class SetBG {
 			SET_ZOOM,
             SET_AUTO
 		};
-		
+
+        enum RootWindowType {
+            DEFAULT,
+            NAUTILUS,
+            XFCE
+        };
+
 		static bool set_bg(	Glib::ustring &disp,
 							Glib::ustring file,
 							SetMode mode,
@@ -68,7 +74,7 @@ class SetBG {
 									Gdk::Color bgcolor
 								    );
 
-		static bool nautilus_running(Glib::RefPtr<Gdk::Window> rootwin);
+		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin);
 
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );

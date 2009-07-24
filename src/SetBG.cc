@@ -65,8 +65,11 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
 	window->get_geometry(winx,winy,winw,winh,wind);
 
 	// check to see if nautilus is running
-	if (SetBG::nautilus_running(window))
-		return SetBG::set_bg_nautilus(screen, file, mode, bgcolor);		
+	if (SetBG::get_rootwindowtype(window) == SetBG::NAUTILUS)
+		return SetBG::set_bg_nautilus(screen, file, mode, bgcolor);
+
+    // NOTE: although we now have a way of detecting XFCE, just setting the bg like
+    // in normal X seems to work just fine.
 
 	// create gc and colormap
 	gc_ = Gdk::GC::create(window);
@@ -373,24 +376,55 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
  *
  * @returns 	True if nautilus is drawing the desktop.
  */
-bool SetBG::nautilus_running(Glib::RefPtr<Gdk::Window> rootwin)
-{   
+SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin)
+{
 	GdkAtom type;
     gint format;
     gint length;
 	guchar *data;
-    gboolean retval;
+    SetBG::RootWindowType retval = SetBG::DEFAULT;
+    gboolean ret = FALSE;
 
-	retval = gdk_property_get(rootwin->gobj(), 
+	ret =    gdk_property_get(rootwin->gobj(),
 						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
                               gdk_atom_intern("WINDOW", FALSE),
 							  0,
-							  4, /* wtf is a length of a window */
+							  4, /* length of a window is 32bits*/
 							  FALSE, &type, &format, &length, &data);
 
-    if (retval)
-        g_free(data);
+    guint wid = *(guint*)data;
 
+    if (!ret)
+        return SetBG::DEFAULT;
+
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+    Atom propatom = XInternAtom(xdisp, "WM_CLASS", FALSE);
+
+    XTextProperty tprop;
+
+    gchar **list;
+    gint num;
+
+    if (XGetTextProperty(xdisp, wid, &tprop, propatom) && tprop.nitems)
+    {
+        if (XTextPropertyToStringList(&tprop, &list, &num))
+        {
+            // expect 2 strings here (XLib tells us there are 3)
+            if (num != 3)
+                retval = SetBG::DEFAULT;
+            else
+            {
+                std::string strclass = std::string(list[1]);
+                if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;
+                if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS;
+            }
+
+            XFreeStringList(list);
+        }
+        XFree(tprop.value);
+    }
+
+    g_free(data);
     return retval;
 }
 
