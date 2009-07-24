@@ -415,9 +415,14 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
             else
             {
                 std::string strclass = std::string(list[1]);
-                if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;
-                if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS;
-            }
+                if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
+                if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
+                {
+                    std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
+                    retval = SetBG::UNKNOWN;
+                }
+
+         }
 
             XFreeStringList(list);
         }

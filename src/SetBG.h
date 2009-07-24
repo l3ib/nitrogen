@@ -49,7 +49,8 @@ class SetBG {
         enum RootWindowType {
             DEFAULT,
             NAUTILUS,
-            XFCE
+            XFCE,
+            UNKNOWN
         };
 
 		static bool set_bg(	Glib::ustring &disp,
