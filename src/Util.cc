@@ -188,21 +188,25 @@ ArgParser* create_arg_parser() {
 	parser->register_option("restore", _("Restore saved backgrounds"));
 	parser->register_option("no-recurse", _("Do not recurse into subdirectories"));
 	parser->register_option("sort", _("How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)"), true);
+	parser->register_option("set-color", _("background color in hex, #000000 by default"), true);
 
 	// command line set modes
 	Glib::ustring openp(" (");
 	Glib::ustring closep(")");
 	parser->register_option("set-scaled", _("Sets the background to the given file") + openp + _("scaled") + closep);
 	parser->register_option("set-tiled", _("Sets the background to the given file") + openp + _("tiled") + closep);
-	parser->register_option("set-best", _("Sets the background to the given file") + openp + _("best-fit") + closep);
+	parser->register_option("set-auto", _("Sets the background to the given file") + openp + _("auto") + closep);
 	parser->register_option("set-centered", _("Sets the background to the given file") + openp + _("centered") + closep);
-	parser->register_option("save", _("Saves the background permanently"));
-	
+	parser->register_option("set-zoom", _("Sets the background to the given file") + openp + _("zoom") + closep);
+    parser->register_option("save", _("Saves the background permanently"));
+
 	std::vector<std::string> vecsetopts;
 	vecsetopts.push_back("set-scaled");
 	vecsetopts.push_back("set-tiled");
-	vecsetopts.push_back("set-best");
+	vecsetopts.push_back("set-auto");
 	vecsetopts.push_back("set-centered");
+	vecsetopts.push_back("set-zoom");
+
 	parser->make_exclusive(vecsetopts);
 
 	return parser;

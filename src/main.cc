@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ArgParser.h"
 #include "Util.h"
 //#include "gettext.h"
-//#include <inti/i18n.h> 
+//#include <inti/i18n.h>
 #include "gcs-i18n.h"
 
 void restore_bgs()
@@ -38,12 +38,9 @@ void restore_bgs()
 	Util::program_log("leaving restore_bgs()");
 }
 
-void set_bg_once(Glib::ustring file, SetBG::SetMode mode, bool save)
+void set_bg_once(Glib::ustring file, SetBG::SetMode mode, bool save, Gdk::Color col)
 {
 	Util::program_log("entering set_bg_once()");
-
-	// TODO: how to get a default color in here
-	Gdk::Color col;
 
 	// TODO: find out why teh config::set_bg will not get me default
 	Glib::ustring disp;
@@ -124,23 +121,34 @@ int main (int argc, char ** argv) {
     	startdir = Util::fix_start_dir(std::string(startdir));
 	
 	// should we set on the command line?
+    Gdk::Color color("#000000");
+    if ( parser->has_argument("set-color") ) {
+        Glib::ustring bgcolor_str = parser->get_value ("set-color");
+        color.parse(bgcolor_str);
+    }
+
 	if ( parser->has_argument("set-tiled") )	{
-		set_bg_once(startdir, SetBG::SET_TILE, parser->has_argument("save"));
+		set_bg_once(startdir, SetBG::SET_TILE, parser->has_argument("save"), color);
 		return 0;
 	}
 
 	if ( parser->has_argument("set-scaled") )	{
-		set_bg_once(startdir, SetBG::SET_SCALE, parser->has_argument("save"));
+		set_bg_once(startdir, SetBG::SET_SCALE, parser->has_argument("save"), color);
+		return 0;
+	}
+
+    if ( parser->has_argument("set-auto") )	{
+		set_bg_once(startdir, SetBG::SET_AUTO, parser->has_argument("save"), color);
 		return 0;
 	}
 
 	if ( parser->has_argument("set-zoom") )	{
-		set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"));
+		set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"), color);
 		return 0;
 	}
 
 	if ( parser->has_argument("set-centered") )	{
-		set_bg_once(startdir, SetBG::SET_CENTER, parser->has_argument("save"));
+		set_bg_once(startdir, SetBG::SET_CENTER, parser->has_argument("save"), color);
 		return 0;
 	}
 
