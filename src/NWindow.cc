@@ -151,6 +151,10 @@ void NWindow::sighandle_click_apply (void) {
 
         std::map<Glib::ustring, Glib::ustring>::iterator mapiter = view.map_setbgs.find(curbgondisp);
 
+        // checking for fullscreen xinerama with several screens end
+        if( mapiter == view.map_setbgs.end() )
+            break;
+
         // if filenames don't match, this row must be blanked out!
         Glib::ustring filename = (*i)[view.record.Filename];
         if (filename != (*mapiter).second)
