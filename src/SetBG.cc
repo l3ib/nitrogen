@@ -436,15 +436,13 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
 /**
  * Sets the bg if nautilus is appearing to draw the desktop image.
  *
- * TODO: Fix this crap array stuff
- *
  * Simply calls gconftool-2 for now, until we find a better way to do it.
  */
 bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 
 	GError *error = NULL;
 
-	Glib::ustring strmode;
+    Glib::ustring strmode = "scaled";       // in case of more modes
 	switch(mode) {
 		case SetBG::SET_SCALE:  strmode = "stretched";  break;
 		case SetBG::SET_TILE:   strmode = "wallpaper"; break; 
@@ -452,45 +450,34 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
 		case SetBG::SET_ZOOM:   strmode = "scaled"; break;
 	};
 
-	gchar** argv = (gchar**)g_malloc(sizeof(gchar*)*10);
-	argv[0] = "gconftool-2";
-	argv[1] = "--type";
-	argv[2] = "string";
-	argv[3] = "--set";
-	argv[4] = "/desktop/gnome/background/picture_options";
-	argv[5] = g_strdup(strmode.c_str());
-	argv[6] = "--set";
-	argv[7] = "/desktop/gnome/background/picture_filename";
-	argv[8] = g_strdup(file.c_str());
-	argv[9] = NULL;
-
-	gboolean res = g_spawn_async(		NULL,
-										argv,
-										NULL,
-										G_SPAWN_SEARCH_PATH,
-										NULL,
-										NULL,
-										NULL,
-										&error);
-
-	if (res == FALSE)
-	{
-		std::cerr << _("ERROR") << "\n" << error->message << "\n";
-		g_clear_error(&error);
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("gconftool-2"));
+    vecCmdLine.push_back(std::string("--type"));
+    vecCmdLine.push_back(std::string("string"));
+    vecCmdLine.push_back(std::string("--set"));
+    vecCmdLine.push_back(std::string("/desktop/gnome/background/picture_options"));
+    vecCmdLine.push_back(std::string(strmode));
+    vecCmdLine.push_back(std::string("--set"));
+    vecCmdLine.push_back(std::string("/desktop/gnome/background/picture_filename"));
+    vecCmdLine.push_back(std::string(file));
+    
+    try
+    {
+        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+    }
+    catch (Glib::SpawnError e)
+    {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
 		
-		for (int i=0; i<9; i++)
-			std::cerr << argv[i] << " ";
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
 
 		std::cerr << "\n";
+
+        return false;
 	}
 
-
-	g_free(argv[5]);
-	g_free(argv[8]);
-	g_free(argv);
-
-	// disregard error atm, just return true or false
-	return (res == TRUE);
+	return true;
 }
 
 /**
