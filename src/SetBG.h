@@ -38,13 +38,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class SetBG {
 	public:
 			
+        // NOTE: do not change the order of these, they are changed to integer and 
+        // put on disk.
 		enum SetMode { 
 			SET_SCALE,
 			SET_TILE,
 			SET_CENTER,
 			SET_ZOOM,
-            SET_ZOOM_FILL,
-            SET_AUTO
+            SET_AUTO,
+            SET_ZOOM_FILL
 		};
 
         enum RootWindowType {
