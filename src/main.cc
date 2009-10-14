@@ -148,7 +148,7 @@ int main (int argc, char ** argv) {
 	}
 
 	if ( parser->has_argument("set-zoom-fill") )	{
-		set_bg_once(startdir, SetBG::SET_ZOOM_FILL, parser->has_argument("save"));
+		set_bg_once(startdir, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
 		return 0;
 	}
 
