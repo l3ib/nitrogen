@@ -198,6 +198,7 @@ ArgParser* create_arg_parser() {
 	parser->register_option("set-auto", _("Sets the background to the given file") + openp + _("auto") + closep);
 	parser->register_option("set-centered", _("Sets the background to the given file") + openp + _("centered") + closep);
 	parser->register_option("set-zoom", _("Sets the background to the given file") + openp + _("zoom") + closep);
+    parser->register_option("set-zoom-fill", _("Sets the background to the given file") + openp + _("zoom-fill") + closep);
     parser->register_option("save", _("Saves the background permanently"));
 
 	std::vector<std::string> vecsetopts;
@@ -206,6 +207,7 @@ ArgParser* create_arg_parser() {
 	vecsetopts.push_back("set-auto");
 	vecsetopts.push_back("set-centered");
 	vecsetopts.push_back("set-zoom");
+    vecsetopts.push_back("set-zoom-fill");
 
 	parser->make_exclusive(vecsetopts);
 
