@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2008-07-31 21:51-0400\n"
+"POT-Creation-Date: 2009-12-09 15:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,123 +36,140 @@ msgstr ""
 msgid "Usage:"
 msgstr ""
 
-#: src/Config.cc:62
+#: src/Config.cc:92
 msgid "Could not open config directory."
 msgstr ""
 
-#: src/Config.cc:72 src/Config.cc:161
+#: src/Config.cc:102 src/Config.cc:191
 msgid "ERROR: Unable to load config file"
 msgstr ""
 
-#: src/Config.cc:83
+#: src/Config.cc:113
 msgid "Couldn't find group for"
 msgstr ""
 
-#: src/Config.cc:95
+#: src/Config.cc:125
 msgid "Could not get filename from config file."
 msgstr ""
 
-#: src/Config.cc:104
+#: src/Config.cc:134
 msgid "Could not get mode from config file."
 msgstr ""
 
-#: src/Config.cc:163
+#: src/Config.cc:193
 msgid "The error code returned was"
 msgstr ""
 
-#: src/Config.cc:164
+#: src/Config.cc:194
 msgid "We expected"
 msgstr ""
 
-#: src/Config.cc:164
+#: src/Config.cc:194
 msgid "or"
 msgstr ""
 
-#: src/NWindow.cc:208
+#: src/NWindow.cc:175
+msgid "You previewed an image without applying it, exit anyway?"
+msgstr ""
+
+#: src/NWindow.cc:238
 msgid "Automatic"
 msgstr ""
 
-#: src/NWindow.cc:215
+#: src/NWindow.cc:245
 msgid "Scaled"
 msgstr ""
 
-#: src/NWindow.cc:223
+#: src/NWindow.cc:253
 msgid "Centered"
 msgstr ""
 
-#: src/NWindow.cc:231
+#: src/NWindow.cc:261
 msgid "Tiled"
 msgstr ""
 
-#: src/NWindow.cc:240
+#: src/NWindow.cc:270
 msgid "Zoomed"
 msgstr ""
 
-#: src/NWindow.cc:253 src/NWindow.cc:284
+#: src/NWindow.cc:271
+msgid "Zoomed Fill"
+msgstr ""
+
+#: src/NWindow.cc:284 src/NWindow.cc:315
 msgid "Screen"
 msgstr ""
 
-#: src/NWindow.cc:278 src/NWindow.cc:280
+#: src/NWindow.cc:309 src/NWindow.cc:311
 msgid "Full Screen"
 msgstr ""
 
-#: src/NWindow.cc:301
+#: src/NWindow.cc:332
 msgid "Default"
 msgstr ""
 
-#: src/SetBG.cc:53 src/SetBG.cc:224
+#: src/SetBG.cc:53 src/SetBG.cc:231
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:86 src/SetBG.cc:306
+#: src/SetBG.cc:89 src/SetBG.cc:313
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:119
+#: src/SetBG.cc:126
 msgid "Unknown mode for saved bg on"
 msgstr ""
 
-#: src/SetBG.cc:163 src/SetBG.cc:352
+#: src/SetBG.cc:170 src/SetBG.cc:363
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:216
+#: src/SetBG.cc:223
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
-#: src/SetBG.cc:339
+#: src/SetBG.cc:350
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:439
+#: src/SetBG.cc:429
+msgid ""
+"UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
+msgstr ""
+
+#: src/SetBG.cc:479
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:611 src/SetBG.cc:636
+#: src/SetBG.cc:695 src/SetBG.cc:723
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:614 src/SetBG.cc:638
+#: src/SetBG.cc:698 src/SetBG.cc:725
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:617 src/SetBG.cc:640
+#: src/SetBG.cc:701 src/SetBG.cc:727
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:620 src/SetBG.cc:642
+#: src/SetBG.cc:704 src/SetBG.cc:729
 msgid "Zoom"
 msgstr ""
 
-#: src/SetBG.cc:623 src/SetBG.cc:644
+#: src/SetBG.cc:707 src/SetBG.cc:731
+msgid "ZoomFill"
+msgstr ""
+
+#: src/SetBG.cc:710 src/SetBG.cc:733
 msgid "Auto"
 msgstr ""
 
-#: src/Thumbview.cc:226
+#: src/Thumbview.cc:258
 msgid "Could not open dir"
 msgstr ""
 
-#: src/Thumbview.cc:267
+#: src/Thumbview.cc:294
 msgid "Invalid UTF-8 encountered. Skipping file"
 msgstr ""
 
@@ -189,38 +206,51 @@ msgid ""
 "\t\t\t* rtime, for reverse last modified time sort (newest first)"
 msgstr ""
 
-#: src/Util.cc:195 src/Util.cc:196 src/Util.cc:197 src/Util.cc:198
+#: src/Util.cc:191
+msgid "background color in hex, #000000 by default"
+msgstr ""
+
+#: src/Util.cc:196 src/Util.cc:197 src/Util.cc:198 src/Util.cc:199
+#: src/Util.cc:200 src/Util.cc:201
 msgid "Sets the background to the given file"
 msgstr ""
 
-#: src/Util.cc:195
+#: src/Util.cc:196
 msgid "scaled"
 msgstr ""
 
-#: src/Util.cc:196
+#: src/Util.cc:197
 msgid "tiled"
 msgstr ""
 
-#: src/Util.cc:197
-msgid "best-fit"
-msgstr ""
-
 #: src/Util.cc:198
-msgid "centered"
+msgid "auto"
 msgstr ""
 
 #: src/Util.cc:199
+msgid "centered"
+msgstr ""
+
+#: src/Util.cc:200
+msgid "zoom"
+msgstr ""
+
+#: src/Util.cc:201
+msgid "zoom-fill"
+msgstr ""
+
+#: src/Util.cc:202
 msgid "Saves the background permanently"
 msgstr ""
 
-#: src/Util.cc:269
+#: src/Util.cc:275
 msgid "Currently set background"
 msgstr ""
 
-#: src/Util.cc:272
+#: src/Util.cc:278
 msgid "for"
 msgstr ""
 
-#: src/main.cc:86
+#: src/main.cc:97
 msgid "Error parsing command line"
 msgstr ""
