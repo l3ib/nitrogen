@@ -400,10 +400,10 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
 							  4, /* length of a window is 32bits*/
 							  FALSE, &type, &format, &length, &data);
 
-    guint wid = *(guint*)data;
-
     if (!ret)
         return SetBG::DEFAULT;
+
+    guint wid = *(guint*)data;
 
     Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
     Atom propatom = XInternAtom(xdisp, "WM_CLASS", FALSE);
