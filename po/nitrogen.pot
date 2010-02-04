@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2009-12-09 15:42+0000\n"
+"POT-Creation-Date: 2010-01-22 14:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -165,11 +165,11 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: src/Thumbview.cc:258
+#: src/Thumbview.cc:259
 msgid "Could not open dir"
 msgstr ""
 
-#: src/Thumbview.cc:294
+#: src/Thumbview.cc:295
 msgid "Invalid UTF-8 encountered. Skipping file"
 msgstr ""
 
