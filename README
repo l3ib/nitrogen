@@ -1,48 +1,37 @@
-NITROGEN:
+NITROGEN
 
-Webpage: http://projects.l3ib.org/nitrogen/
+WEBPAGE: http://projects.l3ib.org/nitrogen/
 
+REQUIREMENTS:
+    GTKMM 2.10
+    GTK 2.10
 
-Requirements:
+BUILDING:
 
-GTKMM 2.10
-GTK 2.10
+    ./bootstrap
+    ./configure
+    make
+    make install (as root or a user with proper permissions)
 
+    The binary is called, amazingly enough, "nitrogen".
 
-Installation:
+    NOTE: If the "CXXFLAGS" env var is not set at ./configure time, autotools
+          will gladly insert "-g -O2" in them. "-g" will inflate the size of 
+          the nitrogen binary to nearly 2mb, so consider using:
+          CXXFLAGS="-O2" ./configure
+    
+          PACKAGERS: Make sure you set CXXFLAGS to an appropriate value for
+          the target system.
 
-./bootstrap
-./configure
-make
-make install (as root or a user with proper permissions)
+USAGE:
+    See the man page. It *might* be up to date.
 
-The binary is called, amazingly enough, "nitrogen".
+CONTACT:
+    If you want to tell us about the many bugs that we have, drop by #l3ib on
+    irc.freenode.net, and talk to m4re or jvd.
 
+LICENSE:
+    Nitrogen is licensed under the GPL.  See COPYING.
+    Icons are licensed under a Creative Commons Attribution-Share Alike license.
 
-
-Usage:  nitrogen [OPTIONS] DIRECTORY
-
-Options:
-        --no-recurse
-                Do not recurse into subdirectories
-        --restore
-                Restore saved backgrounds
-        --sort=[arg]
-                How to sort the backgrounds. Valid options are:
-                        * alpha, for alphanumeric sort
-                        * ralpha, for reverse alphanumeric sort
-                        * time, for last modified time sort (oldest first)
-                        * rtime, for reverse last modified time sort (newest first)
-
-DIRECTORY is the directory containing the backgrounds you wish to preview.  It
-adds files recursively from here (so long as --no-recurse hasn't been supplied),
-generating preview images asynchronously.
-
-If you want to tell us about the many bugs that we have, drop by #l3ib on
-irc.freenode.net, and talk to nightm4re or syscrash2k.
-
-
-Nitrogen is licensed under the GPL.  See COPYING.
-Icons are licensed under a Creative Commons Attribution-Share Alike license.
-
-see http://creativecommons.org/licenses/by-sa/3.0
+    See http://creativecommons.org/licenses/by-sa/3.0
