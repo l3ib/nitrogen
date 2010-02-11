@@ -745,6 +745,8 @@ void Thumbview::file_created_callback(std::string filename) {
 	}
 }
 
+#endif
+
 void Thumbview::set_current_display_mode(DisplayMode newmode)
 {
     remove();
@@ -776,4 +778,4 @@ void Thumbview::sighandle_view_activated(const Gtk::TreePath& path, Gtk::TreeVie
     signal_selected(path);
 }
 
-#endif
+
