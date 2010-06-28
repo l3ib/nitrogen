@@ -529,23 +529,16 @@ void Thumbview::create_cache_images()
 		Glib::ustring file = p->file;
 		Glib::ustring cachefile = this->cache_file(file);
 
-		Util::program_log("create_cache_images(): Caching file %s\n", file.c_str());
+		Util::program_log("create_cache_images(): + Caching file %s\n", file.c_str());
 
-		// open image
+		// open image, scale to smallish 4:3 with aspect preserved
 		try {
-			thumb = Gdk::Pixbuf::create_from_file(file);
+			thumb = Gdk::Pixbuf::create_from_file(file, 100, 75, true);
 		} catch (...) {
 			// forget it, move on
 			delete p;
 			continue;
 		}
-
-		// eliminate zero heights (due to really tiny images :/)
-		int height = (int)(100*((float)thumb->get_height()/(float)thumb->get_width()));
-		if (!height) height = 1;
-
-		// create thumb
-		thumb = thumb->scale_simple(100, height, Gdk::INTERP_TILES);
 
 		// create required fd.o png tags
 		std::list<Glib::ustring> opts, vals;
@@ -563,6 +556,8 @@ void Thumbview::create_cache_images()
 		delete [] bufout;
 				
 		thumb->save(cachefile, "png", opts, vals);
+
+        Util::program_log("create_cache_images(): - Finished caching file %s\n", file.c_str());
 
 		// send it to the display
 		TreePair *sendp = new TreePair();
