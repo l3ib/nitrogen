@@ -469,6 +469,14 @@ bool SetBG::set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen, Glib::ustring file
     vecCmdLine.push_back(std::string("--set"));
     vecCmdLine.push_back(std::string("/desktop/gnome/background/picture_filename"));
     vecCmdLine.push_back(std::string(file));
+
+    std::string strcolor = std::string( bgcolor.to_string() );
+    vecCmdLine.push_back(std::string("--set"));
+    vecCmdLine.push_back(std::string("/desktop/gnome/background/primary_color"));
+    vecCmdLine.push_back(strcolor);
+    vecCmdLine.push_back(std::string("--set"));
+    vecCmdLine.push_back(std::string("/desktop/gnome/background/secondary_color"));
+    vecCmdLine.push_back(strcolor);
     
     try
     {
