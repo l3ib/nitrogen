@@ -190,7 +190,10 @@ void Thumbview::add_file(std::string filename, std::string rootdir)
 	Glib::RefPtr<Gdk::Pixbuf> thumb = this->loading_image; 
 	row[record.Thumbnail] = thumb;
 	row[record.Filename] = filename;
-	row[record.Description] = Glib::ustring(filename, filename.rfind ("/")+1);
+
+    int idx = filename.rfind("/");
+	row[record.Description] = Glib::ustring(filename.substr(idx+1));
+
     row[record.RootDir] = rootdir;
 
     for (std::map<Glib::ustring, Glib::ustring>::iterator i = map_setbgs.begin(); i!=map_setbgs.end(); i++)
