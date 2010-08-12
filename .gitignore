@@ -1,0 +1,16 @@
+Makefile*
+config.*
+*.tar.gz
+*.o
+src/nitrogen
+*.swp
+
+*.m4
+configure
+autom4te.cache
+ltmain.sh
+stamp-h1
+src/.deps
+
+tags
+
