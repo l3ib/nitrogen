@@ -380,6 +380,24 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 #endif
 
 /**
+ * Handles a BadWindow error in get_rootwindowtype.
+ *
+ * This is rather hax, but not sure how else to handle it.
+ */
+int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
+{
+    if (error->error_code == BadWindow)
+        return 0;
+
+    std::cerr << "SetBG::handle_x_errors received an error it cannot handle!\n";
+    std::cerr << "\tcode: " << error->error_code << "\n";
+    std::cerr << "\nWe must abort!";
+    throw std::exception("SetBG::handle_x_error caught an unknown error.");
+
+    return 1;
+}
+
+/**
  * Determines if Nautilus is being used to draw the root desktop.
  *
  * @returns 	True if nautilus is drawing the desktop.
@@ -413,7 +431,11 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
     gchar **list;
     gint num;
 
-    if (XGetTextProperty(xdisp, wid, &tprop, propatom) && tprop.nitems)
+    XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
+    bool bGotText = XGetTextProperty(xdisp, wid, &tprop, propatom);
+    XSetErrorHandler(old_x_error_handler);
+
+    if (bGotText && tprop.nitems)
     {
         if (XTextPropertyToStringList(&tprop, &list, &num))
         {

@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <X11/extensions/Xinerama.h>
 #endif
 
+typedef int (*XErrorHandler)(Display*, XErrorEvent*);
+
 /**
  * Utility class for setting the background image.
  *
@@ -82,7 +84,7 @@ class SetBG {
 
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );
-
+        
 	private:
 	
 		static Glib::RefPtr<Gdk::Pixbuf> make_scale(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
@@ -94,6 +96,8 @@ class SetBG {
 
 		static guint32 GdkColorToUint32(const Gdk::Color);
 	
+        static int handle_x_errors(Display *display, XErrorEvent *error);
+
 };
 
 #endif
