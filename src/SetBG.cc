@@ -392,7 +392,7 @@ int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
     std::cerr << "SetBG::handle_x_errors received an error it cannot handle!\n";
     std::cerr << "\tcode: " << error->error_code << "\n";
     std::cerr << "\nWe must abort!";
-    throw std::exception("SetBG::handle_x_error caught an unknown error.");
+    exit(1);
 
     return 1;
 }
