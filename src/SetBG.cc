@@ -254,7 +254,6 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 	}
 
 	Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
-	XSetCloseDownMode(xdisp, RetainPermanent);
 	Window xwin = DefaultRootWindow(xdisp);
 	Pixmap* xoldpm = NULL;
 
@@ -301,6 +300,9 @@ bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num
 		pixmap = Gdk::Pixmap::create(window,winw,winh,window->get_depth());
         int width, height;
         pixmap->get_size(width, height);
+
+        // only set the mode if we never had an old pixmap to work with
+	    XSetCloseDownMode(xdisp, RetainPermanent);
 	}
 
 	// set the colormap 
