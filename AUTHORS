@@ -8,6 +8,7 @@ Contributors:
     Lars Kinn Ekroll <?> - Much debugging help
     Евдокимов Сергей <usaf@rambler.ru> - patches
     Siiseli Koulutus <tuki@siiseli.fi> - finnish translation
+    Cloudef <mailRoxas@gmail.com> - Xinerama mode resource leak fix
 
 Items Ruthlessly Stolen:
 	Icon theme installer from Banshee

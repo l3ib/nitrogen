@@ -1,3 +1,13 @@
+Tue Apr 19 21:55:56 EDT 2011    Dave Foster <daf@minuslab.net>
+    * Releasing 1.5.2.
+    * Fixed bug in Xinerama mode where X resources would be leaked on
+      every set. Thanks to Cloudef for the fix.
+    * Finnish translation (thx Siiseli Koulutus)
+    * Several small fixes pertaining to substrings, improvements to
+      GNOME setting mode (thx Евдокимов Сергей)
+    * Small fixes for thumbnail generation speed and inotify flag
+      problems.
+
 Thu Feb  4 18:43:52 EST 2010    Dave Foster <daf@minuslab.net>
     * Releasing 1.5.1.
     * Fixes bug with detecting root window type, README updates.
