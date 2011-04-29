@@ -34,27 +34,18 @@ class NPrefsWindow : public Gtk::Dialog
     protected:
         virtual void on_response(int response_id);
     protected:
-        Gtk::VBox m_vbox_view;
-        Gtk::VBox m_vbox_dirs;
-        Gtk::HBox m_hbox_dirbtns;
-        Gtk::Frame m_frame_view;
-        Gtk::Frame m_frame_dirs;
-        Gtk::Alignment m_align_view;
-        Gtk::Alignment m_align_dirs;
-        Gtk::RadioButton m_rb_view_icon;
-        Gtk::RadioButton m_rb_view_list;
-
-        Gtk::ScrolledWindow m_scrolledwin;
-        Gtk::TreeView m_list_dirs;
-        Gtk::Button m_btn_adddir;
-        Gtk::Button m_btn_deldir;
         Config* m_cfg;
+
+		Glib::RefPtr<Gtk::Builder> builder;
+
+		Gtk::ComboBoxText view_type;
 
         // handlers
         void sighandle_click_adddir();
         void sighandle_click_deldir();
 
         // tree view noise
+		Gtk::TreeView * m_list_dirs;
         Glib::RefPtr<Gtk::ListStore> m_store_dirs;
         Gtk::TreeModelColumn<std::string> m_tmc_dir;
 };

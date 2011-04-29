@@ -24,38 +24,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Util.h"
 #include "gcs-i18n.h"
 
-NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Preferences"), parent, true, false),
-                                m_frame_view(_("View Options")),
-                                m_frame_dirs(_("Directories")),
-                                m_rb_view_icon(_("_Icon"), true),
-                                m_rb_view_list(_("_List"), true),
-                                m_btn_adddir(Gtk::Stock::ADD),
-                                m_btn_deldir(Gtk::Stock::DELETE)
+NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Preferences"), parent, true, false)
 {
-    // radio button grouping
-    Gtk::RadioButton::Group group = m_rb_view_icon.get_group();
-    m_rb_view_list.set_group(group);
+
+	builder = Gtk::Builder::create_from_file("data/prefs.glade");
+	builder->get_widget("dirlist", m_list_dirs);
+
+	Gtk::Alignment * view_opts_alignment;
+	builder->get_widget("view_opts_alignment", view_opts_alignment);
+	view_opts_alignment->add(view_type);
+
+	// view mode combo box
+	view_type.append_text(_("Icon View"));
+	view_type.append_text(_("List View"));
    
     m_cfg = cfg;
     DisplayMode mode = m_cfg->get_display_mode();
 
-    if (mode == ICON)
-        m_rb_view_icon.set_active(true);
-    else
-        m_rb_view_list.set_active(true);
+	view_type.set_active_text(mode == ICON ? _("Icon View") : _("List View"));
 
     // signal handlers for directory buttons
-    m_btn_adddir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_adddir));
-    m_btn_deldir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_deldir));
+	Gtk::Button * btn_adddir;
+	Gtk::Button * btn_deldir;
+	builder->get_widget("add_dir", btn_adddir);
+	builder->get_widget("del_dir", btn_deldir);
+
+    btn_adddir->signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_adddir));
+    btn_deldir->signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_deldir));
 
     // fill dir list from config
     Gtk::TreeModelColumnRecord tmcr;
     tmcr.add(m_tmc_dir);
 
     m_store_dirs = Gtk::ListStore::create(tmcr);
-    m_list_dirs.set_model(m_store_dirs);
-    m_list_dirs.append_column("Directory", m_tmc_dir);
-    m_list_dirs.set_headers_visible(false);
+    m_list_dirs->set_model(m_store_dirs);
+    m_list_dirs->append_column("Directory", m_tmc_dir);
+    m_list_dirs->set_headers_visible(false);
 
     VecStrs vecdirs = m_cfg->get_dirs();
     for (VecStrs::iterator i = vecdirs.begin(); i != vecdirs.end(); i++)
@@ -65,31 +69,13 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     }
 
     // layout stuff
-    m_align_view.set_padding(0, 0, 12, 0);
-    m_align_view.add(m_vbox_view);
+	Gtk::Frame * view_opts_frame;
+	Gtk::Frame * dir_frame;
+	builder->get_widget("view_opts_frame", view_opts_frame);
+	builder->get_widget("dir_frame", dir_frame);
 
-    m_frame_view.add(m_align_view);
-    m_frame_view.set_shadow_type(Gtk::SHADOW_NONE);
-    m_vbox_view.pack_start(m_rb_view_icon, false, true);
-    m_vbox_view.pack_start(m_rb_view_list, false, true);
-
-    m_align_dirs.set_padding(0, 0, 12, 0);
-    m_align_dirs.add(m_vbox_dirs);
-
-    m_frame_dirs.add(m_align_dirs);
-    m_frame_dirs.set_shadow_type(Gtk::SHADOW_NONE);
-    m_vbox_dirs.pack_start(m_scrolledwin, true, true);
-    m_vbox_dirs.pack_start(m_hbox_dirbtns, false, true);
-
-    m_scrolledwin.add(m_list_dirs);
-    m_scrolledwin.set_shadow_type(Gtk::SHADOW_IN);
-    m_scrolledwin.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-
-    m_hbox_dirbtns.pack_start(m_btn_adddir, false, true);
-    m_hbox_dirbtns.pack_start(m_btn_deldir, false, true);
-
-    get_vbox()->pack_start(m_frame_view, false, true);
-    get_vbox()->pack_start(m_frame_dirs, true, true);
+	get_vbox()->pack_start(*view_opts_frame, false, false, 5);
+	get_vbox()->pack_start(*dir_frame, true, true, 5);
 
     add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     add_button(Gtk::Stock::OK, Gtk::RESPONSE_OK);
@@ -106,7 +92,7 @@ void NPrefsWindow::on_response(int response_id)
 {
     if (response_id == Gtk::RESPONSE_OK)
     {
-        DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
+        DisplayMode mode = (view_type.get_active_text() == _("Icon View")) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
 
         m_cfg->save_cfg();
@@ -141,7 +127,7 @@ void NPrefsWindow::sighandle_click_adddir()
 
 void NPrefsWindow::sighandle_click_deldir()
 {
-    Gtk::TreeIter iter = m_list_dirs.get_selection()->get_selected();
+    Gtk::TreeIter iter = m_list_dirs->get_selection()->get_selected();
     if (!iter)
         return;
 
