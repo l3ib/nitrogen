@@ -30,9 +30,14 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
 	builder = Gtk::Builder::create_from_file("data/prefs.glade");
 	builder->get_widget("dirlist", m_list_dirs);
 
-	Gtk::Alignment * view_opts_alignment;
-	builder->get_widget("view_opts_alignment", view_opts_alignment);
-	view_opts_alignment->add(view_type);
+	Gtk::VBox * view_opts_vbox;
+	builder->get_widget("view_opts_vbox", view_opts_vbox);
+	view_opts_vbox->pack_start(view_type, false, false, 0);
+	view_opts_vbox->reorder_child(view_type, 0);
+
+	Gtk::HBox * sort_hbox;
+	builder->get_widget("sort_hbox", sort_hbox);
+	sort_hbox->pack_start(sort, false, false, 0);
 
 	// view mode combo box
 	view_type.append_text(_("Icon View"));
@@ -42,6 +47,13 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     DisplayMode mode = m_cfg->get_display_mode();
 
 	view_type.set_active_text(mode == ICON ? _("Icon View") : _("List View"));
+
+	// sort order combo box
+	sort.append_text(_("filename"));
+	sort.append_text(_("date"));
+
+	if (cfg->get_sort_mode() == Thumbview::SORT_ALPHA) sort.set_active_text(_("filename"));
+	else if (cfg->get_sort_mode() == Thumbview::SORT_RTIME) sort.set_active_text(_("date"));
 
     // signal handlers for directory buttons
 	Gtk::Button * btn_adddir;
@@ -94,6 +106,9 @@ void NPrefsWindow::on_response(int response_id)
     {
         DisplayMode mode = (view_type.get_active_text() == _("Icon View")) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
+
+		if (sort.get_active_text() == "filename") m_cfg->set_sort_mode(Thumbview::SORT_ALPHA);
+		else if (sort.get_active_text() == "date") m_cfg->set_sort_mode(Thumbview::SORT_RTIME);
 
         m_cfg->save_cfg();
     }

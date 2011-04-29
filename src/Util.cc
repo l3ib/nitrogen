@@ -187,7 +187,6 @@ ArgParser* create_arg_parser() {
 	ArgParser* parser = new ArgParser();
 	parser->register_option("restore", _("Restore saved backgrounds"));
 	parser->register_option("no-recurse", _("Do not recurse into subdirectories"));
-	parser->register_option("sort", _("How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)"), true);
 	parser->register_option("set-color", _("background color in hex, #000000 by default"), true);
 
 	// command line set modes

@@ -40,6 +40,7 @@ class Config {
 			
 		bool recurse;
         DisplayMode m_display_mode;
+		Thumbview::SortMode m_sort_mode;
         gint m_posx, m_posy;
         guint m_sizex, m_sizey;
         gboolean m_icon_captions;
@@ -66,7 +67,9 @@ class Config {
 		bool get_recurse() { return Config::recurse; }
 		void set_recurse(bool n) { Config::recurse = n; }
         DisplayMode get_display_mode() { return m_display_mode; }
+		Thumbview::SortMode get_sort_mode() { return m_sort_mode; }
         void set_display_mode(DisplayMode mode) { m_display_mode = mode; }
+        void set_sort_mode(Thumbview::SortMode mode) { m_sort_mode = mode; }
         bool get_icon_captions() { return m_icon_captions; }
         void set_icon_captions(gboolean caps) { m_icon_captions = caps; }
 

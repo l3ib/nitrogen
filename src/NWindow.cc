@@ -434,6 +434,7 @@ void NWindow::sighandle_btn_prefs()
         cfg->load_cfg();        // tells the global instance to reload itself from disk, which the prefs dialog
                                 // told our clone to save to
         view.set_current_display_mode(cfg->get_display_mode());
+        view.set_sort_mode(cfg->get_sort_mode());
 
         for (VecStrs::iterator i = vec_unload.begin(); i != vec_unload.end(); i++)
             view.unload_dir(*i);

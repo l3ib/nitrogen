@@ -181,27 +181,11 @@ int main (int argc, char ** argv) {
         main_window->view.load_dir(cfg->get_dirs());
 
     main_window->view.set_current_display_mode(cfg->get_display_mode());
+    main_window->view.set_sort_mode(cfg->get_sort_mode());
 	main_window->set_default_selections();
     main_window->view.set_icon_captions(cfg->get_icon_captions());
     main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
 	main_window->show();
-
-	if ( parser->has_argument("sort") ) {
-		Glib::ustring sort_mode = parser->get_value ("sort");
-		Thumbview::SortMode mode;
-	
-		if (sort_mode == "alpha") {
-			mode = Thumbview::SORT_ALPHA;
-		} else if (sort_mode == "ralpha") {
-			mode = Thumbview::SORT_RALPHA;
-		} else if (sort_mode == "time") {
-			mode = Thumbview::SORT_TIME;
-		} else {
-			mode = Thumbview::SORT_RTIME;
-		}
-	
-		main_window->view.set_sort_mode (mode);
-	}
 
 	// remove parser
 	delete parser;

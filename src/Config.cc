@@ -31,6 +31,7 @@ Config::Config()
 	recurse = true;
 
     m_display_mode = ICON;
+	m_sort_mode = Thumbview::SORT_RTIME;
 
     m_posx = -1;
     m_posy = -1;
@@ -67,6 +68,7 @@ Config* Config::clone()
 
     retVal->recurse = recurse;
     retVal->m_display_mode = m_display_mode;
+    retVal->m_sort_mode = m_sort_mode;
     retVal->m_posx = m_posx;
     retVal->m_posy = m_posy;
     retVal->m_sizex = m_sizex;
@@ -373,6 +375,21 @@ bool Config::save_cfg()
     else if (m_display_mode == LIST)
         kf.set_string("nitrogen", "view",  Glib::ustring("list"));
 
+	switch (m_sort_mode) {
+	case Thumbview::SORT_ALPHA:
+		kf.set_string("nitrogen", "sort", Glib::ustring("alpha"));
+		break;
+	case Thumbview::SORT_RALPHA:
+		kf.set_string("nitrogen", "sort", Glib::ustring("ralpha"));
+		break;
+	case Thumbview::SORT_TIME:
+		kf.set_string("nitrogen", "sort", Glib::ustring("time"));
+		break;
+	case Thumbview::SORT_RTIME:
+		kf.set_string("nitrogen", "sort", Glib::ustring("rtime"));
+		break;
+	}
+
     kf.set_boolean("nitrogen", "icon_caps", m_icon_captions);
 
     kf.set_string_list("nitrogen", "dirs", m_vec_dirs);
@@ -415,6 +432,14 @@ bool Config::load_cfg()
         else if (mode == Glib::ustring("list"))
             m_display_mode = LIST;
     }
+
+	if(kf.has_key("nitrogen", "sort")) {
+		Glib::ustring mode = kf.get_string("nitrogen", "sort");
+		if (mode == Glib::ustring("alpha")) m_sort_mode = Thumbview::SORT_ALPHA;
+		else if (mode == Glib::ustring("ralpha")) m_sort_mode = Thumbview::SORT_RALPHA;
+		else if (mode == Glib::ustring("time")) m_sort_mode = Thumbview::SORT_TIME;
+		else m_sort_mode = Thumbview::SORT_RTIME;
+	}
 
     if (kf.has_key("nitrogen", "dirs"))         m_vec_dirs = kf.get_string_list("nitrogen", "dirs");
     if (kf.has_key("nitrogen", "icon_caps"))    m_icon_captions = kf.get_boolean("nitrogen", "icon_caps");

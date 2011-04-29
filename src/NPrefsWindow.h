@@ -39,6 +39,7 @@ class NPrefsWindow : public Gtk::Dialog
 		Glib::RefPtr<Gtk::Builder> builder;
 
 		Gtk::ComboBoxText view_type;
+		Gtk::ComboBoxText sort;
 
         // handlers
         void sighandle_click_adddir();
