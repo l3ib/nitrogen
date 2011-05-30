@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2010-01-22 14:00+0000\n"
+"POT-Creation-Date: 2011-04-19 22:03-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -112,7 +113,7 @@ msgstr ""
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:89 src/SetBG.cc:313
+#: src/SetBG.cc:89 src/SetBG.cc:315
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
@@ -120,7 +121,7 @@ msgstr ""
 msgid "Unknown mode for saved bg on"
 msgstr ""
 
-#: src/SetBG.cc:170 src/SetBG.cc:363
+#: src/SetBG.cc:170 src/SetBG.cc:365
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
@@ -128,48 +129,48 @@ msgstr ""
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
-#: src/SetBG.cc:350
+#: src/SetBG.cc:352
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:429
+#: src/SetBG.cc:453
 msgid ""
 "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
 msgstr ""
 
-#: src/SetBG.cc:479
+#: src/SetBG.cc:511
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:695 src/SetBG.cc:723
+#: src/SetBG.cc:727 src/SetBG.cc:755
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:698 src/SetBG.cc:725
+#: src/SetBG.cc:730 src/SetBG.cc:757
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:701 src/SetBG.cc:727
+#: src/SetBG.cc:733 src/SetBG.cc:759
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:704 src/SetBG.cc:729
+#: src/SetBG.cc:736 src/SetBG.cc:761
 msgid "Zoom"
 msgstr ""
 
-#: src/SetBG.cc:707 src/SetBG.cc:731
+#: src/SetBG.cc:739 src/SetBG.cc:763
 msgid "ZoomFill"
 msgstr ""
 
-#: src/SetBG.cc:710 src/SetBG.cc:733
+#: src/SetBG.cc:742 src/SetBG.cc:765
 msgid "Auto"
 msgstr ""
 
-#: src/Thumbview.cc:259
+#: src/Thumbview.cc:262
 msgid "Could not open dir"
 msgstr ""
 
-#: src/Thumbview.cc:295
+#: src/Thumbview.cc:298
 msgid "Invalid UTF-8 encountered. Skipping file"
 msgstr ""
 
