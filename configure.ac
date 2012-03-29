@@ -39,6 +39,9 @@ PKG_CHECK_MODULES(GTHREAD2, [gthread-2.0 >= $GTHREAD2_VERSION])
 NITROGEN_LIBS="$GLIB2_LIBS $GTK2_LIBS $GTKMM2_LIBS $GTHREAD2_LIBS"
 NITROGEN_CFLAGS="$GLIB2_CFLAGS $GTK2_CFLAGS $GTKMM2_CFLAGS $GTHREAD2_CFLAGS"
 
+dnl apparantly we have to check for X11 now
+AC_CHECK_LIB(X11, XOpenDisplay, [NITROGEN_LIBS="$NITROGEN_LIBS -lX11"])
+
 dnl do some autotools picen to get inotify
 AC_ARG_ENABLE(inotify, [  --disable-inotify       disable support for inotify watching of dirs (default: enabled)], [enable_inotify=$enableval],[enable_inotify=yes])
 
