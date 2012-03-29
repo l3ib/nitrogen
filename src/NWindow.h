@@ -49,6 +49,8 @@ class NWindow : public Gtk::Window {
 
 	protected:        
 		
+		Glib::RefPtr<Gtk::ActionGroup> m_action_group;
+		Glib::RefPtr<Gtk::UIManager> m_ui_manager;
 		Gtk::VBox main_vbox;
 		Gtk::HBox bot_hbox;
 
@@ -62,6 +64,7 @@ class NWindow : public Gtk::Window {
 
 		void setup_select_boxes();
 
+		void sighandle_accel_quit();
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
         void sighandle_btn_prefs();

@@ -52,7 +52,7 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 	bot_hbox.pack_start(button_bgcolor, FALSE, FALSE, 0);
 	
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
-    bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
+	bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
 
 	// add to main box
 	main_vbox.pack_start (view, TRUE, TRUE, 0);
@@ -79,6 +79,33 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 		// don't even worry about it!
 	}
 	
+	// accel group for keyboard shortcuts
+	// unfortunately we have to basically make a menu which we never add to the UI
+	m_action_group = Gtk::ActionGroup::create();
+	m_action_group->add(Gtk::Action::create("FileMenu", ""));
+	m_action_group->add(Gtk::Action::create("Quit", Gtk::Stock::QUIT),
+						Gtk::AccelKey("<control>Q"),
+						sigc::mem_fun(*this, &NWindow::sighandle_accel_quit));
+
+	m_action_group->add(Gtk::Action::create("Close", Gtk::Stock::CLOSE),
+						Gtk::AccelKey("<control>W"),
+						sigc::mem_fun(*this, &NWindow::sighandle_accel_quit));
+
+	m_ui_manager = Gtk::UIManager::create();
+	m_ui_manager->insert_action_group(m_action_group);
+
+	add_accel_group(m_ui_manager->get_accel_group());
+
+	Glib::ustring ui = "<ui>"
+						"<menubar name='MenuBar'>"
+						"<menu action='FileMenu'>"
+						"<menuitem action='Close' />"
+						"<menuitem action='Quit' />"
+						"</menu>"
+						"</menubar>"
+						"</ui>";
+	m_ui_manager->add_ui_from_string(ui);
+
     m_dirty = false;
 }
 
@@ -95,6 +122,13 @@ void NWindow::show (void) {
     btn_prefs.show();
 
 	this->set_title("Nitrogen");
+}
+
+/**
+ * Handles the user pressing Ctrl+Q or Ctrl+W, standard quit buttons.
+ */
+void NWindow::sighandle_accel_quit() {
+	Gtk::Main::quit();
 }
 
 /**
