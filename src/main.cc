@@ -186,6 +186,11 @@ int main (int argc, char ** argv) {
     main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
     main_window->show();
 
+#ifdef USE_XINERAMA
+    if ( parser->has_argument("head") )
+        main_window->set_default_display( parser->get_intvalue("head") );
+#endif
+
     if ( parser->has_argument("sort") ) {
         Glib::ustring sort_mode = parser->get_value ("sort");
         Thumbview::SortMode mode;
