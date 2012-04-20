@@ -76,89 +76,89 @@ bool poll_inotify(void) {
 
 int main (int argc, char ** argv) {
 
-	// set up i18n
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	bind_textdomain_codeset(PACKAGE, "UTF-8");
-	textdomain(PACKAGE);
+    // set up i18n
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+    textdomain(PACKAGE);
 
-   /* i18n::set_text_domain_dir(PACKAGE, LOCALEDIR);
-	i18n::set_text_domain(PACKAGE);*/
+    /* i18n::set_text_domain_dir(PACKAGE, LOCALEDIR);
+       i18n::set_text_domain(PACKAGE);*/
 
 
-	Gtk::Main kit(argc, argv);
-	Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR
-													  G_DIR_SEPARATOR_S "icons");
-	if (!Glib::thread_supported()) Glib::thread_init();
-	Config *cfg = Config::get_instance();
-	ArgParser *parser = Util::create_arg_parser();
+    Gtk::Main kit(argc, argv);
+    Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR
+            G_DIR_SEPARATOR_S "icons");
+    if (!Glib::thread_supported()) Glib::thread_init();
+    Config *cfg = Config::get_instance();
+    ArgParser *parser = Util::create_arg_parser();
 
-	// parse command line
-	if ( ! parser->parse(argc, argv) ) {
-		std::cerr << _("Error parsing command line") << ": " << parser->get_error() << "\n";
-		return -1;
-	}
+    // parse command line
+    if ( ! parser->parse(argc, argv) ) {
+        std::cerr << _("Error parsing command line") << ": " << parser->get_error() << "\n";
+        return -1;
+    }
 
-	// if we got restore, set it and exit
-	if ( parser->has_argument("restore") ) {
-		restore_bgs();
-		return 0;
-	}
+    // if we got restore, set it and exit
+    if ( parser->has_argument("restore") ) {
+        restore_bgs();
+        return 0;
+    }
 
-	// if we got a help, display it and exit
-	if ( parser->has_argument("help") ) {
-		std::cout << parser->help_text() << "\n";
-		return 0;
-	}
+    // if we got a help, display it and exit
+    if ( parser->has_argument("help") ) {
+        std::cout << parser->help_text() << "\n";
+        return 0;
+    }
 
-	// get the starting dir
-	std::string startdir = parser->get_extra_args();
+    // get the starting dir
+    std::string startdir = parser->get_extra_args();
     bool bcmdlinedir = startdir.length() > 0;
-//	if (!bcmd <= 0) {
-//		startdir = ".";
-//        cfg->set_recurse(false);
-//	}
+    //	if (!bcmd <= 0) {
+    //		startdir = ".";
+    //        cfg->set_recurse(false);
+    //	}
     if (bcmdlinedir)
-    	startdir = Util::fix_start_dir(std::string(startdir));
-	
-	// should we set on the command line?
+        startdir = Util::fix_start_dir(std::string(startdir));
+
+    // should we set on the command line?
     Gdk::Color color("#000000");
     if ( parser->has_argument("set-color") ) {
         Glib::ustring bgcolor_str = parser->get_value ("set-color");
         color.parse(bgcolor_str);
     }
 
-	if ( parser->has_argument("set-tiled") )	{
-		set_bg_once(startdir, SetBG::SET_TILE, parser->has_argument("save"), color);
-		return 0;
-	}
+    if ( parser->has_argument("set-tiled") )	{
+        set_bg_once(startdir, SetBG::SET_TILE, parser->has_argument("save"), color);
+        return 0;
+    }
 
-	if ( parser->has_argument("set-scaled") )	{
-		set_bg_once(startdir, SetBG::SET_SCALE, parser->has_argument("save"), color);
-		return 0;
-	}
+    if ( parser->has_argument("set-scaled") )	{
+        set_bg_once(startdir, SetBG::SET_SCALE, parser->has_argument("save"), color);
+        return 0;
+    }
 
     if ( parser->has_argument("set-auto") )	{
-		set_bg_once(startdir, SetBG::SET_AUTO, parser->has_argument("save"), color);
-		return 0;
-	}
+        set_bg_once(startdir, SetBG::SET_AUTO, parser->has_argument("save"), color);
+        return 0;
+    }
 
-	if ( parser->has_argument("set-zoom") )	{
-		set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"), color);
-		return 0;
-	}
+    if ( parser->has_argument("set-zoom") )	{
+        set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"), color);
+        return 0;
+    }
 
-	if ( parser->has_argument("set-zoom-fill") )	{
-		set_bg_once(startdir, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
-		return 0;
-	}
+    if ( parser->has_argument("set-zoom-fill") )	{
+        set_bg_once(startdir, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
+        return 0;
+    }
 
-	if ( parser->has_argument("set-centered") )	{
-		set_bg_once(startdir, SetBG::SET_CENTER, parser->has_argument("save"), color);
-		return 0;
-	}
+    if ( parser->has_argument("set-centered") )	{
+        set_bg_once(startdir, SetBG::SET_CENTER, parser->has_argument("save"), color);
+        return 0;
+    }
 
-	if ( parser->has_argument("no-recurse") ) 
-		cfg->set_recurse(false);
+    if ( parser->has_argument("no-recurse") )
+        cfg->set_recurse(false);
 
     // load configuration if there is one
     cfg->load_cfg();
@@ -170,53 +170,53 @@ int main (int argc, char ** argv) {
     cfg->get_pos(x, y);
 
     // create main window
-	NWindow* main_window = new NWindow();
+    NWindow* main_window = new NWindow();
     main_window->set_default_size(w, h);
     main_window->move(x, y);                    // most likely will be ignored by the wm
 
-//	main_window->view.set_dir(startdir);
+    //	main_window->view.set_dir(startdir);
     if (bcmdlinedir)
-    	main_window->view.load_dir(startdir);
+        main_window->view.load_dir(startdir);
     else
         main_window->view.load_dir(cfg->get_dirs());
 
     main_window->view.set_current_display_mode(cfg->get_display_mode());
-	main_window->set_default_selections();
+    main_window->set_default_selections();
     main_window->view.set_icon_captions(cfg->get_icon_captions());
     main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
-	main_window->show();
+    main_window->show();
 
-	if ( parser->has_argument("sort") ) {
-		Glib::ustring sort_mode = parser->get_value ("sort");
-		Thumbview::SortMode mode;
-	
-		if (sort_mode == "alpha") {
-			mode = Thumbview::SORT_ALPHA;
-		} else if (sort_mode == "ralpha") {
-			mode = Thumbview::SORT_RALPHA;
-		} else if (sort_mode == "time") {
-			mode = Thumbview::SORT_TIME;
-		} else {
-			mode = Thumbview::SORT_RTIME;
-		}
-	
-		main_window->view.set_sort_mode (mode);
-	}
+    if ( parser->has_argument("sort") ) {
+        Glib::ustring sort_mode = parser->get_value ("sort");
+        Thumbview::SortMode mode;
 
-	// remove parser
-	delete parser;
+        if (sort_mode == "alpha") {
+            mode = Thumbview::SORT_ALPHA;
+        } else if (sort_mode == "ralpha") {
+            mode = Thumbview::SORT_RALPHA;
+        } else if (sort_mode == "time") {
+            mode = Thumbview::SORT_TIME;
+        } else {
+            mode = Thumbview::SORT_RTIME;
+        }
 
-	// rig up idle/thread routines
-	Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images), true);
-	Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::create_cache_images), true);
+        main_window->view.set_sort_mode (mode);
+    }
+
+    // remove parser
+    delete parser;
+
+    // rig up idle/thread routines
+    Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::load_cache_images), true);
+    Glib::Thread::create(sigc::mem_fun(main_window->view, &Thumbview::create_cache_images), true);
 
 #ifdef USE_INOTIFY
-	Glib::signal_timeout().connect(sigc::ptr_fun(&poll_inotify), (unsigned)1e3);
+    Glib::signal_timeout().connect(sigc::ptr_fun(&poll_inotify), (unsigned)1e3);
 #endif
 
-	Gtk::Main::run (*main_window);
+    Gtk::Main::run (*main_window);
 
     cfg->save_cfg();
 
-	return 0;
+    return 0;
 }
