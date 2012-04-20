@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <iostream>
 
 class Arg {
@@ -107,6 +108,15 @@ class ArgParser {
 			return std::string ();
 		}
 
+                inline int get_intvalue (std::string key) {
+                        std::stringstream stream;
+                        std::string tmp_str = this->get_value(key);
+                        int tmp_int;
+
+                        stream << tmp_str;
+                        stream >> tmp_int;
+                        return tmp_int;
+                }
 		
 		// parses away.
 		bool parse (int argc, char ** argv);

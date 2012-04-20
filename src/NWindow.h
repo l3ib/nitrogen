@@ -28,43 +28,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SetBG.h"
 
 class NWindow : public Gtk::Window {
-	public:
-		NWindow ();
-		void show (void);
-		virtual ~NWindow ();
+    public:
+        NWindow ();
+        void show (void);
+        virtual ~NWindow ();
 
-		Thumbview view;
-		void sighandle_dblclick_item(const Gtk::TreeModel::Path& path);
-		void sighandle_click_apply(void);
-		void sighandle_mode_change(void);
+        Thumbview view;
+        void sighandle_dblclick_item(const Gtk::TreeModel::Path& path);
+        void sighandle_click_apply(void);
+        void sighandle_mode_change(void);
 
-		void set_default_selections();
+        void set_default_selections();
 
         std::map<Glib::ustring, Glib::ustring> map_displays;        // a map of current displays on the running instance to their display names
-		
-		bool is_multihead;
-		bool is_xinerama;
+#ifdef USE_XINERAMA
+        void set_default_display(int display);
+#endif
+
+        bool is_multihead;
+        bool is_xinerama;
 
         void set_bg(Glib::ustring file);
 
-	protected:        
-		
-		Glib::RefPtr<Gtk::ActionGroup> m_action_group;
-		Glib::RefPtr<Gtk::UIManager> m_ui_manager;
-		Gtk::VBox main_vbox;
-		Gtk::HBox bot_hbox;
+    protected:        
+        Glib::RefPtr<Gtk::ActionGroup> m_action_group;
+        Glib::RefPtr<Gtk::UIManager> m_ui_manager;
+        Gtk::VBox main_vbox;
+        Gtk::HBox bot_hbox;
 
-		ImageCombo select_mode, select_display;
+        ImageCombo select_mode, select_display;
 
-		Gtk::Button apply;
+        Gtk::Button apply;
         Gtk::Button btn_prefs;
-		Gtk::ColorButton button_bgcolor;
+        Gtk::ColorButton button_bgcolor;
 
         bool m_dirty;       // set if the user double clicks to preview but forgets to press apply
 
-		void setup_select_boxes();
+        void setup_select_boxes();
 
-		void sighandle_accel_quit();
+        void sighandle_accel_quit();
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
         void sighandle_btn_prefs();
@@ -72,9 +74,9 @@ class NWindow : public Gtk::Window {
         virtual bool on_delete_event(GdkEventAny *event);
 
 #ifdef USE_XINERAMA
-		// xinerama stuff
-		XineramaScreenInfo* xinerama_info;
-		gint xinerama_num_screens;
+	// xinerama stuff
+	XineramaScreenInfo* xinerama_info;
+	gint xinerama_num_screens;
 #endif
 };
 
