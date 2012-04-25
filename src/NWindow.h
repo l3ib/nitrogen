@@ -41,9 +41,7 @@ class NWindow : public Gtk::Window {
         void set_default_selections();
 
         std::map<Glib::ustring, Glib::ustring> map_displays;        // a map of current displays on the running instance to their display names
-#ifdef USE_XINERAMA
         void set_default_display(int display);
-#endif
 
         bool is_multihead;
         bool is_xinerama;

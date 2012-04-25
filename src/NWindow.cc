@@ -433,16 +433,16 @@ void NWindow::set_default_selections()
 
 }
 
-#ifdef USE_XINERAMA
 void NWindow::set_default_display(int display)
 {
     std::ostringstream headstr;
     if (this->is_xinerama) {
         headstr << "xin_" << display;
         select_display.select_value(headstr.str());
+    } else if (this->is_multihead) {
+        select_display.set_active(display); 
     }
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 
