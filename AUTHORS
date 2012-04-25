@@ -9,6 +9,7 @@ Contributors:
     Евдокимов Сергей <usaf@rambler.ru> - patches
     Siiseli Koulutus <tuki@siiseli.fi> - finnish translation
     Cloudef <mailRoxas@gmail.com> - Xinerama mode resource leak fix
+    Julian Knauer <jpk@goatpr0n.de> - Xinerama/multihead --head select
 
 Items Ruthlessly Stolen:
 	Icon theme installer from Banshee
