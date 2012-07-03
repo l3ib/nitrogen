@@ -38,14 +38,26 @@ void restore_bgs()
 	Util::program_log("leaving restore_bgs()");
 }
 
-void set_bg_once(Glib::ustring file, SetBG::SetMode mode, bool save, Gdk::Color col)
+void set_bg_once(Glib::ustring file, int head, SetBG::SetMode mode, bool save, Gdk::Color col)
 {
 	Util::program_log("entering set_bg_once()");
-
-	// TODO: find out why teh config::set_bg will not get me default
 	Glib::ustring disp;
 
+#ifdef USE_XINERAMA
+        Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
+        Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
+
+        XineramaScreenInfo *xinerama_info;
+        gint xinerama_num_screens;
+
+        xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()),
+                &xinerama_num_screens);
+        disp = Glib::ustring::compose("xin_%1", head);
+        SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens,
+                disp, file, mode, col);
+#else
 	SetBG::set_bg(disp,file,mode,col);
+#endif
 	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
 	while (Gtk::Main::events_pending())
 		Gtk::Main::iteration();
@@ -75,6 +87,10 @@ bool poll_inotify(void) {
 #endif
 
 int main (int argc, char ** argv) {
+#ifdef USE_XINERAMA
+    int xin_head = -1;
+#endif
+
 
     // set up i18n
     bindtextdomain(PACKAGE, LOCALEDIR);
@@ -127,33 +143,38 @@ int main (int argc, char ** argv) {
         color.parse(bgcolor_str);
     }
 
+#ifdef USE_XINERAMA
+    if ( parser->has_argument("head") )
+        xin_head = parser->get_intvalue("head");
+#endif
+
     if ( parser->has_argument("set-tiled") )	{
-        set_bg_once(startdir, SetBG::SET_TILE, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_TILE, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-scaled") )	{
-        set_bg_once(startdir, SetBG::SET_SCALE, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_SCALE, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-auto") )	{
-        set_bg_once(startdir, SetBG::SET_AUTO, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_AUTO, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-zoom") )	{
-        set_bg_once(startdir, SetBG::SET_ZOOM, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_ZOOM, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-zoom-fill") )	{
-        set_bg_once(startdir, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-centered") )	{
-        set_bg_once(startdir, SetBG::SET_CENTER, parser->has_argument("save"), color);
+        set_bg_once(startdir, xin_head, SetBG::SET_CENTER, parser->has_argument("save"), color);
         return 0;
     }
 
@@ -187,8 +208,7 @@ int main (int argc, char ** argv) {
     main_window->show();
 
 #ifdef USE_XINERAMA
-    if ( parser->has_argument("head") )
-        main_window->set_default_display( parser->get_intvalue("head") );
+    main_window->set_default_display(xin_head);
 #endif
 
     if ( parser->has_argument("sort") ) {

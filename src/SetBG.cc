@@ -191,8 +191,7 @@ bool SetBG::set_bg(	Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::
  * Sets a bg on a Xinerama "screen", which is one of the virtual screens on a Xinerama display.
  *
  */
-bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens, Glib::ustring xinerama_screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
-{
+bool SetBG::set_bg_xinerama(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens, Glib::ustring xinerama_screen, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
 	gint winx,winy,winw,winh,wind;
 	Glib::RefPtr<Gdk::Display> _display;
  	Glib::RefPtr<Gdk::Screen> screen;
