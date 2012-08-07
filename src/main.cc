@@ -52,11 +52,22 @@ void set_bg_once(Glib::ustring file, int head, SetBG::SetMode mode, bool save, G
 
         xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()),
                 &xinerama_num_screens);
-        disp = Glib::ustring::compose("xin_%1", head);
-        SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens,
-                disp, file, mode, col);
+
+        // only use xinerama mode if we have noticed more than one screen
+        if (xinerama_num_screens > 1) {
+            disp = Glib::ustring::compose("xin_%1", head);
+            SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens,
+                    disp, file, mode, col);
+        }
+        else
 #else
+    {
+    if (head != -1) {
+        Glib::RefPtr<Gdk::Display> gdkdisp = Gdk::Display::get_default();
+        disp = Glib::ustring::compose("%1.%2", gdkdisp->get_name(), head);
+    }
 	SetBG::set_bg(disp,file,mode,col);
+    }
 #endif
 	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
 	while (Gtk::Main::events_pending())
@@ -87,9 +98,7 @@ bool poll_inotify(void) {
 #endif
 
 int main (int argc, char ** argv) {
-#ifdef USE_XINERAMA
     int xin_head = -1;
-#endif
 
 
     // set up i18n
@@ -143,10 +152,8 @@ int main (int argc, char ** argv) {
         color.parse(bgcolor_str);
     }
 
-#ifdef USE_XINERAMA
     if ( parser->has_argument("head") )
         xin_head = parser->get_intvalue("head");
-#endif
 
     if ( parser->has_argument("set-tiled") )	{
         set_bg_once(startdir, xin_head, SetBG::SET_TILE, parser->has_argument("save"), color);
@@ -207,9 +214,7 @@ int main (int argc, char ** argv) {
     main_window->signal_delete_event().connect(sigc::bind(sigc::ptr_fun(&on_window_close_save_pos), main_window));
     main_window->show();
 
-#ifdef USE_XINERAMA
     main_window->set_default_display(xin_head);
-#endif
 
     if ( parser->has_argument("sort") ) {
         Glib::ustring sort_mode = parser->get_value ("sort");
