@@ -66,22 +66,6 @@ class SetBG {
 
         virtual Glib::ustring make_display_key(guint head) = 0;
 
-#ifdef USE_XINERAMA
-		static bool set_bg_xinerama(XineramaScreenInfo *xinerama_info,
-									gint xinerama_num_screens,
-									Glib::ustring xinerama_screen, 
-									Glib::ustring file,
-									SetMode mode,
-									Gdk::Color bgcolor
-									);
-#endif
-
-		static bool set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen,
-						            Glib::ustring file,
-									SetMode mode,
-									Gdk::Color bgcolor
-								    );
-
 		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin);
 
         static SetBG* get_bg_setter();
