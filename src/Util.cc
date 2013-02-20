@@ -87,23 +87,13 @@ Glib::ustring path_to_abs_path(Glib::ustring path) {
 //
 // TODO: i turned this kind of into a shitshow with the xinerama, must redo a bit
 //
-void restore_saved_bgs() {
+void restore_saved_bgs(SetBG* bg_setter) {
 
 	program_log("entering set_saved_bgs()");
-	
-	Glib::ustring file, display;
-	SetBG::SetMode mode;
-	Gdk::Color bgcolor;
-	
-	std::vector<Glib::ustring> displist;
-	std::vector<Glib::ustring>::const_iterator i;
-	Config *cfg = Config::get_instance();
 
-	if ( cfg->get_bg_groups(displist) == false ) {
-		std::cerr << _("Could not get bg groups from config file.") << std::endl;
-		return;
-	}
+    bg_setter->restore_bgs();
 
+    /*
 	// determine what mode we are going into
 	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
 	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
@@ -129,7 +119,7 @@ void restore_saved_bgs() {
 			if (foundfull) {
 				if (cfg->get_bg(Glib::ustring("xin_-1"), file, mode, bgcolor)) {
 					program_log("setting full xinerama screen to %s", file.c_str());
-					SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, Glib::ustring("xin_-1"), file, mode, bgcolor); 
+					bg_setter->set_bg_xinerama(xinerama_info, xinerama_num_screens, Glib::ustring("xin_-1"), file, mode, bgcolor); 
 					program_log("done setting full xinerama screen");
 				} else {
 					std::cerr << _("Could not get bg info for fullscreen xinerama") << std::endl;
@@ -141,7 +131,7 @@ void restore_saved_bgs() {
 					if ((*i).find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos) {
 						if (cfg->get_bg((*i), file, mode, bgcolor)) {
 							program_log("setting %s to %s", (*i).c_str(), file.c_str());
-							SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, (*i), file, mode, bgcolor);
+							bg_setter->set_bg_xinerama(xinerama_info, xinerama_num_screens, (*i), file, mode, bgcolor);
 							program_log("done setting %s", (*i).c_str());
 						} else {
 							std::cerr << _("Could not get bg info for") << " " << (*i) << std::endl;
@@ -166,13 +156,14 @@ void restore_saved_bgs() {
 		if (cfg->get_bg(display, file, mode, bgcolor)) {
 					
 			program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-			SetBG::set_bg(display, file, mode, bgcolor);
+			bg_setter->set_bg(display, file, mode, bgcolor);
 			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
 				
 		} else {
 			std::cerr << _("Could not get bg info") << std::endl;
 		}
 	}
+*/
 
 	program_log("leaving set_saved_bgs()");	
 }

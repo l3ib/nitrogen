@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class NWindow : public Gtk::Window {
     public:
-        NWindow ();
+        NWindow(SetBG* bg_setter);
         void show (void);
         virtual ~NWindow ();
 
@@ -53,6 +53,7 @@ class NWindow : public Gtk::Window {
         Glib::RefPtr<Gtk::UIManager> m_ui_manager;
         Gtk::VBox main_vbox;
         Gtk::HBox bot_hbox;
+        SetBG* bg_setter;
 
         ImageCombo select_mode, select_display;
 

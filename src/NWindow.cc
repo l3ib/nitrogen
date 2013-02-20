@@ -34,8 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES) {
-	
+NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES) {
+    this->bg_setter = bg_setter;
+
 	set_border_width (5);
 	set_default_size (450, 500);
 
@@ -230,18 +231,12 @@ bool NWindow::on_delete_event(GdkEventAny *event)
 void NWindow::set_bg(const Glib::ustring file) {
 
 	// get the data from the active items
-	SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-	Glib::ustring thedisp = this->select_display.get_active_data(); 
-	Gdk::Color bgcolor = this->button_bgcolor.get_color();
+	SetBG::SetMode mode   = SetBG::string_to_mode(this->select_mode.get_active_data());
+	Glib::ustring thedisp = this->select_display.get_active_data();
+	Gdk::Color bgcolor    = this->button_bgcolor.get_color();
 
 	// set it
-#ifdef USE_XINERAMA
-	if (this->is_xinerama)
-		SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, thedisp, file, mode, bgcolor);
-	else
-#endif
-		SetBG::set_bg(thedisp, file, mode, bgcolor);
-	
+    bg_setter->set_bg(thedisp, file, mode, bgcolor);
 }
 
 // leethax destructor

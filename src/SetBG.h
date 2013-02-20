@@ -39,10 +39,9 @@ typedef int (*XErrorHandler)(Display*, XErrorEvent*);
  */
 class SetBG {
 	public:
-			
         // NOTE: do not change the order of these, they are changed to integer and 
         // put on disk.
-		enum SetMode { 
+		enum SetMode {
 			SET_SCALE,
 			SET_TILE,
 			SET_CENTER,
@@ -58,11 +57,12 @@ class SetBG {
             UNKNOWN
         };
 
-		static bool set_bg(	Glib::ustring &disp,
-							Glib::ustring file,
-							SetMode mode,
-							Gdk::Color bgcolor
-							);
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor) = 0;
+
+        virtual void restore_bgs();
 
 #ifdef USE_XINERAMA
 		static bool set_bg_xinerama(XineramaScreenInfo *xinerama_info,
@@ -82,11 +82,17 @@ class SetBG {
 
 		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin);
 
+        static SetBG* get_bg_setter();
+
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );
-        
-	private:
-	
+
+	protected:
+
+        virtual Glib::ustring get_prefix() = 0;
+        virtual Glib::ustring get_fullscreen_key() = 0;
+        bool has_prefix(Glib::ustring prefix, Glib::ustring str);
+
 		static Glib::RefPtr<Gdk::Pixbuf> make_scale(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_tile(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_center(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
@@ -98,6 +104,52 @@ class SetBG {
 	
         static int handle_x_errors(Display *display, XErrorEvent *error);
 
+};
+
+/**
+ * Concrete setter for X windows (default).
+ */
+class SetBGXWindows : public SetBG {
+    public:
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+
+    protected:
+        virtual Glib::ustring get_prefix();
+        virtual Glib::ustring get_fullscreen_key();
+};
+
+#ifdef USE_XINERAMA
+class SetBGXinerama : public SetBG {
+    public:
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+
+        void set_xinerama_info(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens);
+
+    protected:
+        // xinerama stuff
+        XineramaScreenInfo* xinerama_info;
+        gint xinerama_num_screens;
+
+        virtual Glib::ustring get_prefix();
+        virtual Glib::ustring get_fullscreen_key();
+};
+#endif
+
+class SetBGGnome : public SetBG {
+    public:
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+    protected:
+        virtual Glib::ustring get_prefix();
+        virtual Glib::ustring get_fullscreen_key();
 };
 
 #endif

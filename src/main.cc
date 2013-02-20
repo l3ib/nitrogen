@@ -29,19 +29,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //#include <inti/i18n.h>
 #include "gcs-i18n.h"
 
-void restore_bgs()
+void restore_bgs(SetBG* bg_setter)
 {
 	Util::program_log("entering restore_bgs()");
-	Util::restore_saved_bgs();
+	Util::restore_saved_bgs(bg_setter);
 	while( Gtk::Main::events_pending() )
 	   Gtk::Main::iteration();
 	Util::program_log("leaving restore_bgs()");
 }
 
-void set_bg_once(Glib::ustring file, int head, SetBG::SetMode mode, bool save, Gdk::Color col)
+void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode mode, bool save, Gdk::Color col)
 {
 	Util::program_log("entering set_bg_once()");
 	Glib::ustring disp;
+
+    /*
 
 #ifdef USE_XINERAMA
         Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
@@ -56,7 +58,7 @@ void set_bg_once(Glib::ustring file, int head, SetBG::SetMode mode, bool save, G
         // only use xinerama mode if we have noticed more than one screen
         if (xinerama_num_screens > 1) {
             disp = Glib::ustring::compose("xin_%1", head);
-            SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens,
+            bg_setter->set_bg_xinerama(xinerama_info, xinerama_num_screens,
                     disp, file, mode, col);
         }
         else
@@ -66,13 +68,14 @@ void set_bg_once(Glib::ustring file, int head, SetBG::SetMode mode, bool save, G
         Glib::RefPtr<Gdk::Display> gdkdisp = Gdk::Display::get_default();
         disp = Glib::ustring::compose("%1.%2", gdkdisp->get_name(), head);
     }
-	SetBG::set_bg(disp,file,mode,col);
+	bg_setter->set_bg(disp,file,mode,col);
     }
 #endif
 	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
 	while (Gtk::Main::events_pending())
 		Gtk::Main::iteration();
-
+    */
+    
 	Util::program_log("leaving set_bg_once()");
 }
 
@@ -109,7 +112,6 @@ int main (int argc, char ** argv) {
     /* i18n::set_text_domain_dir(PACKAGE, LOCALEDIR);
        i18n::set_text_domain(PACKAGE);*/
 
-
     Gtk::Main kit(argc, argv);
     Gtk::IconTheme::get_default()->append_search_path(NITROGEN_DATA_DIR
             G_DIR_SEPARATOR_S "icons");
@@ -123,15 +125,25 @@ int main (int argc, char ** argv) {
         return -1;
     }
 
-    // if we got restore, set it and exit
-    if ( parser->has_argument("restore") ) {
-        restore_bgs();
-        return 0;
-    }
-
     // if we got a help, display it and exit
     if ( parser->has_argument("help") ) {
         std::cout << parser->help_text() << "\n";
+        return 0;
+    }
+
+    Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
+    Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
+
+    XineramaScreenInfo *xinerama_info;
+    gint xinerama_num_screens;
+
+    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+    SetBG* setter = new SetBGXinerama();
+    ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
+
+    // if we got restore, set it and exit
+    if ( parser->has_argument("restore") ) {
+        restore_bgs(setter);
         return 0;
     }
 
@@ -156,32 +168,32 @@ int main (int argc, char ** argv) {
         xin_head = parser->get_intvalue("head");
 
     if ( parser->has_argument("set-tiled") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_TILE, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_TILE, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-scaled") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_SCALE, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_SCALE, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-auto") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_AUTO, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_AUTO, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-zoom") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_ZOOM, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_ZOOM, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-zoom-fill") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
         return 0;
     }
 
     if ( parser->has_argument("set-centered") )	{
-        set_bg_once(startdir, xin_head, SetBG::SET_CENTER, parser->has_argument("save"), color);
+        set_bg_once(setter, startdir, xin_head, SetBG::SET_CENTER, parser->has_argument("save"), color);
         return 0;
     }
 
@@ -198,7 +210,7 @@ int main (int argc, char ** argv) {
     cfg->get_pos(x, y);
 
     // create main window
-    NWindow* main_window = new NWindow();
+    NWindow* main_window = new NWindow(setter);
     main_window->set_default_size(w, h);
     main_window->move(x, y);                    // most likely will be ignored by the wm
 
