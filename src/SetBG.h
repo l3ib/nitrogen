@@ -64,6 +64,8 @@ class SetBG {
 
         virtual void restore_bgs();
 
+        virtual Glib::ustring make_display_key(guint head) = 0;
+
 #ifdef USE_XINERAMA
 		static bool set_bg_xinerama(XineramaScreenInfo *xinerama_info,
 									gint xinerama_num_screens,
@@ -119,6 +121,7 @@ class SetBGXWindows : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
+        virtual Glib::ustring make_display_key(guint head);
 };
 
 #ifdef USE_XINERAMA
@@ -138,6 +141,7 @@ class SetBGXinerama : public SetBG {
 
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
+        virtual Glib::ustring make_display_key(guint head);
 };
 #endif
 
@@ -150,6 +154,7 @@ class SetBGGnome : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
+        virtual Glib::ustring make_display_key(guint head);
 };
 
 #endif

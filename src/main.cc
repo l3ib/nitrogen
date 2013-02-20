@@ -43,39 +43,13 @@ void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode 
 	Util::program_log("entering set_bg_once()");
 	Glib::ustring disp;
 
-    /*
+    disp = bg_setter->make_display_key(head);
+    bg_setter->set_bg(disp, file, mode, col);
 
-#ifdef USE_XINERAMA
-        Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-        Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
-
-        XineramaScreenInfo *xinerama_info;
-        gint xinerama_num_screens;
-
-        xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()),
-                &xinerama_num_screens);
-
-        // only use xinerama mode if we have noticed more than one screen
-        if (xinerama_num_screens > 1) {
-            disp = Glib::ustring::compose("xin_%1", head);
-            bg_setter->set_bg_xinerama(xinerama_info, xinerama_num_screens,
-                    disp, file, mode, col);
-        }
-        else
-#else
-    {
-    if (head != -1) {
-        Glib::RefPtr<Gdk::Display> gdkdisp = Gdk::Display::get_default();
-        disp = Glib::ustring::compose("%1.%2", gdkdisp->get_name(), head);
-    }
-	bg_setter->set_bg(disp,file,mode,col);
-    }
-#endif
 	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
 	while (Gtk::Main::events_pending())
 		Gtk::Main::iteration();
-    */
-    
+
 	Util::program_log("leaving set_bg_once()");
 }
 

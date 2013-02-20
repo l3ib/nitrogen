@@ -685,6 +685,20 @@ Glib::ustring SetBGXWindows::get_fullscreen_key()
     return this->get_prefix();
 }
 
+/**
+ * Make a usable display key to pass to set_bg with a given head number.
+ * If no head number given, returns the fullscreen key.
+ *
+ * For XWindows, will be a string like ":0" or ":0.1"
+ */
+Glib::ustring SetBGXWindows::make_display_key(guint head)
+{
+    if (head == -1)
+        return this->get_fullscreen_key();
+
+    return Glib::ustring::compose("%1.%2", this->get_prefix(), head);
+}
+
 /*
  * **************************************************************************
  * SetBGXinerama
@@ -901,7 +915,18 @@ Glib::ustring SetBGXinerama::get_prefix()
  */
 Glib::ustring SetBGXinerama::get_fullscreen_key()
 {
-    return this->get_prefix() + Glib::ustring("_1");
+    return Glib::ustring::compose("%1_-1", this->get_prefix());
+}
+
+/**
+ * Make a usable display key to pass to set_bg with a given head number.
+ * If no head number given, returns the fullscreen key.
+ *
+ * For Xinerama, will be a string like "xin_-1" (fullscreen) or "xin_0"
+ */
+Glib::ustring SetBGXinerama::make_display_key(guint head)
+{
+    return Glib::ustring::compose("%1_%2", this->get_prefix(), head);
 }
 
 #endif
@@ -995,5 +1020,16 @@ Glib::ustring SetBGGnome::get_fullscreen_key()
 {
     Glib::ustring display("????");
     return display;
+}
+
+/**
+ * Make a usable display key to pass to set_bg with a given head number.
+ * If no head number given, returns the fullscreen key.
+ *
+ * This is N/A?
+ */
+Glib::ustring SetBGGnome::make_display_key(guint head)
+{
+    return Glib::ustring("???");
 }
 
