@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void restore_bgs(SetBG* bg_setter)
 {
 	Util::program_log("entering restore_bgs()");
-	Util::restore_saved_bgs(bg_setter);
+	bg_setter->restore_bgs();
 	while( Gtk::Main::events_pending() )
 	   Gtk::Main::iteration();
 	Util::program_log("leaving restore_bgs()");

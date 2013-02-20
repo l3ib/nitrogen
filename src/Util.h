@@ -30,7 +30,6 @@ namespace Util {
 
 	void program_log(const char *format, ...);
 	Glib::ustring path_to_abs_path(Glib::ustring path);
-	void restore_saved_bgs(SetBG* setter);
 	ArgParser* create_arg_parser();
 	std::string fix_start_dir(std::string startdir);
 
