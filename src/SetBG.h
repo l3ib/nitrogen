@@ -64,22 +64,6 @@ class SetBG {
 
         virtual void restore_bgs();
 
-#ifdef USE_XINERAMA
-		static bool set_bg_xinerama(XineramaScreenInfo *xinerama_info,
-									gint xinerama_num_screens,
-									Glib::ustring xinerama_screen, 
-									Glib::ustring file,
-									SetMode mode,
-									Gdk::Color bgcolor
-									);
-#endif
-
-		static bool set_bg_nautilus(Glib::RefPtr<Gdk::Screen> screen,
-						            Glib::ustring file,
-									SetMode mode,
-									Gdk::Color bgcolor
-								    );
-
 		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin);
 
         static SetBG* get_bg_setter();
@@ -114,12 +98,6 @@ class SetBG {
  * Concrete setter for X windows (default).
  */
 class SetBGXWindows : public SetBG {
-    public:
-		virtual bool set_bg(Glib::ustring &disp,
-                            Glib::ustring file,
-                            SetMode mode,
-                            Gdk::Color bgcolor);
-
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
@@ -129,11 +107,6 @@ class SetBGXWindows : public SetBG {
 #ifdef USE_XINERAMA
 class SetBGXinerama : public SetBG {
     public:
-		virtual bool set_bg(Glib::ustring &disp,
-                            Glib::ustring file,
-                            SetMode mode,
-                            Gdk::Color bgcolor);
-
         void set_xinerama_info(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens);
 
     protected:
