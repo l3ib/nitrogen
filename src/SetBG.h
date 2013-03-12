@@ -60,7 +60,7 @@ class SetBG {
 		virtual bool set_bg(Glib::ustring &disp,
                             Glib::ustring file,
                             SetMode mode,
-                            Gdk::Color bgcolor) = 0;
+                            Gdk::Color bgcolor);
 
         virtual void restore_bgs();
 
@@ -101,9 +101,14 @@ class SetBG {
         static SetMode get_real_mode(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint);
 
 		static guint32 GdkColorToUint32(const Gdk::Color);
-	
+
         static int handle_x_errors(Display *display, XErrorEvent *error);
 
+        Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
+        virtual Glib::RefPtr<Gdk::Display> get_display(Glib::ustring& disp);
+
+        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
+        Glib::RefPtr<Gdk::Pixmap> get_or_create_pixmap(Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap);
 };
 
 /**
@@ -119,6 +124,7 @@ class SetBGXWindows : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
+        virtual Glib::RefPtr<Gdk::Display> get_display(Glib::ustring& disp);
 };
 
 #ifdef USE_XINERAMA
@@ -138,6 +144,7 @@ class SetBGXinerama : public SetBG {
 
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring get_fullscreen_key();
+        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
 };
 #endif
 

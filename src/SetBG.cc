@@ -495,6 +495,227 @@ void SetBG::restore_bgs()
 }
 
 /**
+ * Returns a Gdk::Display object for use with any of the set_bg derivations.
+ */
+Glib::RefPtr<Gdk::Display> SetBG::get_display(Glib::ustring& disp)
+{
+    Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name());
+	if (!_display) {
+		std::cerr << _("Could not open display") << "\n";
+		return false;
+	}
+
+    return _display;
+}
+
+/**
+ * Base driver for set_bg in derived classes.
+ *
+ * @param	disp	The display to set it on.  If "", uses the default display, and passes is out by reference.
+ * @param	file	The file to set the bg to
+ * @param	mode	Stretch, tile, center, bestfit
+ * @param	bgcolor	The background color for modes that do not cover entire portions
+ * @return			If it went smoothly
+ */
+bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+    gint winx,winy,winw,winh,wind;
+	gint tarx, tary, tarw, tarh;
+    Glib::RefPtr<Gdk::Display> _display = this->get_display(disp);
+    Glib::RefPtr<Gdk::Screen> screen;
+    Glib::RefPtr<Gdk::Window> window;
+    Glib::RefPtr<Gdk::GC> gc_;
+    Glib::RefPtr<Gdk::Colormap> colormap;
+    Glib::RefPtr<Gdk::Pixbuf> pixbuf, outpixbuf;
+    Glib::RefPtr<Gdk::Pixmap> pixmap;
+    Pixmap* xoldpm = NULL;
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    Window xwin = DefaultRootWindow(xdisp);
+    Atom prop_root, prop_esetroot, type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data_root, *data_esetroot;
+
+    // get the screen
+    screen = _display->get_default_screen();
+
+    // get window stuff
+    window = screen->get_root_window();
+    window->get_geometry(winx, winy, winw, winh, wind);
+
+    // get target dimensions
+    this->get_target_dimensions(disp, winx, winy, winw, winh, tarx, tary, tarw, tarh);
+
+    // create gc and colormap
+    gc_ = Gdk::GC::create(window);
+    colormap = screen->get_default_colormap();
+
+    // allocate bg color
+    colormap->alloc_color(bgcolor, false, true);
+
+    // get or create pixmap - for xinerama, may use existing one to merge
+    // this will delete the old pixmap if necessary
+    // also sets shutdown mode if necessary
+    pixmap = this->get_or_create_pixmap(_display, window, winw, winh, wind, colormap);
+
+    // get our pixbuf from the file
+    try {
+        pixbuf = Gdk::Pixbuf::create_from_file(file);
+    } catch (Glib::FileError e) {
+        std::cerr << _("ERROR: Could not load file in bg set") << ": " << e.what() << "\n";
+        return false;
+    }
+
+    outpixbuf = this->make_resized_pixbuf(pixbuf, mode, bgcolor, tarw, tarh);
+
+    // render it to the pixmap
+	pixmap->draw_pixbuf(gc_, outpixbuf, 0, 0, tarx, tary, tarw, tarh, Gdk::RGB_DITHER_NONE, 0, 0);
+
+    // set it via XLib
+    Pixmap xpm = GDK_PIXMAP_XID(pixmap->gobj());
+
+    prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", False);
+    prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
+
+    if (prop_root == None || prop_esetroot == None) {
+        std::cerr << _("ERROR: BG set could not make atoms.") << "\n";
+        return false;
+    }
+
+    XChangeProperty(xdisp, xwin, prop_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
+    XChangeProperty(xdisp, xwin, prop_esetroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
+
+    // set it via gtk
+    window->set_back_pixmap(pixmap, false);
+    window->clear();
+
+    // close down display
+    _display->close();
+
+    return true;
+}
+
+/**
+ * Sets the target dimensions based on window dimensions and display.
+ *
+ * For this base version, simply copies the window dimensions to the target
+ * dimensions.
+ */
+void SetBG::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
+{
+    tarx = winx;
+    tary = winy;
+    tarw = winw;
+    tarh = winh;
+}
+
+/**
+ * Creates a resized pixbuf given the mode, bgcolor, and target size.
+ */
+Glib::RefPtr<Gdk::Pixbuf> SetBG::make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh)
+{
+    Glib::RefPtr<Gdk::Pixbuf> outpixbuf;
+
+    // apply the bg color to pixbuf here, because every make_ method would
+    // have to do it anyway.
+    pixbuf = pixbuf->composite_color_simple(pixbuf->get_width(),
+            pixbuf->get_height(), Gdk::INTERP_NEAREST, 255, 1, bgcolor.get_pixel(),
+            bgcolor.get_pixel());
+
+    // if automatic, figure out what mode we really want
+    if (mode == SetBG::SET_AUTO)
+        mode = SetBG::get_real_mode(pixbuf, tarw, tarh);
+
+    switch(mode) {
+        case SetBG::SET_SCALE:
+            outpixbuf = SetBG::make_scale(pixbuf, tarw, tarh, bgcolor);
+            break;
+
+        case SetBG::SET_TILE:
+            outpixbuf = SetBG::make_tile(pixbuf, tarw, tarh, bgcolor);
+            break;
+
+        case SetBG::SET_CENTER:
+            outpixbuf = SetBG::make_center(pixbuf, tarw, tarh, bgcolor);
+            break;
+
+        case SetBG::SET_ZOOM:
+            outpixbuf = SetBG::make_zoom(pixbuf, tarw, tarh, bgcolor);
+            break;
+
+        case SetBG::SET_ZOOM_FILL:
+            outpixbuf = SetBG::make_zoom_fill(pixbuf, tarw, tarh, bgcolor);
+            break;
+
+        default:
+            std::cerr << _("Unknown mode for saved bg") << std::endl;
+            // @TODO: raise exception
+            //return false;
+    };
+
+    return outpixbuf;
+}
+
+/**
+ * Returns the Pixmap to use as the permanent background.
+ *
+ * This method will either wrap and return the existing pixmap to be reused,
+ * or create a new one if one doesn't exist or the dimensions are incorrect.
+ *
+ * It will delete the old pixmap if appropriate and set the proper close down
+ * mode on the X display.
+ */
+Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap)
+{
+    Glib::RefPtr<Gdk::Pixmap> pixmap;
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+
+    Atom prop_root, prop_esetroot, type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data_root, *data_esetroot;
+
+    prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", True);
+    prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", True);
+
+    if (prop_root != None && prop_esetroot != None) {
+        XGetWindowProperty(xdisp, xwin, prop_root, 0L, 1L, False, AnyPropertyType, &type, &format, &length, &after, &data_root);
+        if (type == XA_PIXMAP) {
+            XGetWindowProperty(xdisp, xwin, prop_esetroot, 0L, 1L, False, AnyPropertyType, &type, &format, &length, &after, &data_esetroot);
+            if (data_root && data_esetroot)
+                if (type == XA_PIXMAP && *((Pixmap *) data_root) == *((Pixmap *) data_esetroot)) {
+                    xoldpm = (Pixmap*)data_root;
+                }
+        }
+    }
+
+    if (xoldpm)
+    {
+        // grab the old pixmap and ref it into a gdk pixmap
+        pixmap = Gdk::Pixmap::create(_display, *xoldpm);
+
+        // check that this pixmap is the right size
+        int width, height;
+        pixmap->get_size(width, height);
+
+        if ((width != winw) || (height != winh) || (pixmap->get_depth() != wind)) {
+            XKillClient(xdisp, *((Pixmap *) data_root));
+            xoldpm = NULL;
+        }
+    }
+
+    if (!xoldpm) {
+        // we have to create it
+        pixmap = Gdk::Pixmap::create(window, winw, winh, wind);
+
+        // only set the mode if we never had an old pixmap to work with
+        XSetCloseDownMode(xdisp, RetainPermanent);
+    }
+
+    return pixmap;
+}
+
+/**
  * Used as a predicate to determine is str starts with prefix.
  */
 bool SetBG::has_prefix(Glib::ustring prefix, Glib::ustring str)
@@ -507,6 +728,32 @@ bool SetBG::has_prefix(Glib::ustring prefix, Glib::ustring str)
  * SetBGXwindows
  * **************************************************************************
  */
+
+/**
+ * Gets the gdk display used by the XWindows specific setter.
+ *
+ * Has the side effect of setting the disp param.
+ */
+Glib::RefPtr<Gdk::Display> SetBGXWindows::get_display(Glib::ustring& disp)
+{
+    Glib::RefPtr<Gdk::Display> _display;
+
+    if (disp != "")
+    {
+        _display = Gdk::Display::open(disp);
+        if (!_display) {
+            std::cerr << _("Could not open display") << " " << disp << "\n";
+        }
+        // @TODO: exception?
+    }
+    else
+    {
+        _display = SetBG::get_display(disp);
+        disp = _display->make_display_name();
+    }
+
+    return _display;
+}
 
 /**
  * Sets the background to the image in the file specified.
@@ -691,6 +938,7 @@ Glib::ustring SetBGXWindows::get_fullscreen_key()
  * **************************************************************************
  */
 #ifdef USE_XINERAMA
+
 /**
  * Sets a bg on a Xinerama "screen", which is one of the virtual screens on a Xinerama display.
  *
@@ -780,6 +1028,7 @@ bool SetBGXinerama::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode
 	}
 
 	// we need to alloc a colormap every time
+    gc_ = Gdk::GC::create(window);
 	colormap = Gdk::Colormap::get_system();
 
 	// alloc our background color 
@@ -902,6 +1151,49 @@ Glib::ustring SetBGXinerama::get_prefix()
 Glib::ustring SetBGXinerama::get_fullscreen_key()
 {
     return this->get_prefix() + Glib::ustring("_1");
+}
+
+/**
+ * Sets the target dimensions based on window dimensions and display.
+ *
+ * For this Xinerama version, it examines the disp string and uses the stored
+ * xinerama info about each screen to set the target.
+ */
+void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
+{
+    gint xin_screen_num;
+    int xin_offset = -1;
+
+    // get specific xinerama "screen"
+    // disp is a string that should be "xin_#"
+    // "xin_-1" refers to the whole thing
+    Glib::ustring xin_numstr = disp.substr(4);
+    std::stringstream sstr;
+    sstr << xin_numstr;
+    sstr >> xin_screen_num;
+
+    if (xin_screen_num != -1) {
+        for (int i=0; i<xinerama_num_screens; i++)
+            if (xinerama_info[i].screen_number == xin_screen_num)
+                xin_offset = i;
+
+        if (xin_offset == -1) {
+            std::cerr << _("Could not find Xinerama screen number") << " " << xin_screen_num << "\n";
+            return false;
+        }
+    }
+
+	if (xin_screen_num == -1) {
+		tarx = winx;
+		tary = winy;
+		tarw = winw;
+		tarh = winh;
+	} else {
+		tarx = xinerama_info[xin_offset].x_org;
+		tary = xinerama_info[xin_offset].y_org;
+		tarw = xinerama_info[xin_offset].width;
+		tarh = xinerama_info[xin_offset].height;
+	}
 }
 
 #endif
