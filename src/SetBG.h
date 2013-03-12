@@ -91,7 +91,6 @@ class SetBG {
 
         virtual Glib::ustring get_prefix() = 0;
         virtual Glib::ustring get_fullscreen_key() = 0;
-        bool has_prefix(Glib::ustring prefix, Glib::ustring str);
 
 		static Glib::RefPtr<Gdk::Pixbuf> make_scale(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_tile(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);

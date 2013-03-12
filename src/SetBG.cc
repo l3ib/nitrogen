@@ -450,27 +450,6 @@ void SetBG::restore_bgs()
         if ((*i).compare(0, prefix.length(), prefix) == 0)
             filtered_list.push_back((*i));
 
-    /*
-    struct temp_pred {
-        Glib::ustring comparestr;
-        bool operator()(Glib::ustring rhs) const
-        {
-            return rhs.compare(0, comparestr.length(), comparestr) == 0;
-        }
-    };
-
-    temp_pred tp;
-    tp.comparestr = this->get_prefix();
-
-    std::remove_copy_if(displist.begin(),
-                        displist.end(),
-                        filtered_list.begin(),
-                        tp);
-                        //std::not1(std::mem_fun(std::bind1st(&SetBG::has_prefix, this->get_prefix())));
-    */
-    for (std::vector<Glib::ustring>::const_iterator i = filtered_list.begin(); i != filtered_list.end(); i++)
-        std::cerr << "we got " << (*i) << "\n";
-
     // do we have a "full screen" item set?
     Glib::ustring fullscreen = this->get_fullscreen_key();
 
@@ -713,14 +692,6 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
     }
 
     return pixmap;
-}
-
-/**
- * Used as a predicate to determine is str starts with prefix.
- */
-bool SetBG::has_prefix(Glib::ustring prefix, Glib::ustring str)
-{
-    return str.compare(0, prefix.length(), prefix) == 0;
 }
 
 /*
