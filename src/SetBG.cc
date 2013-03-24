@@ -481,7 +481,7 @@ Glib::RefPtr<Gdk::Display> SetBG::get_display(Glib::ustring& disp)
     Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name());
 	if (!_display) {
 		std::cerr << _("Could not open display") << "\n";
-		return false;
+		throw 1;
 	}
 
     return _display;
@@ -507,7 +507,6 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     Glib::RefPtr<Gdk::Colormap> colormap;
     Glib::RefPtr<Gdk::Pixbuf> pixbuf, outpixbuf;
     Glib::RefPtr<Gdk::Pixmap> pixmap;
-    Pixmap* xoldpm = NULL;
     Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
     Window xwin = DefaultRootWindow(xdisp);
     Atom prop_root, prop_esetroot, type;
@@ -567,6 +566,8 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     // set it via gtk
     window->set_back_pixmap(pixmap, false);
     window->clear();
+
+	gc_.clear();
 
     // close down display
     _display->close();
@@ -648,6 +649,8 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
 {
     Glib::RefPtr<Gdk::Pixmap> pixmap;
     Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    Window xwin = DefaultRootWindow(xdisp);
+    Pixmap* xoldpm = NULL;
 
     Atom prop_root, prop_esetroot, type;
     int format;
@@ -691,6 +694,7 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
         XSetCloseDownMode(xdisp, RetainPermanent);
     }
 
+    pixmap->set_colormap(colormap);
     return pixmap;
 }
 
@@ -720,7 +724,7 @@ Glib::RefPtr<Gdk::Display> SetBGXWindows::get_display(Glib::ustring& disp)
     else
     {
         _display = SetBG::get_display(disp);
-        disp = _display->make_display_name();
+        disp = _display->get_name();
     }
 
     return _display;
@@ -828,7 +832,7 @@ void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint w
 
         if (xin_offset == -1) {
             std::cerr << _("Could not find Xinerama screen number") << " " << xin_screen_num << "\n";
-            return false;
+            return;  // @TODO: throw?
         }
     }
 
