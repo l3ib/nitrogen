@@ -36,15 +36,33 @@ using namespace Util;
  */
 SetBG* SetBG::get_bg_setter()
 {
-    Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-    Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
+    Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
 
-    XineramaScreenInfo *xinerama_info;
-    gint xinerama_num_screens;
+    SetBG* setter = NULL;
+    SetBG::RootWindowType wt = SetBG::get_rootwindowtype(dpy);
 
-    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+    switch (wt) {
+        case SetBG::NAUTILUS:
+            setter = new SetBGGnome();
+            break;
+#ifdef USE_XINERAMA
+        case SetBG::XINERAMA:
+            XineramaScreenInfo *xinerama_info;
+            gint xinerama_num_screens;
 
-    return new SetBGXWindows();
+            xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+
+            setter = new SetBGXinerama();
+            ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
+            break;
+#endif
+        case SetBG::DEFAULT:
+        default:
+            setter = new SetBGXWindows();
+            break;
+    };
+
+    return setter;
 }
 
 /**
@@ -70,7 +88,7 @@ int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
  *
  * @returns 	True if nautilus is drawing the desktop.
  */
-SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin)
+SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> display)
 {
 	GdkAtom type;
     gint format;
@@ -78,6 +96,9 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
 	guchar *data;
     SetBG::RootWindowType retval = SetBG::DEFAULT;
     gboolean ret = FALSE;
+    Glib::RefPtr<Gdk::Window> rootwin;
+
+    rootwin = display->get_default_screen()->get_root_window();
 
 	ret =    gdk_property_get(rootwin->gobj(),
 						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
@@ -86,8 +107,21 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwi
 							  4, /* length of a window is 32bits*/
 							  FALSE, &type, &format, &length, &data);
 
-    if (!ret)
+    if (!ret) {
+#ifdef USE_XINERAMA
+        // determine if xinerama is in play
+        //
+        XineramaScreenInfo *xinerama_info;
+        gint xinerama_num_screens;
+
+        xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(display->gobj()), &xinerama_num_screens);
+
+        if (xinerama_num_screens > 1)
+            return SetBG::XINERAMA;
+#endif
+
         return SetBG::DEFAULT;
+    }
 
     guint wid = *(guint*)data;
 

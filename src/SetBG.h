@@ -54,7 +54,8 @@ class SetBG {
             DEFAULT,
             NAUTILUS,
             XFCE,
-            UNKNOWN
+            UNKNOWN,
+            XINERAMA,
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
@@ -66,7 +67,7 @@ class SetBG {
 
         virtual Glib::ustring make_display_key(guint head) = 0;
 
-		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Window> rootwin);
+		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Display> display);
 
         static SetBG* get_bg_setter();
 

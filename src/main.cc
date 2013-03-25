@@ -108,12 +108,30 @@ int main (int argc, char ** argv) {
     Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
     Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
 
-    XineramaScreenInfo *xinerama_info;
-    gint xinerama_num_screens;
+    // factory to make the correct setter, if no force specified on command line
+    SetBG* setter;
+    if (parser->has_argument("force-setter")) {
+        Glib::ustring setter_str = parser->get_value("force-setter");
 
-    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
-    SetBG* setter = new SetBGXinerama();
-    ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
+        if (setter_str.c_str() == "xwindows")
+            setter = new SetBGXWindows();
+        else if (setter_str.c_str() == "xinerama") {
+            setter = new SetBGXinerama();
+
+            XineramaScreenInfo *xinerama_info;
+            gint xinerama_num_screens;
+
+            xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+            ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
+        }
+        else if (setter_str.c_str() == "gnome")
+            setter = new SetBGGnome();
+        else
+            setter = SetBG::get_bg_setter();
+
+    } else {
+        setter = SetBG::get_bg_setter();
+    }
 
     // if we got restore, set it and exit
     if ( parser->has_argument("restore") ) {
