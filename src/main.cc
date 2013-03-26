@@ -105,26 +105,24 @@ int main (int argc, char ** argv) {
         return 0;
     }
 
-    Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-    Glib::RefPtr<Gdk::Display> dpy = manager->get_default_display();
-
     // factory to make the correct setter, if no force specified on command line
     SetBG* setter;
     if (parser->has_argument("force-setter")) {
         Glib::ustring setter_str = parser->get_value("force-setter");
 
-        if (setter_str.c_str() == "xwindows")
+        if (setter_str == "xwindows")
             setter = new SetBGXWindows();
-        else if (setter_str.c_str() == "xinerama") {
+        else if (setter_str == "xinerama") {
             setter = new SetBGXinerama();
 
             XineramaScreenInfo *xinerama_info;
             gint xinerama_num_screens;
 
+            Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
             xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
             ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
         }
-        else if (setter_str.c_str() == "gnome")
+        else if (setter_str == "gnome")
             setter = new SetBGGnome();
         else
             setter = SetBG::get_bg_setter();
