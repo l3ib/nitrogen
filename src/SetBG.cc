@@ -896,68 +896,29 @@ void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint w
  *
  * Simply calls gconftool-2 for now, until we find a better way to do it.
  */
-bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
-
-    Glib::RefPtr<Gdk::Display> _display;
-    Glib::RefPtr<Gdk::Screen> screen;
-
-	// open display and screen
-	_display = (disp == "") ? Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name()) : Gdk::Display::open(disp);
-	if (!_display) {
-		std::cerr << _("Could not open display") << " " << disp << "\n";
-		return false;
-	}
-
-	// get the screen
-	screen = _display->get_default_screen();
-
-	GError *error = NULL;
-
-    Glib::ustring strmode = "scaled";       // in case of more modes
-	switch(mode) {
-		case SetBG::SET_SCALE:  strmode = "stretched";  break;
-		case SetBG::SET_TILE:   strmode = "wallpaper"; break; 
-		case SetBG::SET_CENTER: strmode = "centered"; break;
-		case SetBG::SET_ZOOM:   strmode = "scaled"; break;
-		case SetBG::SET_ZOOM_FILL:   strmode = "scaled"; break;
+bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+    Glib::ustring strmode;
+    switch(mode) {
+        case SetBG::SET_SCALE:      strmode = "stretched";  break;
+        case SetBG::SET_TILE:       strmode = "wallpaper"; break;
+        case SetBG::SET_CENTER:     strmode = "centered"; break;
+        case SetBG::SET_ZOOM:       strmode = "scaled"; break;
+        case SetBG::SET_ZOOM_FILL:
+        default:                    strmode = "zoom"; break;
 	};
 
-    std::vector<std::string> vecCmdLine;
-    vecCmdLine.push_back(std::string("gconftool-2"));
-    vecCmdLine.push_back(std::string("--type"));
-    vecCmdLine.push_back(std::string("string"));
-    vecCmdLine.push_back(std::string("--set"));
-    vecCmdLine.push_back(std::string("/desktop/gnome/background/picture_options"));
-    vecCmdLine.push_back(std::string(strmode));
-    vecCmdLine.push_back(std::string("--set"));
-    vecCmdLine.push_back(std::string("/desktop/gnome/background/picture_filename"));
-    vecCmdLine.push_back(std::string(file));
+    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.gnome.desktop.background");
 
-    std::string strcolor = std::string( bgcolor.to_string() );
-    vecCmdLine.push_back(std::string("--set"));
-    vecCmdLine.push_back(std::string("/desktop/gnome/background/primary_color"));
-    vecCmdLine.push_back(strcolor);
-    vecCmdLine.push_back(std::string("--set"));
-    vecCmdLine.push_back(std::string("/desktop/gnome/background/secondary_color"));
-    vecCmdLine.push_back(strcolor);
+    Glib::RefPtr<Gio::File> iofile = Gio::File::create_for_commandline_arg(file);
 
-    try
-    {
-        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
-    }
-    catch (Glib::SpawnError e)
-    {
-		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+    settings->set_string("picture-uri", iofile->get_uri());
+    settings->set_string("picture-options", strmode);
+    settings->set_string("primary-color", bgcolor.to_string());
+    settings->set_string("secondary-color", bgcolor.to_string());
+    settings->set_boolean("draw-background", true);
 
-        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
-			std::cerr << *i << " ";
-
-		std::cerr << "\n";
-
-        return false;
-	}
-
-	return true;
+    return true;
 }
 
 Glib::ustring SetBGGnome::get_prefix()
@@ -979,11 +940,9 @@ Glib::ustring SetBGGnome::get_fullscreen_key()
 /**
  * Make a usable display key to pass to set_bg with a given head number.
  * If no head number given, returns the fullscreen key.
- *
- * This is N/A?
  */
 Glib::ustring SetBGGnome::make_display_key(guint head)
 {
-    return Glib::ustring("???");
+    return Glib::ustring("");
 }
 
