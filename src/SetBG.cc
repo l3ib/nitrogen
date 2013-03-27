@@ -739,6 +739,29 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
  */
 
 /**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
+std::map<Glib::ustring, Glib::ustring> SetBGXWindows::get_active_displays()
+{
+    Glib::RefPtr<Gdk::Display> disp = Gdk::DisplayManager::get()->get_default_display();
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+
+    for (int i=0; i < disp->get_n_screens(); i++) {
+        Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
+        std::ostringstream ostr;
+        ostr << _("Screen") << " " << i;
+
+        map_displays[screen->make_display_name()] = ostr.str();
+    }
+
+    return map_displays;
+}
+
+/**
  * Gets the gdk display used by the XWindows specific setter.
  *
  * Has the side effect of setting the disp param.
@@ -792,7 +815,7 @@ Glib::ustring SetBGXWindows::get_fullscreen_key()
  *
  * For XWindows, will be a string like ":0" or ":0.1"
  */
-Glib::ustring SetBGXWindows::make_display_key(guint head)
+Glib::ustring SetBGXWindows::make_display_key(gint head)
 {
     if (head == -1)
         return this->get_fullscreen_key();
@@ -813,6 +836,33 @@ void SetBGXinerama::set_xinerama_info(XineramaScreenInfo* xinerama_info, gint xi
     this->xinerama_num_screens = xinerama_num_screens;
 }
 
+/**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
+std::map<Glib::ustring, Glib::ustring> SetBGXinerama::get_active_displays()
+{
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+
+    // if at least 2 screens, add the full screen
+    // reason being if xinerama on but only one screen, full screen is the same as the first display
+    if (this->xinerama_num_screens > 1)
+        map_displays[this->get_fullscreen_key()] = _("Full Screen");
+
+    // add individual screens
+    for (int i=0; i < xinerama_num_screens; i++) {
+        std::ostringstream ostr;
+        ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
+
+        map_displays[this->make_display_key(xinerama_info[i].screen_number)] = ostr.str();
+    }
+
+    return map_displays;
+}
+
 Glib::ustring SetBGXinerama::get_prefix()
 {
     Glib::ustring display("xin_");
@@ -826,7 +876,7 @@ Glib::ustring SetBGXinerama::get_prefix()
  */
 Glib::ustring SetBGXinerama::get_fullscreen_key()
 {
-    return Glib::ustring::compose("%1_-1", this->get_prefix());
+    return Glib::ustring::compose("%1-1", this->get_prefix());
 }
 
 /**
@@ -835,9 +885,9 @@ Glib::ustring SetBGXinerama::get_fullscreen_key()
  *
  * For Xinerama, will be a string like "xin_-1" (fullscreen) or "xin_0"
  */
-Glib::ustring SetBGXinerama::make_display_key(guint head)
+Glib::ustring SetBGXinerama::make_display_key(gint head)
 {
-    return Glib::ustring::compose("%1_%2", this->get_prefix(), head);
+    return Glib::ustring::compose("%1%2", this->get_prefix(), head);
 }
 
 /**
@@ -921,6 +971,13 @@ bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, G
     return true;
 }
 
+std::map<Glib::ustring, Glib::ustring> SetBGGnome::get_active_displays()
+{
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+    map_displays["dummy"] = "Gnome";
+    return map_displays;
+}
+
 Glib::ustring SetBGGnome::get_prefix()
 {
     Glib::ustring display("????");
@@ -941,7 +998,7 @@ Glib::ustring SetBGGnome::get_fullscreen_key()
  * Make a usable display key to pass to set_bg with a given head number.
  * If no head number given, returns the fullscreen key.
  */
-Glib::ustring SetBGGnome::make_display_key(guint head)
+Glib::ustring SetBGGnome::make_display_key(gint head)
 {
     return Glib::ustring("");
 }

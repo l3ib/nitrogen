@@ -65,7 +65,9 @@ class SetBG {
 
         virtual void restore_bgs();
 
-        virtual Glib::ustring make_display_key(guint head) = 0;
+        virtual Glib::ustring make_display_key(gint head) = 0;
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays() = 0;
+        virtual Glib::ustring get_fullscreen_key() = 0;
 
 		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Display> display);
 
@@ -77,7 +79,6 @@ class SetBG {
 	protected:
 
         virtual Glib::ustring get_prefix() = 0;
-        virtual Glib::ustring get_fullscreen_key() = 0;
 
 		static Glib::RefPtr<Gdk::Pixbuf> make_scale(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
 		static Glib::RefPtr<Gdk::Pixbuf> make_tile(const Glib::RefPtr<Gdk::Pixbuf>, const gint, const gint, Gdk::Color);
@@ -101,10 +102,12 @@ class SetBG {
  * Concrete setter for X windows (default).
  */
 class SetBGXWindows : public SetBG {
+    public:
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual Glib::ustring get_fullscreen_key();
     protected:
         virtual Glib::ustring get_prefix();
-        virtual Glib::ustring get_fullscreen_key();
-        virtual Glib::ustring make_display_key(guint head);
+        virtual Glib::ustring make_display_key(gint head);
         virtual Glib::RefPtr<Gdk::Display> get_display(Glib::ustring& disp);
 };
 
@@ -112,6 +115,8 @@ class SetBGXWindows : public SetBG {
 class SetBGXinerama : public SetBG {
     public:
         void set_xinerama_info(XineramaScreenInfo* xinerama_info, gint xinerama_num_screens);
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual Glib::ustring get_fullscreen_key();
 
     protected:
         // xinerama stuff
@@ -119,8 +124,7 @@ class SetBGXinerama : public SetBG {
         gint xinerama_num_screens;
 
         virtual Glib::ustring get_prefix();
-        virtual Glib::ustring get_fullscreen_key();
-        virtual Glib::ustring make_display_key(guint head);
+        virtual Glib::ustring make_display_key(gint head);
         virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
 };
 #endif
@@ -131,10 +135,12 @@ class SetBGGnome : public SetBG {
                             Glib::ustring file,
                             SetMode mode,
                             Gdk::Color bgcolor);
+
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual Glib::ustring get_fullscreen_key();
     protected:
         virtual Glib::ustring get_prefix();
-        virtual Glib::ustring get_fullscreen_key();
-        virtual Glib::ustring make_display_key(guint head);
+        virtual Glib::ustring make_display_key(gint head);
 };
 
 #endif

@@ -43,9 +43,6 @@ class NWindow : public Gtk::Window {
         std::map<Glib::ustring, Glib::ustring> map_displays;        // a map of current displays on the running instance to their display names
         void set_default_display(int display);
 
-        bool is_multihead;
-        bool is_xinerama;
-
         void set_bg(Glib::ustring file);
 
     protected:        

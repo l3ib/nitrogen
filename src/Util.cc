@@ -153,13 +153,6 @@ bool is_display_relevant(Gtk::Window* window, Glib::ustring display)
 {
     // cast window to an NWindow.  we have to do this to avoid a circular dep
     NWindow *nwindow = dynamic_cast<NWindow*>(window);
-    if (!nwindow->is_multihead)
-    {
-        Glib::ustring curdisp = Gdk::DisplayManager::get()->get_default_display()->get_default_screen()->make_display_name();
-        return (curdisp == display);
-    }
-
-    // window IS multihead, check to see if this display is in the map
     return (nwindow->map_displays.find(display) != nwindow->map_displays.end());
 }
 
@@ -183,7 +176,7 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
     std::ostringstream ostr;
     ostr << shortfile << "\n\n" << "<i>" << _("Currently set background");
 
-    if (nwindow->is_multihead)
+    if (nwindow->map_displays.size() > 1)
         ostr << " " << _("for") << " " << nwindow->map_displays[display];
    
     ostr << "</i>";
