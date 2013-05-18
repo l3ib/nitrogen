@@ -10,6 +10,7 @@ Contributors:
     Siiseli Koulutus <tuki@siiseli.fi> - finnish translation
     Cloudef <mailRoxas@gmail.com> - Xinerama mode resource leak fix
     Julian Knauer <jpk@goatpr0n.de> - Xinerama/multihead --head select
+    Andrew Starr-Bochicchio <a.starr.b@gmail.com> - .desktop file
 
 Items Ruthlessly Stolen:
 	Icon theme installer from Banshee
