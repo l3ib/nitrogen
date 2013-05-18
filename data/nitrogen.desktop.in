@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=@PACKAGE@
+Name=@PACKAGE_NAME@
+Categories=Utility;GTK
+Icon=@PACKAGE@
+Comment=Browse and set desktop backgrounds
+Keywords=background;desktop;
