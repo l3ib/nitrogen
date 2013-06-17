@@ -427,7 +427,7 @@ Glib::ustring Thumbview::cache_file(Glib::ustring file) {
 	delete [] full;
 
 	// build dir paths
-	Glib::ustring halfref = Glib::build_filename(Glib::get_home_dir(),".thumbnails/");
+	Glib::ustring halfref = Glib::build_filename(Glib::get_user_cache_dir(),"thumbnails/");
 	halfref = Glib::build_filename(halfref, "normal/");
 
 	if ( !Glib::file_test(halfref, Glib::FILE_TEST_EXISTS) )
