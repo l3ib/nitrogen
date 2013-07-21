@@ -231,6 +231,8 @@ bool NWindow::on_delete_event(GdkEventAny *event)
                 this->apply_bg();
                 break;
             case Gtk::RESPONSE_NO:
+                Util::program_log("restoring backgrounds from config file");
+                Util::restore_saved_bgs();
                 break;
             case Gtk::RESPONSE_CANCEL:
             case Gtk::RESPONSE_DELETE_EVENT:
