@@ -84,99 +84,6 @@ Glib::ustring path_to_abs_path(Glib::ustring path) {
 	return cwd + '/' + path;
 }
 
-//
-// TODO: i turned this kind of into a shitshow with the xinerama, must redo a bit
-//
-void restore_saved_bgs() {
-
-	program_log("entering set_saved_bgs()");
-	
-	Glib::ustring file, display;
-	SetBG::SetMode mode;
-	Gdk::Color bgcolor;
-	
-	std::vector<Glib::ustring> displist;
-	std::vector<Glib::ustring>::const_iterator i;
-	Config *cfg = Config::get_instance();
-
-	if ( cfg->get_bg_groups(displist) == false ) {
-		std::cerr << _("Could not get bg groups from config file.") << std::endl;
-		return;
-	}
-
-	// determine what mode we are going into
-	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
-	
-#ifdef USE_XINERAMA
-	XineramaScreenInfo* xinerama_info;
-	gint xinerama_num_screens;
-
-	int event_base, error_base;
-	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
-	if (xinerama && XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()))) {
-		xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
-
-		// dirty, dirty hack to make sure we're not on some crazy 1 monitor display
-		if (xinerama_num_screens > 1) {
-			program_log("using xinerama");
-
-			bool foundfull = false;
-			for (i=displist.begin(); i!=displist.end(); i++)
-				if ((*i) == Glib::ustring("xin_-1"))
-					foundfull = true;
-
-			if (foundfull) {
-				if (cfg->get_bg(Glib::ustring("xin_-1"), file, mode, bgcolor)) {
-					program_log("setting full xinerama screen to %s", file.c_str());
-					SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, Glib::ustring("xin_-1"), file, mode, bgcolor); 
-					program_log("done setting full xinerama screen");
-				} else {
-					std::cerr << _("Could not get bg info for fullscreen xinerama") << std::endl;
-				}
-			} else {
-
-				// iterate through, pick out the xin_*
-				for (i=displist.begin(); i!=displist.end(); i++) {
-					if ((*i).find(Glib::ustring("xin_").c_str(), 0, 4) != Glib::ustring::npos) {
-						if (cfg->get_bg((*i), file, mode, bgcolor)) {
-							program_log("setting %s to %s", (*i).c_str(), file.c_str());
-							SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, (*i), file, mode, bgcolor);
-							program_log("done setting %s", (*i).c_str());
-						} else {
-							std::cerr << _("Could not get bg info for") << " " << (*i) << std::endl;
-						}
-					}
-				}
-			}
-		
-			// must return here becuase not all systems have xinerama
-			program_log("leaving set_saved_bgs()");	
-			return;
-		}
-	} 
-#endif
-
-	for (int n=0; n<disp->get_n_screens(); n++) {
-				
-		display = disp->get_screen(n)->make_display_name();
-
-		program_log("display: %s", display.c_str());
-			
-		if (cfg->get_bg(display, file, mode, bgcolor)) {
-					
-			program_log("setting bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-			SetBG::set_bg(display, file, mode, bgcolor);
-			program_log("set bg on %s to %s (mode: %d)", display.c_str(), file.c_str(), mode);
-				
-		} else {
-			std::cerr << _("Could not get bg info") << std::endl;
-		}
-	}
-
-	program_log("leaving set_saved_bgs()");	
-}
-
 /**
  * Creates an instance of an ArgParser with all options set up.
  *
@@ -190,6 +97,7 @@ ArgParser* create_arg_parser() {
     parser->register_option("sort", _("How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)"), true);
     parser->register_option("set-color", _("background color in hex, #000000 by default"), true);
     parser->register_option("head", _("Select xinerama/multihead display in GUI, 0..n, -1 for full"), true);
+    parser->register_option("force-setter", _("Force setter engine: xwindows, xinerama, gnome"), true);
 
     // command line set modes
     Glib::ustring openp(" (");
@@ -245,13 +153,6 @@ bool is_display_relevant(Gtk::Window* window, Glib::ustring display)
 {
     // cast window to an NWindow.  we have to do this to avoid a circular dep
     NWindow *nwindow = dynamic_cast<NWindow*>(window);
-    if (!nwindow->is_multihead)
-    {
-        Glib::ustring curdisp = Gdk::DisplayManager::get()->get_default_display()->get_default_screen()->make_display_name();
-        return (curdisp == display);
-    }
-
-    // window IS multihead, check to see if this display is in the map
     return (nwindow->map_displays.find(display) != nwindow->map_displays.end());
 }
 
@@ -275,7 +176,7 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
     std::ostringstream ostr;
     ostr << shortfile << "\n\n" << "<i>" << _("Currently set background");
 
-    if (nwindow->is_multihead)
+    if (nwindow->map_displays.size() > 1)
         ostr << " " << _("for") << " " << nwindow->map_displays[display];
    
     ostr << "</i>";

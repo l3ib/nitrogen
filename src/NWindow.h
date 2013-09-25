@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class NWindow : public Gtk::Window {
     public:
-        NWindow ();
+        NWindow(SetBG* bg_setter);
         void show (void);
         virtual ~NWindow ();
 
@@ -43,9 +43,6 @@ class NWindow : public Gtk::Window {
         std::map<Glib::ustring, Glib::ustring> map_displays;        // a map of current displays on the running instance to their display names
         void set_default_display(int display);
 
-        bool is_multihead;
-        bool is_xinerama;
-
         void set_bg(Glib::ustring file);
 
     protected:        
@@ -53,6 +50,7 @@ class NWindow : public Gtk::Window {
         Glib::RefPtr<Gtk::UIManager> m_ui_manager;
         Gtk::VBox main_vbox;
         Gtk::HBox bot_hbox;
+        SetBG* bg_setter;
 
         ImageCombo select_mode, select_display;
 

@@ -34,8 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // leethax constructor
 
-NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xinerama(false), btn_prefs(Gtk::Stock::PREFERENCES) {
-	
+NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::Stock::PREFERENCES) {
+    this->bg_setter = bg_setter;
+
 	set_border_width (5);
 	set_default_size (450, 500);
 
@@ -112,16 +113,17 @@ NWindow::NWindow (void) : apply (Gtk::Stock::APPLY), is_multihead(false), is_xin
 // shows all of our widgets
 
 void NWindow::show (void) {
-	view.show ();
-	select_mode.show ();
-	if ( this->is_multihead ) select_display.show();
-	apply.show ();
-	bot_hbox.show ();
-	main_vbox.show ();
-	button_bgcolor.show();
+    view.show();
+    select_mode.show();
+    // show only if > 1 entry in box
+    if (this->map_displays.size() > 1) select_display.show();
+    apply.show();
+    bot_hbox.show();
+    main_vbox.show();
+    button_bgcolor.show();
     btn_prefs.show();
 
-	this->set_title("Nitrogen");
+    this->set_title("Nitrogen");
 }
 
 /**
@@ -230,18 +232,12 @@ bool NWindow::on_delete_event(GdkEventAny *event)
 void NWindow::set_bg(const Glib::ustring file) {
 
 	// get the data from the active items
-	SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-	Glib::ustring thedisp = this->select_display.get_active_data(); 
-	Gdk::Color bgcolor = this->button_bgcolor.get_color();
+	SetBG::SetMode mode   = SetBG::string_to_mode(this->select_mode.get_active_data());
+	Glib::ustring thedisp = this->select_display.get_active_data();
+	Gdk::Color bgcolor    = this->button_bgcolor.get_color();
 
 	// set it
-#ifdef USE_XINERAMA
-	if (this->is_xinerama)
-		SetBG::set_bg_xinerama(xinerama_info, xinerama_num_screens, thedisp, file, mode, bgcolor);
-	else
-#endif
-		SetBG::set_bg(thedisp, file, mode, bgcolor);
-	
+    bg_setter->set_bg(thedisp, file, mode, bgcolor);
 }
 
 // leethax destructor
@@ -304,66 +300,15 @@ void NWindow::setup_select_boxes() {
 	this->select_mode.add_image_row( icon, _("Zoomed"), SetBG::mode_to_string(SetBG::SET_ZOOM), false );
 	this->select_mode.add_image_row( icon, _("Zoomed Fill"), SetBG::mode_to_string(SetBG::SET_ZOOM_FILL), false );
 
+
+    // @TODO GET ALL THIS INTEL FROM THE SETTER
+    //
 	// displays
-	Glib::RefPtr<Gdk::DisplayManager> manager = Gdk::DisplayManager::get();
-	Glib::RefPtr<Gdk::Display> disp	= manager->get_default_display();
+    map_displays = this->bg_setter->get_active_displays();
 
-	if ( disp->get_n_screens() > 1 ) 
-	{
-		this->is_multihead = true;	
-
-		for (int i=0; i<disp->get_n_screens(); i++) {
-			Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
-			std::ostringstream ostr;
-			ostr << _("Screen") << " " << i;
-			bool on = (screen == disp->get_default_screen());
-				
-			this->select_display.add_image_row( video_display_icon, ostr.str(), screen->make_display_name(), on );
-
-            map_displays[screen->make_display_name()] = ostr.str();
-		}
-
-		return;
-	}
-
-#ifdef USE_XINERAMA
-	// xinerama
-	int event_base, error_base;
-	int xinerama = XineramaQueryExtension(GDK_DISPLAY_XDISPLAY(disp->gobj()), &event_base, &error_base);
-	if (xinerama) {
-		xinerama = XineramaIsActive(GDK_DISPLAY_XDISPLAY(disp->gobj()));
-		if (xinerama) {
-			xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(disp->gobj()), &xinerama_num_screens);
-
-			if (xinerama_num_screens > 1) {
-				this->is_multihead = true;
-				this->is_xinerama = true;
-
-				// add the big one
-				this->select_display.add_image_row(video_display_icon, _("Full Screen"), "xin_-1", true);
-
-                map_displays["xin_-1"] = _("Full Screen");
-
-				for (int i=0; i<xinerama_num_screens; i++) {
-					std::ostringstream ostr, valstr;
-					ostr << _("Screen") << " " << xinerama_info[i].screen_number+1;
-					valstr << "xin_" << xinerama_info[i].screen_number;
-							
-					this->select_display.add_image_row(video_display_icon, ostr.str(), valstr.str(), false);
-
-                    map_displays[valstr.str()] = ostr.str();
-				}
-							
-							return;
-			}
-		}
-	}
-#endif
-
-	// if we made it here, we do not have any kind of multihead
-	// we still need to insert an entry to the display selector or we will die harshly
-	
-	this->select_display.add_image_row( video_display_icon, _("Default"), disp->get_default_screen()->make_display_name(), true);
+    for (std::map<Glib::ustring, Glib::ustring>::const_iterator i = map_displays.begin(); i != map_displays.end(); i++) {
+        this->select_display.add_image_row( video_display_icon, (*i).second, (*i).first, false);
+    }
 
 	return;
 }
@@ -374,74 +319,58 @@ void NWindow::setup_select_boxes() {
  */
 void NWindow::set_default_selections()
 {
-	// grab the current config (if there is one)
-	Config *cfg = Config::get_instance();
-	std::vector<Glib::ustring> cfg_displays;
-	if( cfg->get_bg_groups(cfg_displays) ) 
-    {	
+    // grab the current config (if there is one)
+    Config *cfg = Config::get_instance();
+    std::vector<Glib::ustring> cfg_displays;
+    if(cfg->get_bg_groups(cfg_displays))
+    {
         SetBG::SetMode m;
         Gdk::Color c;
-		Glib::ustring default_selection;
+        Glib::ustring default_selection;
         Glib::ustring file;
 
-		// get default display
-        if (this->is_xinerama)
-        {
-            // we want the lowest numbered xinerama display (slightly hacky)
-            int max = 99;
-            for (std::vector<Glib::ustring>::iterator i = cfg_displays.begin(); i != cfg_displays.end(); i++)
+        if (find(cfg_displays.begin(), cfg_displays.end(), this->bg_setter->get_fullscreen_key()) != cfg_displays.end())
+            default_selection = this->bg_setter->get_fullscreen_key();
+        else {
+            // iterate the displays we know until we find the first one set
+            std::map<Glib::ustring, Glib::ustring> known_disps = this->bg_setter->get_active_displays();
+            for (std::map<Glib::ustring, Glib::ustring>::const_iterator i = known_disps.begin(); i != known_disps.end(); i++)
             {
-                if ((*i).substr(0, 4) != "xin_")
-                    continue;
-
-                std::stringstream stream((*i).substr(4));
-                int newmax;
-                stream >> newmax;
-                if (newmax < max)
-                    max = newmax;
+                if (find(cfg_displays.begin(), cfg_displays.end(), (*i).first) != cfg_displays.end())
+                {
+                    default_selection = (*i).first;
+                    break;
+                }
             }
-
-            std::ostringstream ostr;
-            ostr << "xin_" << max;
-            default_selection = ostr.str();
         }
-        else
-            default_selection = Gdk::DisplayManager::get()->get_default_display()->get_default_screen()->make_display_name();
 
         // make sure whatever we came up with is in the config file, if not, just return
         if (find(cfg_displays.begin(), cfg_displays.end(), default_selection) == cfg_displays.end())
             return;
 
-		if (!cfg->get_bg(default_selection, file, m, c)) {
-			// failed. return?
-			return;
-		}
+        if (!cfg->get_bg(default_selection, file, m, c)) {
+            // failed. return?
+            return;
+        }
 
-		// set em!
-		button_bgcolor.set_color(c);
-		select_mode.select_value( SetBG::mode_to_string(m) );
-		
-		// iterate through filename list
-		for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
-		{
-			if ( (*iter)[view.record.CurBGOnDisp] == default_selection) {
+        // set em!
+        button_bgcolor.set_color(c);
+        select_mode.select_value( SetBG::mode_to_string(m) );
+
+        // iterate through filename list
+        for (Gtk::TreeIter iter = view.store->children().begin(); iter != view.store->children().end(); iter++)
+        {
+            if ( (*iter)[view.record.CurBGOnDisp] == default_selection) {
                 Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(view, &Thumbview::select), new Gtk::TreeIter(iter)), 100);
-				break;
-			}
-		}
-	}
-
+                break;
+            }
+        }
+    }
 }
 
 void NWindow::set_default_display(int display)
 {
-    std::ostringstream headstr;
-    if (this->is_xinerama) {
-        headstr << "xin_" << display;
-        select_display.select_value(headstr.str());
-    } else if (this->is_multihead) {
-        select_display.set_active(display); 
-    }
+    select_display.select_value(this->bg_setter->make_display_key(display));
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _UTIL_H_
 
 #include "ArgParser.h"
+#include "SetBG.h"
 #include <gtkmm.h>
 
 namespace Util {
 
 	void program_log(const char *format, ...);
 	Glib::ustring path_to_abs_path(Glib::ustring path);
-	void restore_saved_bgs();
 	ArgParser* create_arg_parser();
 	std::string fix_start_dir(std::string startdir);
 
