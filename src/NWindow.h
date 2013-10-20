@@ -66,6 +66,7 @@ class NWindow : public Gtk::Window {
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
         void sighandle_btn_prefs();
+        void apply_bg();
 
         virtual bool on_delete_event(GdkEventAny *event);
 

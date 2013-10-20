@@ -148,26 +148,34 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 }
 
 /**
- * Handles the user pressing the apply button.  Grabs the selected items and
+ * Handles the user pressing the apply button.
+ */
+void NWindow::sighandle_click_apply (void) {
+    this->apply_bg();
+}
+
+/**
+ * Performs the apply action
+ * Grabs the selected items and
  * calls set_bg on it. It also saves the bg and closes the application if 
  * the app is not multiheaded, or the full xin desktop is selected.
  */
-void NWindow::sighandle_click_apply (void) {
-	
-	// find out which image is currently selected
-	Gtk::TreeModel::iterator iter = view.get_selected ();
-	Gtk::TreeModel::Row row = *iter;
+void NWindow::apply_bg () {
+
+    // find out which image is currently selected
+    Gtk::TreeModel::iterator iter = view.get_selected ();
+    Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
-	this->set_bg(file);
+    this->set_bg(file);
 
     // apply - remove dirty flag
     m_dirty = false;
 
     SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-	Glib::ustring thedisp = this->select_display.get_active_data(); 
-	Gdk::Color bgcolor = this->button_bgcolor.get_color();
+    Glib::ustring thedisp = this->select_display.get_active_data(); 
+    Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
-	// save	
+    // save 
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
     // tell the row that he's now on thedisp
@@ -180,7 +188,7 @@ void NWindow::sighandle_click_apply (void) {
     // old background on thedisp, but could be 2 items if xinerama individual bgs
     // are replaced by the fullscreen xinerama.
     for (Gtk::TreeIter i = view.store->children().begin(); i != view.store->children().end(); i++)
-	{
+    {
         Glib::ustring curbgondisp = (*i)[view.record.CurBGOnDisp];
         if (curbgondisp == "")
             continue;
@@ -201,24 +209,36 @@ void NWindow::sighandle_click_apply (void) {
         else
             (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
-
 }
 
 bool NWindow::on_delete_event(GdkEventAny *event)
 {
     if (m_dirty)
     {
-        Gtk::MessageDialog dialog(*this, _("You previewed an image without applying it, exit anyway?"), false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO, true);
+        int result;
+        Gtk::MessageDialog dialog(*this,
+            _("You previewed an image without applying it, apply?"), false,
+            Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_NONE, true);
 
-        int result = dialog.run();
+        dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+        dialog.add_button(Gtk::Stock::NO, Gtk::RESPONSE_NO);
+        dialog.add_button(Gtk::Stock::YES, Gtk::RESPONSE_YES);
+
+        dialog.set_default_response(Gtk::RESPONSE_YES);
+        result = dialog.run();
+
         switch (result)
         {
             case Gtk::RESPONSE_YES:
-
+                this->apply_bg();
                 break;
             case Gtk::RESPONSE_NO:
-                return true;
+                Util::program_log("restoring backgrounds from config file");
+                Util::restore_saved_bgs();
                 break;
+            case Gtk::RESPONSE_CANCEL:
+            case Gtk::RESPONSE_DELETE_EVENT:
+                return true;
         };
     }
 
