@@ -467,6 +467,9 @@ void SetBG::restore_bgs()
 	SetBG::SetMode mode;
 	Gdk::Color bgcolor;
 
+    // saving of pixmaps is for interactive only
+    disable_pixmap_save();
+
 	Config *cfg = Config::get_instance();
 
     if (cfg->get_bg_groups(displist) == false) {
@@ -807,6 +810,15 @@ void SetBG::reset_to_first_pixmap(Glib::ustring& disp)
 
     // set the first one back to the prop
     set_current_pixmap(_display, first_pixmap);
+}
+
+/**
+ * Sets a flag to prevent saving the first pixmap.
+ * Used by non-interactive modes.
+ */
+void SetBG::disable_pixmap_save()
+{
+    has_set_once = true;
 }
 
 /*

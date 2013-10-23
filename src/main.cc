@@ -43,6 +43,9 @@ void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode 
 	Util::program_log("entering set_bg_once()");
 	Glib::ustring disp;
 
+    // saving of pixmaps is for interactive only
+    bg_setter->disable_pixmap_save();
+
     disp = bg_setter->make_display_key(head);
     bg_setter->set_bg(disp, file, mode, col);
 

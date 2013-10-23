@@ -79,6 +79,7 @@ class SetBG {
         // public methods used on save/shutdown to work with first pixmap
         void clear_first_pixmap(Glib::ustring& disp);
         void reset_to_first_pixmap(Glib::ustring& disp);
+        void disable_pixmap_save();
 
 	protected:
 
