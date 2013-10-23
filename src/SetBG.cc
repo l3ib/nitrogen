@@ -586,21 +586,9 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     // set it via XLib
     Pixmap xpm = GDK_PIXMAP_XID(pixmap->gobj());
 
-    prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", False);
-    prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
+    set_current_pixmap(_display, &xpm);
 
-    if (prop_root == None || prop_esetroot == None) {
-        std::cerr << _("ERROR: BG set could not make atoms.") << "\n";
-        return false;
-    }
-
-    XChangeProperty(xdisp, xwin, prop_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
-    XChangeProperty(xdisp, xwin, prop_esetroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &xpm, 1);
-
-    // set it via gtk
-    window->set_back_pixmap(pixmap, false);
-    window->clear();
-
+    // cleanup
 	gc_.clear();
 
     // close down display
@@ -683,9 +671,52 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
 {
     Glib::RefPtr<Gdk::Pixmap> pixmap;
     Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
-    Window xwin = DefaultRootWindow(xdisp);
-    Pixmap* xoldpm = NULL;
+    Window xwin    = DefaultRootWindow(xdisp);
+    Pixmap* xoldpm = get_current_pixmap(_display);
 
+    // if this is the first time we've set, don't delete/reuse the first pixmap - we hold onto
+    // it for possible restore on program exit
+    if (xoldpm && !has_set_once) {
+        has_set_once = true;
+        first_pixmap = xoldpm;
+        xoldpm = NULL;
+    }
+
+    if (xoldpm)
+    {
+        // grab the old pixmap and ref it into a gdk pixmap
+        pixmap = Gdk::Pixmap::create(_display, *xoldpm);
+
+        // check that this pixmap is the right size
+        int width, height;
+        pixmap->get_size(width, height);
+
+        if ((width != winw) || (height != winh) || (pixmap->get_depth() != wind)) {
+            XKillClient(xdisp, *(xoldpm));
+            xoldpm = NULL;
+        }
+    }
+
+    if (!xoldpm) {
+        // we have to create it
+        pixmap = Gdk::Pixmap::create(window, winw, winh, wind);
+
+        // only set the mode if we never had an old pixmap to work with
+        XSetCloseDownMode(xdisp, RetainPermanent);
+    }
+
+    pixmap->set_colormap(colormap);
+    return pixmap;
+}
+
+/**
+ * Returns the current X Pixmap set as the background.
+ */
+Pixmap* SetBG::get_current_pixmap(Glib::RefPtr<Gdk::Display> _display)
+{
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    Window xwin    = DefaultRootWindow(xdisp);
+    Pixmap* xoldpm = NULL;
     Atom prop_root, prop_esetroot, type;
     int format;
     unsigned long length, after;
@@ -705,31 +736,77 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
         }
     }
 
-    if (xoldpm)
-    {
-        // grab the old pixmap and ref it into a gdk pixmap
-        pixmap = Gdk::Pixmap::create(_display, *xoldpm);
+    return xoldpm;
+}
 
-        // check that this pixmap is the right size
-        int width, height;
-        pixmap->get_size(width, height);
+/**
+ * Sets the given Pixmap to be the display's permanent background.
+ */
+void SetBG::set_current_pixmap(Glib::RefPtr<Gdk::Display> _display, Pixmap* new_pixmap)
+{
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    Window xwin = DefaultRootWindow(xdisp);
+    Atom prop_root, prop_esetroot, type;
 
-        if ((width != winw) || (height != winh) || (pixmap->get_depth() != wind)) {
-            XKillClient(xdisp, *((Pixmap *) data_root));
-            xoldpm = NULL;
-        }
+    prop_root = XInternAtom(xdisp, "_XROOTPMAP_ID", False);
+    prop_esetroot = XInternAtom(xdisp, "ESETROOT_PMAP_ID", False);
+
+    if (prop_root == None || prop_esetroot == None) {
+        std::cerr << _("ERROR: BG set could not make atoms.") << "\n";
+        return;
     }
 
-    if (!xoldpm) {
-        // we have to create it
-        pixmap = Gdk::Pixmap::create(window, winw, winh, wind);
+    XChangeProperty(xdisp, xwin, prop_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &(*new_pixmap), 1);
+    XChangeProperty(xdisp, xwin, prop_esetroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &(*new_pixmap), 1);
 
-        // only set the mode if we never had an old pixmap to work with
-        XSetCloseDownMode(xdisp, RetainPermanent);
+    // actually set the background via Xlib
+    XSetWindowBackgroundPixmap(xdisp, xwin, *new_pixmap);
+    XClearWindow(xdisp, xwin);
+}
+
+/**
+ * Frees the initial pixmap that was saved on first set.
+ *
+ * This should be called after save.
+ */
+void SetBG::clear_first_pixmap(Glib::ustring& disp)
+{
+    Glib::RefPtr<Gdk::Display> _display = get_display(disp);
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+
+    if (first_pixmap != NULL) {
+        XKillClient(xdisp, *(first_pixmap));
+        first_pixmap = NULL;
     }
+}
 
-    pixmap->set_colormap(colormap);
-    return pixmap;
+/**
+ * Kills whatever is the current background and resets the background to be
+ * the one saved at the intial set time.
+ */
+void SetBG::reset_to_first_pixmap(Glib::ustring& disp)
+{
+    Glib::RefPtr<Gdk::Display> _display = get_display(disp);
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    Window xwin = DefaultRootWindow(xdisp);
+    Pixmap *current_pixmap = NULL;
+
+    // how did you do that
+    if (first_pixmap == NULL)
+        return;
+
+    // get current pixmap from root window
+    current_pixmap = get_current_pixmap(_display);
+
+    // if they are the same (how?), no need to do anything
+    if (first_pixmap == current_pixmap)
+       return;
+
+    // ok, they aren't the same. kill the current one
+    XKillClient(xdisp, *((Pixmap *) current_pixmap));
+
+    // set the first one back to the prop
+    set_current_pixmap(_display, first_pixmap);
 }
 
 /*

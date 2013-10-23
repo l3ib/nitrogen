@@ -130,7 +130,8 @@ void NWindow::show (void) {
  * Handles the user pressing Ctrl+Q or Ctrl+W, standard quit buttons.
  */
 void NWindow::sighandle_accel_quit() {
-	Gtk::Main::quit();
+    if (!handle_exit_request())
+        hide();
 }
 
 /**
@@ -178,6 +179,9 @@ void NWindow::apply_bg () {
     // save 
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
+    // tell the bg setter to forget about the first pixmap
+    bg_setter->clear_first_pixmap(thedisp);
+
     // tell the row that he's now on thedisp
     row[view.record.CurBGOnDisp] = thedisp;
 
@@ -211,7 +215,12 @@ void NWindow::apply_bg () {
     }
 }
 
-bool NWindow::on_delete_event(GdkEventAny *event)
+/**
+ * Common handler for window delete or key accels.
+ *
+ * Prompts the user to save if necessary.
+ */
+bool NWindow::handle_exit_request()
 {
     if (m_dirty)
     {
@@ -227,14 +236,14 @@ bool NWindow::on_delete_event(GdkEventAny *event)
         dialog.set_default_response(Gtk::RESPONSE_YES);
         result = dialog.run();
 
+        Glib::ustring thedisp = this->select_display.get_active_data();
         switch (result)
         {
             case Gtk::RESPONSE_YES:
                 this->apply_bg();
                 break;
             case Gtk::RESPONSE_NO:
-                Util::program_log("restoring backgrounds from config file");
-                bg_setter->restore_bgs();
+                bg_setter->reset_to_first_pixmap(thedisp);
                 break;
             case Gtk::RESPONSE_CANCEL:
             case Gtk::RESPONSE_DELETE_EVENT:
@@ -242,7 +251,12 @@ bool NWindow::on_delete_event(GdkEventAny *event)
         };
     }
 
-    return Gtk::Window::on_delete_event(event);
+    return false;
+}
+
+bool NWindow::on_delete_event(GdkEventAny *event)
+{
+    return handle_exit_request();
 }
 
 /**

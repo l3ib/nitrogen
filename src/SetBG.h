@@ -76,6 +76,10 @@ class SetBG {
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );
 
+        // public methods used on save/shutdown to work with first pixmap
+        void clear_first_pixmap(Glib::ustring& disp);
+        void reset_to_first_pixmap(Glib::ustring& disp);
+
 	protected:
 
         virtual Glib::ustring get_prefix() = 0;
@@ -96,6 +100,14 @@ class SetBG {
 
         virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
         Glib::RefPtr<Gdk::Pixmap> get_or_create_pixmap(Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap);
+
+
+        Pixmap* get_current_pixmap(Glib::RefPtr<Gdk::Display> _display);
+        void set_current_pixmap(Glib::RefPtr<Gdk::Display> _display, Pixmap* new_pixmap);
+
+        // data for saving initial pixmap on first set (for restore later)
+        bool has_set_once;
+        Pixmap* first_pixmap;
 };
 
 /**

@@ -69,6 +69,7 @@ class NWindow : public Gtk::Window {
         void apply_bg();
 
         virtual bool on_delete_event(GdkEventAny *event);
+        bool handle_exit_request();
 
 #ifdef USE_XINERAMA
 	// xinerama stuff
