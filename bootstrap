@@ -7,7 +7,7 @@ sh() {
 export WANT_AUTOMAKE=1.9
 
 sh libtoolize --copy --force --automake
-sh aclocal
+sh aclocal -I m4
 sh autoconf
 sh autoheader
 sh automake --include-deps --add-missing --copy
