@@ -2,6 +2,7 @@ AC_PREREQ([2.69])
 AC_INIT([nitrogen],[1.5.2],[daf@minuslab.net])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_AUX_DIR([.])
 AC_ISC_POSIX
 AC_HEADER_STDC++
 AM_INIT_AUTOMAKE
