@@ -1,7 +1,7 @@
 SUBDIRS = icons
 
 desktopdir = $(datadir)/applications
-desktop_DATA = nitrogen.desktop.in
+desktop_DATA = nitrogen.desktop
 
 UPDATE_DESKTOP = update-desktop-database $(datadir)/applications || :
 

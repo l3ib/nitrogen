@@ -89,6 +89,7 @@ AC_SUBST([NITROGEN_CFLAGS])
 
 AC_CONFIG_FILES([Makefile po/Makefile.in
                  data/Makefile
+                 data/nitrogen.desktop
                  data/icons/Makefile
                  src/Makefile])
 AC_OUTPUT
