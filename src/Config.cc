@@ -39,6 +39,8 @@ Config::Config()
     m_sizey = 500;
 
     m_icon_captions = false;
+    
+    m_sort_mode = Thumbview::SORT_ALPHA;
 }
 
 /**
@@ -73,6 +75,7 @@ Config* Config::clone()
     retVal->m_sizey = m_sizey;
     retVal->m_icon_captions = m_icon_captions;
     retVal->m_vec_dirs = VecStrs(m_vec_dirs);
+    retVal->m_sort_mode = m_sort_mode;
 
     return retVal;
 }
@@ -373,6 +376,17 @@ bool Config::save_cfg()
     else if (m_display_mode == LIST)
         kf.set_string("nitrogen", "view",  Glib::ustring("list"));
 
+    kf.set_boolean("nitrogen", "recurse", recurse);
+
+    if (m_sort_mode == Thumbview::SORT_ALPHA)
+        kf.set_string("nitrogen", "sort", Glib::ustring("alpha"));
+    else if (m_sort_mode == Thumbview::SORT_RALPHA)
+        kf.set_string("nitrogen", "sort", Glib::ustring("ralpha"));
+    else if (m_sort_mode == Thumbview::SORT_TIME)
+        kf.set_string("nitrogen", "sort", Glib::ustring("time"));
+    else
+        kf.set_string("nitrogen", "sort", Glib::ustring("rtime"));
+
     kf.set_boolean("nitrogen", "icon_caps", m_icon_captions);
 
     kf.set_string_list("nitrogen", "dirs", m_vec_dirs);
@@ -418,7 +432,21 @@ bool Config::load_cfg()
 
     if (kf.has_key("nitrogen", "dirs"))         m_vec_dirs = kf.get_string_list("nitrogen", "dirs");
     if (kf.has_key("nitrogen", "icon_caps"))    m_icon_captions = kf.get_boolean("nitrogen", "icon_caps");
+    if (kf.has_key("nitrogen", "recurse"))      recurse = kf.get_boolean("nitrogen", "recurse");
 
+    if (kf.has_key("nitrogen", "sort"))
+    {
+        Glib::ustring sort_mode = kf.get_string("nitrogen", "sort");
+        if (sort_mode == Glib::ustring("alpha"))
+            m_sort_mode = Thumbview::SORT_ALPHA;
+        else if (sort_mode == Glib::ustring("ralpha"))
+            m_sort_mode = Thumbview::SORT_RALPHA;
+        else if (sort_mode == Glib::ustring("time"))
+            m_sort_mode = Thumbview::SORT_TIME;
+        else if (sort_mode == Glib::ustring("alpha"))
+            m_sort_mode = Thumbview::SORT_RTIME;
+    }
+  
     return true;
 }
 
