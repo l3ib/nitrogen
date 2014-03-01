@@ -6,7 +6,6 @@ AC_CONFIG_AUX_DIR([.])
 AC_ISC_POSIX
 AC_HEADER_STDC++
 AM_INIT_AUTOMAKE
-AM_GNU_GETTEXT_VERSION([0.18.3])
 
 AC_PROG_CXX
 AC_PROG_AWK
@@ -87,7 +86,8 @@ fi
 AC_SUBST([NITROGEN_LIBS])
 AC_SUBST([NITROGEN_CFLAGS])
 
-AC_CONFIG_FILES([Makefile po/Makefile.in
+AC_CONFIG_FILES([Makefile 
+                 po/Makefile.in
                  data/Makefile
                  data/nitrogen.desktop
                  data/icons/Makefile
