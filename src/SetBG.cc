@@ -513,7 +513,7 @@ void SetBG::restore_bgs()
 /**
  * Returns a Gdk::Display object for use with any of the set_bg derivations.
  */
-Glib::RefPtr<Gdk::Display> SetBG::get_display(Glib::ustring& disp)
+Glib::RefPtr<Gdk::Display> SetBG::get_display(const Glib::ustring& disp)
 {
     Glib::RefPtr<Gdk::Display> _display = Gdk::Display::open(Gdk::DisplayManager::get()->get_default_display()->get_name());
 	if (!_display) {
@@ -571,7 +571,7 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     // get or create pixmap - for xinerama, may use existing one to merge
     // this will delete the old pixmap if necessary
     // also sets shutdown mode if necessary
-    pixmap = this->get_or_create_pixmap(_display, window, winw, winh, wind, colormap);
+    pixmap = this->get_or_create_pixmap(disp, _display, window, winw, winh, wind, colormap);
 
     // get our pixbuf from the file
     try {
@@ -670,7 +670,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> p
  * It will delete the old pixmap if appropriate and set the proper close down
  * mode on the X display.
  */
-Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap)
+Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::ustring disp, Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap)
 {
     Glib::RefPtr<Gdk::Pixmap> pixmap;
     Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
@@ -681,7 +681,7 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::RefPtr<Gdk::Display>
     // it for possible restore on program exit
     if (xoldpm && !has_set_once) {
         has_set_once = true;
-        first_pixmap = xoldpm;
+        first_pixmaps[disp] = xoldpm;
         xoldpm = NULL;
     }
 
@@ -768,48 +768,52 @@ void SetBG::set_current_pixmap(Glib::RefPtr<Gdk::Display> _display, Pixmap* new_
 }
 
 /**
- * Frees the initial pixmap that was saved on first set.
+ * Frees the initial pixmaps that were saved on first set.
  *
  * This should be called after save.
  */
-void SetBG::clear_first_pixmap(Glib::ustring& disp)
+void SetBG::clear_first_pixmaps()
 {
-    Glib::RefPtr<Gdk::Display> _display = get_display(disp);
-    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+    for (std::map<Glib::ustring, Pixmap*>::iterator i = first_pixmaps.begin(); i != first_pixmaps.end(); i++) {
+        if ((*i).second == NULL)
+            continue;
 
-    if (first_pixmap != NULL) {
-        XKillClient(xdisp, *(first_pixmap));
-        first_pixmap = NULL;
+        Glib::RefPtr<Gdk::Display> _display = get_display((*i).first);
+        Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+
+        XKillClient(xdisp, *((*i).second));
     }
+
+    first_pixmaps.erase(first_pixmaps.begin(), first_pixmaps.end());
 }
 
 /**
- * Kills whatever is the current background and resets the background to be
- * the one saved at the intial set time.
+ * For each display that has a recorded first pixmap, kills whatever is the current background
+ * and resets the background to be the one saved at the intial set time.
  */
-void SetBG::reset_to_first_pixmap(Glib::ustring& disp)
+void SetBG::reset_first_pixmaps()
 {
-    Glib::RefPtr<Gdk::Display> _display = get_display(disp);
-    Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
-    Window xwin = DefaultRootWindow(xdisp);
-    Pixmap *current_pixmap = NULL;
+    for (std::map<Glib::ustring, Pixmap*>::iterator i = first_pixmaps.begin(); i != first_pixmaps.end(); i++) {
+        if ((*i).second == NULL)
+            continue;
 
-    // how did you do that
-    if (first_pixmap == NULL)
-        return;
+        Glib::RefPtr<Gdk::Display> _display = get_display((*i).first);
+        Display *xdisp = GDK_DISPLAY_XDISPLAY(_display->gobj());
+        Pixmap *current_pixmap = NULL;
 
-    // get current pixmap from root window
-    current_pixmap = get_current_pixmap(_display);
+        // get current pixmap from root window
+        current_pixmap = get_current_pixmap(_display);
 
-    // if they are the same (how?), no need to do anything
-    if (first_pixmap == current_pixmap)
-       return;
+        // if they are the same (how?), no need to do anything
+        if ((*i).second == current_pixmap)
+           return;
 
-    // ok, they aren't the same. kill the current one
-    XKillClient(xdisp, *((Pixmap *) current_pixmap));
+        // ok, they aren't the same. kill the current one
+        XKillClient(xdisp, *((Pixmap *) current_pixmap));
 
-    // set the first one back to the prop
-    set_current_pixmap(_display, first_pixmap);
+        // set the first one back to the prop
+        set_current_pixmap(_display, (*i).second);
+    }
 }
 
 /**

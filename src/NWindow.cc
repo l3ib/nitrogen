@@ -180,7 +180,7 @@ void NWindow::apply_bg () {
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
     // tell the bg setter to forget about the first pixmap
-    bg_setter->clear_first_pixmap(thedisp);
+    bg_setter->clear_first_pixmaps();
 
     // tell the row that he's now on thedisp
     row[view.record.CurBGOnDisp] = thedisp;
@@ -236,14 +236,13 @@ bool NWindow::handle_exit_request()
         dialog.set_default_response(Gtk::RESPONSE_YES);
         result = dialog.run();
 
-        Glib::ustring thedisp = this->select_display.get_active_data();
         switch (result)
         {
             case Gtk::RESPONSE_YES:
                 this->apply_bg();
                 break;
             case Gtk::RESPONSE_NO:
-                bg_setter->reset_to_first_pixmap(thedisp);
+                bg_setter->reset_first_pixmaps();
                 break;
             case Gtk::RESPONSE_CANCEL:
             case Gtk::RESPONSE_DELETE_EVENT:
