@@ -704,6 +704,18 @@ Glib::RefPtr<Gdk::Pixmap> SetBG::get_or_create_pixmap(Glib::ustring disp, Glib::
         // we have to create it
         pixmap = Gdk::Pixmap::create(window, winw, winh, wind);
 
+        // copy from the first pixmap, if it exists
+        if (first_pixmaps.find(disp) != first_pixmaps.end()) {
+            Pixmap newxpm = GDK_PIXMAP_XID(pixmap->gobj());
+            Glib::RefPtr<Gdk::GC> gc_ = Gdk::GC::create(pixmap);
+            GC xgc = GDK_GC_XGC(gc_->gobj());
+
+            xoldpm = first_pixmaps[disp];
+            XCopyArea(xdisp, *xoldpm, newxpm, xgc, 0, 0, winw, winh, 0, 0);
+
+            gc_.clear();
+        }
+
         // only set the mode if we never had an old pixmap to work with
         XSetCloseDownMode(xdisp, RetainPermanent);
     }
