@@ -28,16 +28,13 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
                                 m_frame_view(_("View Options")),
                                 m_frame_dirs(_("Directories")),
                                 m_frame_sort(_("Sort by")),
-                                m_frame_recurse(_("Search recursively?")),
                                 m_rb_view_icon(_("_Icon"), true),
                                 m_rb_view_list(_("_List"), true),
                                 m_rb_sort_rtime(_("_Time (Descending)"), true),
                                 m_rb_sort_time(_("_Time (Ascending)"), true),
                                 m_rb_sort_alpha(_("_Name (Ascending)"), true),
                                 m_rb_sort_ralpha(_("_Name (Descending)"), true),
-                                m_rb_recurse_false(_("_No"), true),
-                                m_rb_recurse_true(_("_Yes"), true),
-
+                                m_cb_recurse(_("Recurse"), true),
                                 m_btn_adddir(Gtk::Stock::ADD),
                                 m_btn_deldir(Gtk::Stock::DELETE)
 {
@@ -48,9 +45,6 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_rb_sort_rtime.set_group(sort_group);
     m_rb_sort_time.set_group(sort_group);
     m_rb_sort_ralpha.set_group(sort_group);
-    
-    Gtk::RadioButton::Group recurse_group = m_rb_recurse_true.get_group();
-    m_rb_recurse_false.set_group(recurse_group);
 
     m_cfg = cfg;
     DisplayMode mode = m_cfg->get_display_mode();
@@ -61,10 +55,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
         m_rb_view_list.set_active(true);
 
     bool recurse = m_cfg->get_recurse();
-    if (recurse)
-        m_rb_recurse_true.set_active(true);
-    else
-        m_rb_recurse_false.set_active(true);
+    m_cb_recurse.set_active(recurse);
 
     Thumbview::SortMode sort_mode = m_cfg->get_sort_mode();
     if (sort_mode == Thumbview::SORT_ALPHA)
@@ -105,13 +96,6 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_vbox_view.pack_start(m_rb_view_icon, false, true);
     m_vbox_view.pack_start(m_rb_view_list, false, true);
 
-    m_align_recurse.set_padding(0, 0, 12, 0);
-    m_align_recurse.add(m_vbox_recurse);
-    m_frame_recurse.add(m_align_recurse);
-    m_frame_recurse.set_shadow_type(Gtk::SHADOW_NONE);
-    m_vbox_recurse.pack_start(m_rb_recurse_true, false, true);
-    m_vbox_recurse.pack_start(m_rb_recurse_false, false, true);
-
     m_align_sort.set_padding(0, 0, 12, 0);
     m_align_sort.add(m_vbox_sort);
     m_frame_sort.add(m_align_sort);
@@ -135,17 +119,17 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
 
     m_hbox_dirbtns.pack_start(m_btn_adddir, false, true);
     m_hbox_dirbtns.pack_start(m_btn_deldir, false, true);
+    m_hbox_dirbtns.pack_end(m_cb_recurse, false, true);
 
     get_vbox()->pack_start(m_frame_view, false, true);
-    get_vbox()->pack_start(m_frame_recurse, false, true);
     get_vbox()->pack_start(m_frame_sort, false, true);
     get_vbox()->pack_start(m_frame_dirs, true, true);
 
     add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     add_button(Gtk::Stock::OK, Gtk::RESPONSE_OK);
     set_response_sensitive(Gtk::RESPONSE_CANCEL);
-	
-    set_default_size(300, 250);
+
+    set_default_size(350, 350);
 
     show_all();
 }
@@ -158,7 +142,7 @@ void NPrefsWindow::on_response(int response_id)
     {
         DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
-        m_cfg->set_recurse((m_rb_recurse_true.get_active()) ? true : false);
+        m_cfg->set_recurse((m_cb_recurse.get_active()) ? true : false);
         if (m_rb_sort_alpha.get_active())
             m_cfg->set_sort_mode(Thumbview::SORT_ALPHA);
         else if (m_rb_sort_ralpha.get_active())

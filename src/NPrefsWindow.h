@@ -37,24 +37,20 @@ class NPrefsWindow : public Gtk::Dialog
         Gtk::VBox m_vbox_view;
         Gtk::VBox m_vbox_dirs;
         Gtk::VBox m_vbox_sort;
-        Gtk::VBox m_vbox_recurse;
         Gtk::HBox m_hbox_dirbtns;
         Gtk::Frame m_frame_view;
         Gtk::Frame m_frame_dirs;
         Gtk::Frame m_frame_sort;
-        Gtk::Frame m_frame_recurse;
         Gtk::Alignment m_align_view;
         Gtk::Alignment m_align_dirs;
         Gtk::Alignment m_align_sort;
-        Gtk::Alignment m_align_recurse;
         Gtk::RadioButton m_rb_view_icon;
         Gtk::RadioButton m_rb_view_list;
         Gtk::RadioButton m_rb_sort_alpha;
         Gtk::RadioButton m_rb_sort_ralpha;
         Gtk::RadioButton m_rb_sort_time;
         Gtk::RadioButton m_rb_sort_rtime;
-        Gtk::RadioButton m_rb_recurse_true;
-        Gtk::RadioButton m_rb_recurse_false;
+        Gtk::CheckButton m_cb_recurse;
 
         Gtk::ScrolledWindow m_scrolledwin;
         Gtk::TreeView m_list_dirs;

@@ -65,7 +65,7 @@ class Config {
 		bool get_bg_groups(std::vector<Glib::ustring> &groups);
 
 		bool get_recurse() { return recurse; }
-		void set_recurse(bool n) { Config::recurse = n; }
+		void set_recurse(bool n) { recurse = n; }
         DisplayMode get_display_mode() { return m_display_mode; }
         void set_display_mode(DisplayMode mode) { m_display_mode = mode; }
         bool get_icon_captions() { return m_icon_captions; }
@@ -76,7 +76,7 @@ class Config {
         void get_size(guint &w, guint &h);
         void set_size(guint w, guint h);
 
-        void set_sort_mode(Thumbview::SortMode s) { Config::m_sort_mode = s; }
+        void set_sort_mode(Thumbview::SortMode s) { m_sort_mode = s; }
         Thumbview::SortMode get_sort_mode(){ return m_sort_mode; }
 
         VecStrs get_dirs();
