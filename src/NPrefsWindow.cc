@@ -27,15 +27,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Preferences"), parent, true, false),
                                 m_frame_view(_("View Options")),
                                 m_frame_dirs(_("Directories")),
+                                m_frame_sort(_("Sort by")),
+                                m_frame_recurse(_("Search recursively?")),
                                 m_rb_view_icon(_("_Icon"), true),
                                 m_rb_view_list(_("_List"), true),
+                                m_rb_sort_rtime(_("_Time (Descending)"), true),
+                                m_rb_sort_time(_("_Time (Ascending)"), true),
+                                m_rb_sort_alpha(_("_Name (Ascending)"), true),
+                                m_rb_sort_ralpha(_("_Name (Descending)"), true),
+                                m_rb_recurse_false(_("_No"), true),
+                                m_rb_recurse_true(_("_Yes"), true),
+
                                 m_btn_adddir(Gtk::Stock::ADD),
                                 m_btn_deldir(Gtk::Stock::DELETE)
 {
     // radio button grouping
     Gtk::RadioButton::Group group = m_rb_view_icon.get_group();
     m_rb_view_list.set_group(group);
-   
+    Gtk::RadioButton::Group sort_group = m_rb_sort_alpha.get_group();
+    m_rb_sort_rtime.set_group(sort_group);
+    m_rb_sort_time.set_group(sort_group);
+    m_rb_sort_ralpha.set_group(sort_group);
+    
+    Gtk::RadioButton::Group recurse_group = m_rb_recurse_true.get_group();
+    m_rb_recurse_false.set_group(recurse_group);
+
     m_cfg = cfg;
     DisplayMode mode = m_cfg->get_display_mode();
 
@@ -43,6 +59,22 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
         m_rb_view_icon.set_active(true);
     else
         m_rb_view_list.set_active(true);
+
+    bool recurse = m_cfg->get_recurse();
+    if (recurse)
+        m_rb_recurse_true.set_active(true);
+    else
+        m_rb_recurse_false.set_active(true);
+
+    Thumbview::SortMode sort_mode = m_cfg->get_sort_mode();
+    if (sort_mode == Thumbview::SORT_ALPHA)
+        m_rb_sort_alpha.set_active(true);
+    else if (sort_mode == Thumbview::SORT_RALPHA)
+        m_rb_sort_ralpha.set_active(true);
+    else if (sort_mode == Thumbview::SORT_TIME)
+        m_rb_sort_time.set_active(true);
+    else
+        m_rb_sort_rtime.set_active(true);
 
     // signal handlers for directory buttons
     m_btn_adddir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_adddir));
@@ -73,6 +105,22 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_vbox_view.pack_start(m_rb_view_icon, false, true);
     m_vbox_view.pack_start(m_rb_view_list, false, true);
 
+    m_align_recurse.set_padding(0, 0, 12, 0);
+    m_align_recurse.add(m_vbox_recurse);
+    m_frame_recurse.add(m_align_recurse);
+    m_frame_recurse.set_shadow_type(Gtk::SHADOW_NONE);
+    m_vbox_recurse.pack_start(m_rb_recurse_true, false, true);
+    m_vbox_recurse.pack_start(m_rb_recurse_false, false, true);
+
+    m_align_sort.set_padding(0, 0, 12, 0);
+    m_align_sort.add(m_vbox_sort);
+    m_frame_sort.add(m_align_sort);
+    m_frame_sort.set_shadow_type(Gtk::SHADOW_NONE);
+    m_vbox_sort.pack_start(m_rb_sort_alpha, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_ralpha, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_time, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_rtime, false, true);
+
     m_align_dirs.set_padding(0, 0, 12, 0);
     m_align_dirs.add(m_vbox_dirs);
 
@@ -89,6 +137,8 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_hbox_dirbtns.pack_start(m_btn_deldir, false, true);
 
     get_vbox()->pack_start(m_frame_view, false, true);
+    get_vbox()->pack_start(m_frame_recurse, false, true);
+    get_vbox()->pack_start(m_frame_sort, false, true);
     get_vbox()->pack_start(m_frame_dirs, true, true);
 
     add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -108,6 +158,15 @@ void NPrefsWindow::on_response(int response_id)
     {
         DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
+        m_cfg->set_recurse((m_rb_recurse_true.get_active()) ? true : false);
+        if (m_rb_sort_alpha.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_ALPHA);
+        else if (m_rb_sort_ralpha.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_RALPHA);
+        else if (m_rb_sort_time.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_TIME);
+        else
+            m_cfg->set_sort_mode(Thumbview::SORT_RTIME);
 
         m_cfg->save_cfg();
     }

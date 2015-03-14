@@ -192,6 +192,8 @@ int main (int argc, char ** argv) {
 
     if ( parser->has_argument("no-recurse") )
         cfg->set_recurse(false);
+    else
+    	cfg->set_recurse(cfg->get_recurse());
 
     // load configuration if there is one
     cfg->load_cfg();
@@ -237,6 +239,8 @@ int main (int argc, char ** argv) {
 
         main_window->view.set_sort_mode (mode);
     }
+    else
+    	main_window->view.set_sort_mode(cfg->get_sort_mode());
 
     // remove parser
     delete parser;
