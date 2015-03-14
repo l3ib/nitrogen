@@ -424,6 +424,9 @@ void NWindow::sighandle_btn_prefs()
     {
         // figure out what directories to reload and what directories to not reload!
         // do this before we reload the main config!
+        //
+        // if the recurse flag changed, we need to unload/reload everything
+        bool recurse_changed = cfg->get_recurse() != clone->get_recurse();
 
         VecStrs vec_load;
         VecStrs vec_unload;
@@ -431,11 +434,11 @@ void NWindow::sighandle_btn_prefs()
         VecStrs vec_cfg_dirs = cfg->get_dirs();
         VecStrs vec_clone_dirs = clone->get_dirs();
         for (VecStrs::iterator i = vec_cfg_dirs.begin(); i != vec_cfg_dirs.end(); i++)
-            if (find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
+            if (recurse_changed || find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
                 vec_unload.push_back(*i);
 
         for (VecStrs::iterator i = vec_clone_dirs.begin(); i != vec_clone_dirs.end(); i++)
-            if (find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
+            if (recurse_changed || find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
                 vec_load.push_back(*i);
 
         cfg->load_cfg();        // tells the global instance to reload itself from disk, which the prefs dialog
