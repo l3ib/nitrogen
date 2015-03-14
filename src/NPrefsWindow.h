@@ -45,6 +45,7 @@ class NPrefsWindow : public Gtk::Dialog
         Gtk::Alignment m_align_dirs;
         Gtk::Alignment m_align_sort;
         Gtk::RadioButton m_rb_view_icon;
+        Gtk::RadioButton m_rb_view_icon_caps;
         Gtk::RadioButton m_rb_view_list;
         Gtk::RadioButton m_rb_sort_alpha;
         Gtk::RadioButton m_rb_sort_ralpha;

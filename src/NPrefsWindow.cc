@@ -29,6 +29,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
                                 m_frame_dirs(_("Directories")),
                                 m_frame_sort(_("Sort by")),
                                 m_rb_view_icon(_("_Icon"), true),
+                                m_rb_view_icon_caps(_("_Icon with captions"), true),
                                 m_rb_view_list(_("_List"), true),
                                 m_rb_sort_rtime(_("_Time (descending)"), true),
                                 m_rb_sort_time(_("_Time (ascending)"), true),
@@ -40,7 +41,9 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
 {
     // radio button grouping
     Gtk::RadioButton::Group group = m_rb_view_icon.get_group();
+    m_rb_view_icon_caps.set_group(group);
     m_rb_view_list.set_group(group);
+
     Gtk::RadioButton::Group sort_group = m_rb_sort_alpha.get_group();
     m_rb_sort_rtime.set_group(sort_group);
     m_rb_sort_time.set_group(sort_group);
@@ -49,8 +52,12 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_cfg = cfg;
     DisplayMode mode = m_cfg->get_display_mode();
 
-    if (mode == ICON)
-        m_rb_view_icon.set_active(true);
+    if (mode == ICON) {
+        if (m_cfg->get_icon_captions())
+            m_rb_view_icon_caps.set_active(true);
+        else
+            m_rb_view_icon.set_active(true);
+    }
     else
         m_rb_view_list.set_active(true);
 
@@ -94,6 +101,7 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_frame_view.add(m_align_view);
     m_frame_view.set_shadow_type(Gtk::SHADOW_NONE);
     m_vbox_view.pack_start(m_rb_view_icon, false, true);
+    m_vbox_view.pack_start(m_rb_view_icon_caps, false, true);
     m_vbox_view.pack_start(m_rb_view_list, false, true);
 
     m_align_sort.set_padding(0, 0, 12, 0);
@@ -140,8 +148,9 @@ void NPrefsWindow::on_response(int response_id)
 {
     if (response_id == Gtk::RESPONSE_OK)
     {
-        DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
+        DisplayMode mode = (m_rb_view_icon.get_active() || m_rb_view_icon_caps.get_active()) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
+        m_cfg->set_icon_captions(m_rb_view_icon_caps.get_active());
         m_cfg->set_recurse((m_cb_recurse.get_active()) ? true : false);
         if (m_rb_sort_alpha.get_active())
             m_cfg->set_sort_mode(Thumbview::SORT_ALPHA);
