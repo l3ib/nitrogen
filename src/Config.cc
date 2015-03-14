@@ -443,7 +443,7 @@ bool Config::load_cfg()
             m_sort_mode = Thumbview::SORT_RALPHA;
         else if (sort_mode == Glib::ustring("time"))
             m_sort_mode = Thumbview::SORT_TIME;
-        else if (sort_mode == Glib::ustring("alpha"))
+        else if (sort_mode == Glib::ustring("rtime"))
             m_sort_mode = Thumbview::SORT_RTIME;
     }
   

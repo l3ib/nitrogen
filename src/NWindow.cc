@@ -450,6 +450,8 @@ void NWindow::sighandle_btn_prefs()
 
         for (VecStrs::iterator i = vec_load.begin(); i != vec_load.end(); i++)
             view.load_dir(*i);
+
+        view.set_sort_mode(cfg->get_sort_mode());
     }
 
 }
