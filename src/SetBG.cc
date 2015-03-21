@@ -47,6 +47,9 @@ SetBG* SetBG::get_bg_setter()
         case SetBG::NAUTILUS:
             setter = new SetBGGnome();
             break;
+        case SetBG::NEMO:
+            setter = new SetBGNemo();
+            break;
 #ifdef USE_XINERAMA
         case SetBG::XINERAMA:
             XineramaScreenInfo *xinerama_info;
@@ -195,6 +198,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
                     std::string strclass = std::string(list[1]);
                     if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
                     if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
+                    if (strclass == std::string("Nemo"))      retval = SetBG::NEMO;     else
                     {
                         std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
                         retval = SetBG::UNKNOWN;
@@ -1127,7 +1131,7 @@ bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, G
         default:                    strmode = "zoom"; break;
 	};
 
-    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.gnome.desktop.background");
+    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(get_gsettings_key());
 
     Glib::RefPtr<Gio::File> iofile = Gio::File::create_for_commandline_arg(file);
 
@@ -1135,7 +1139,8 @@ bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, G
     settings->set_string("picture-options", strmode);
     settings->set_string("primary-color", bgcolor.to_string());
     settings->set_string("secondary-color", bgcolor.to_string());
-    settings->set_boolean("draw-background", true);
+
+    set_show_desktop();
 
     return true;
 }
@@ -1172,3 +1177,51 @@ Glib::ustring SetBGGnome::make_display_key(gint head)
     return Glib::ustring("");
 }
 
+/**
+ * Returns the schema key to be used for setting background settings.
+ *
+ * Can be overridden.
+ */
+Glib::ustring SetBGGnome::get_gsettings_key()
+{
+    return Glib::ustring("org.gnome.desktop.background");
+}
+
+/**
+ * Sets the show_desktop flag in the appropriate spot.
+ *
+ * This varies depending on actual software used, so needs to be own function
+ * to be overridden.
+ */
+void SetBGGnome::set_show_desktop()
+{
+    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(get_gsettings_key());
+    settings->set_boolean("draw-background", true);
+}
+
+/*
+ * **************************************************************************
+ * SetBGNemo
+ * **************************************************************************
+ */
+/**
+ * Returns the schema key to be used for setting background settings.
+ *
+ * Can be overridden.
+ */
+Glib::ustring SetBGNemo::get_gsettings_key()
+{
+    return Glib::ustring("org.cinnamon.desktop.background");
+}
+
+/**
+ * Sets the show_desktop flag in the appropriate spot.
+ *
+ * This varies depending on actual software used, so needs to be own function
+ * to be overridden.
+ */
+void SetBGNemo::set_show_desktop()
+{
+    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(Glib::ustring("org.nemo.desktop"));
+    settings->set_boolean("draw-background", true);
+}

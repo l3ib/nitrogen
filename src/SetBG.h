@@ -56,6 +56,7 @@ class SetBG {
             XFCE,
             UNKNOWN,
             XINERAMA,
+            NEMO,
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
@@ -155,6 +156,14 @@ class SetBGGnome : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
+        virtual Glib::ustring get_gsettings_key();
+        virtual void set_show_desktop();
+};
+
+class SetBGNemo : public SetBGGnome {
+    protected:
+        virtual Glib::ustring get_gsettings_key();
+        virtual void set_show_desktop();
 };
 
 #endif
