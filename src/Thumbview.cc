@@ -76,7 +76,7 @@ void DelayLoadingStore::get_value_vfunc (const iterator& iter, int column, Glib:
 
 			row[thumbview->record.LoadingThumb] = true;
 
-			Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
+			//Util::program_log("Custom model: planning on loading %s\n", tp->file.c_str());
 
 			g_async_queue_push(aqueue_loadthumbs, (gpointer)tp);
 		}
@@ -208,7 +208,7 @@ void Thumbview::add_file(std::string filename, std::string rootdir)
 	// for modified time
 	row[record.Time] = get_file_mtime(filename);
 
-	Util::program_log("add_file(): Adding file %s (from %s)\n", filename.c_str(), rootdir.c_str());
+	//Util::program_log("add_file(): Adding file %s (from %s)\n", filename.c_str(), rootdir.c_str());
 
 	// push it on the thumb queue
 //	TreePair *tp = new TreePair();
@@ -256,7 +256,7 @@ void Thumbview::load_dir(const VecStrs& dirs)
 		
 		try {
 			dirhandle = new Glib::Dir(curdir);
-			Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
+			//Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
 
 		} catch (Glib::FileError e) {
 			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";

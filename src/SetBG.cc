@@ -41,6 +41,8 @@ SetBG* SetBG::get_bg_setter()
     SetBG* setter = NULL;
     SetBG::RootWindowType wt = SetBG::get_rootwindowtype(dpy);
 
+    Util::program_log("root window type %d\n", wt);
+
     switch (wt) {
         case SetBG::NAUTILUS:
             setter = new SetBGGnome();
@@ -84,6 +86,53 @@ int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
 }
 
 /**
+ * Recursive function to find a window with _NET_WM_WINDOW_TYPE set to
+ * _NET_WM_WINDOW_TYPE_DESKTOP.
+ *
+ * Returns the window id if found.
+ *
+ * Returns:
+ * -1 if not found
+ *  <wid> if found
+ */
+int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
+    Window rr, pr;
+    Window *children;
+    unsigned int numchildren;
+    Atom ret_type;
+    int ret_format;
+    unsigned long ret_items, ret_bytesleft;
+    Atom *prop_return;
+
+    // search current window for atom
+    Atom propatom = XInternAtom(xdisp, "_NET_WM_WINDOW_TYPE", False);
+    Atom propval  = XInternAtom(xdisp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+
+    XGetWindowProperty(xdisp, curwindow, propatom, 0L, 32L, False,
+            XA_ATOM, &ret_type, &ret_format, &ret_items, &ret_bytesleft,
+            (unsigned char**) &prop_return);
+
+    if (ret_type == XA_ATOM && ret_format == 32 && ret_items == 1) {
+        if (prop_return[0] == propval) {
+            XFree(prop_return);
+            return curwindow;
+        }
+    }
+
+
+    XQueryTree(xdisp, curwindow, &rr, &pr, &children, &numchildren);
+    for (int i = 0; i < numchildren; i++) {
+        int ret = find_desktop_window(xdisp, children[i]);
+        if (ret != -1) {
+            XFree(children);
+            return ret;
+        }
+    }
+
+    return -1;
+}
+
+/**
  * Determines if Nautilus is being used to draw the root desktop.
  *
  * @returns 	True if nautilus is drawing the desktop.
@@ -97,72 +146,87 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
     SetBG::RootWindowType retval = SetBG::DEFAULT;
     gboolean ret = FALSE;
     Glib::RefPtr<Gdk::Window> rootwin;
+    guint wid = 0;
 
     rootwin = display->get_default_screen()->get_root_window();
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
 
 	ret =    gdk_property_get(rootwin->gobj(),
 						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
                               gdk_atom_intern("WINDOW", FALSE),
-							  0,
-							  4, /* length of a window is 32bits*/
+							  0L,
+							  4L, /* length of a window is 32bits*/
 							  FALSE, &type, &format, &length, &data);
 
-    if (!ret) {
+    if (ret) {
+        wid = *(guint*)data;
+    } else {
+        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
+        // now we have to search for it!
+        Window xwin = DefaultRootWindow(xdisp);
+        gint wwid = find_desktop_window(xdisp, xwin);
+
+        if (wwid != -1)
+            wid = (guint)wwid;
+    }
+
+    if (wid > 0) {
+
+        Atom propatom = XInternAtom(xdisp, "WM_CLASS", FALSE);
+
+        XTextProperty tprop;
+
+        gchar **list;
+        gint num;
+
+        XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
+        bool bGotText = XGetTextProperty(xdisp, wid, &tprop, propatom);
+        XSetErrorHandler(old_x_error_handler);
+
+        if (bGotText && tprop.nitems)
+        {
+            if (XTextPropertyToStringList(&tprop, &list, &num))
+            {
+                // expect 2 strings here (XLib tells us there are 3)
+                if (num != 3)
+                    retval = SetBG::DEFAULT;
+                else
+                {
+                    std::string strclass = std::string(list[1]);
+                    if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
+                    if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
+                    {
+                        std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
+                        retval = SetBG::UNKNOWN;
+                    }
+
+             }
+
+                XFreeStringList(list);
+            }
+            XFree(tprop.value);
+        }
+
+        // need to free what we got from property get
+        if (ret)
+            g_free(data);
+
+        return retval;
+    }
+
 #ifdef USE_XINERAMA
-        // determine if xinerama is in play
-        //
-        XineramaScreenInfo *xinerama_info;
-        gint xinerama_num_screens;
+    // determine if xinerama is in play
+    //
+    XineramaScreenInfo *xinerama_info;
+    gint xinerama_num_screens;
 
-        xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(display->gobj()), &xinerama_num_screens);
+    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(display->gobj()), &xinerama_num_screens);
 
-        if (xinerama_num_screens > 1)
-            return SetBG::XINERAMA;
+    if (xinerama_num_screens > 1)
+        return SetBG::XINERAMA;
 #endif
 
-        return SetBG::DEFAULT;
-    }
-
-    guint wid = *(guint*)data;
-
-    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
-    Atom propatom = XInternAtom(xdisp, "WM_CLASS", FALSE);
-
-    XTextProperty tprop;
-
-    gchar **list;
-    gint num;
-
-    XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
-    bool bGotText = XGetTextProperty(xdisp, wid, &tprop, propatom);
-    XSetErrorHandler(old_x_error_handler);
-
-    if (bGotText && tprop.nitems)
-    {
-        if (XTextPropertyToStringList(&tprop, &list, &num))
-        {
-            // expect 2 strings here (XLib tells us there are 3)
-            if (num != 3)
-                retval = SetBG::DEFAULT;
-            else
-            {
-                std::string strclass = std::string(list[1]);
-                if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
-                if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
-                {
-                    std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
-                    retval = SetBG::UNKNOWN;
-                }
-
-         }
-
-            XFreeStringList(list);
-        }
-        XFree(tprop.value);
-    }
-
-    g_free(data);
-    return retval;
+    return SetBG::DEFAULT;
 }
 
 /**

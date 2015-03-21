@@ -95,6 +95,7 @@ class SetBG {
 		static guint32 GdkColorToUint32(const Gdk::Color);
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
+        static int find_desktop_window(Display *display, Window curwindow);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
