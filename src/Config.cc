@@ -115,11 +115,6 @@ std::string Config::get_file(const Glib::ustring filename) const
  */
 bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMode &mode, Gdk::Color &bgcolor) {
 
-	if ( ! Config::check_dir() ) {
-		std::cerr << _("Could not open config directory.") << std::endl;
-		return false;
-	}
-
     Glib::ustring cfgfile = get_bg_config_file();
     if (cfgfile.empty())
         return false;
@@ -275,9 +270,6 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
  * @return			If it was able to open and do everything ok
  */
 bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
-		
-	if ( ! Config::check_dir() )
-		return false;
 
 	Glib::ustring cfgfile = get_bg_config_file();
     if (cfgfile.empty())
@@ -431,9 +423,6 @@ bool Config::save_cfg()
  */
 bool Config::load_cfg()
 {
-	if ( ! Config::check_dir() )
-		return false;
-
 	Glib::ustring cfgfile = get_config_file();
     if (cfgfile.empty())
         return false;
