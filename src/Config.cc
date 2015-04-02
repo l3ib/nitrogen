@@ -97,6 +97,26 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 	}
 
 	Glib::ustring cfgfile = Glib::ustring(g_get_user_config_dir()) + Glib::ustring("/nitrogen/bg-saved.cfg");
+	if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS)) {
+		GArray *config_file_paths = g_array_new (FALSE, FALSE, sizeof (gchar*));
+		gchar *config_file_path = NULL;
+		guint i;
+		const gchar *const *system_config_dirs = g_get_system_config_dirs ();
+			for (i = 0; system_config_dirs[i]; i++) {
+				config_file_path  = g_build_filename (system_config_dirs[i], "nitrogen", "bg-saved.cfg", NULL);
+				g_array_append_val (config_file_paths, config_file_path);
+			}
+		// See if we actually got something
+		for (i = 0; i < config_file_paths->len; i++) {
+			config_file_path = g_array_index (config_file_paths, gchar*, i);
+			if (g_file_test (config_file_path, G_FILE_TEST_EXISTS)) {
+				cfgfile = config_file_path;
+				break;
+			}
+		}
+		g_array_free (config_file_paths, TRUE);
+		g_free(config_file_path);
+	}
 	GKeyFile *kf = g_key_file_new();
 	
 	GError *ge = NULL;
@@ -254,6 +274,26 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
 
 	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
 	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("bg-saved.cfg"));
+	if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS)) {
+		GArray *config_file_paths = g_array_new (FALSE, FALSE, sizeof (gchar*));
+		gchar *config_file_path = NULL;
+		guint i;
+		const gchar *const *system_config_dirs = g_get_system_config_dirs ();
+			for (i = 0; system_config_dirs[i]; i++) {
+				config_file_path  = g_build_filename (system_config_dirs[i], "nitrogen", "bg-saved.cfg", NULL);
+				g_array_append_val (config_file_paths, config_file_path);
+			}
+		// See if we actually got something
+		for (i = 0; i < config_file_paths->len; i++) {
+			config_file_path = g_array_index (config_file_paths, gchar*, i);
+			if (g_file_test (config_file_path, G_FILE_TEST_EXISTS)) {
+				cfgfile = config_file_path;
+				break;
+			}
+		}
+		g_array_free (config_file_paths, TRUE);
+		g_free(config_file_path);
+	}
 	GKeyFile *kf = g_key_file_new();
 	
 	if ( g_key_file_load_from_file(kf, cfgfile.c_str(), G_KEY_FILE_NONE, NULL) == FALSE ) {
@@ -407,6 +447,26 @@ bool Config::load_cfg()
 
 	Glib::ustring cfgfile = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), Glib::ustring("nitrogen"));
 	cfgfile = Glib::build_filename(cfgfile, Glib::ustring("nitrogen.cfg"));
+	if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS)) {
+		GArray *config_file_paths = g_array_new (FALSE, FALSE, sizeof (gchar*));
+		gchar *config_file_path = NULL;
+		guint i;
+		const gchar *const *system_config_dirs = g_get_system_config_dirs ();
+			for (i = 0; system_config_dirs[i]; i++) {
+				config_file_path  = g_build_filename (system_config_dirs[i], "nitrogen", "nitrogen.cfg", NULL);
+				g_array_append_val (config_file_paths, config_file_path);
+			}
+		// See if we actually got something
+		for (i = 0; i < config_file_paths->len; i++) {
+			config_file_path = g_array_index (config_file_paths, gchar*, i);
+			if (g_file_test (config_file_path, G_FILE_TEST_EXISTS)) {
+				cfgfile = config_file_path;
+				break;
+			}
+		}
+		g_array_free (config_file_paths, TRUE);
+		g_free(config_file_path);
+	}
 
     if (!Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS))
         return false;
