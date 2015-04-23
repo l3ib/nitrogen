@@ -23,8 +23,8 @@
   </description>
 
   <screenshots>
-    <screenshot type="default" width="1280" height="720">http://jamesnz.fedorapeople.org/nitrogen/screenshots/nitrogen_screenshot_1.png</screenshot>
-    <screenshot width="1280" height="720">http://jamesnz.fedorapeople.org/nitrogen/screenshots/nitrogen_screenshot_2.png</screenshot>
+    <screenshot type="default" width="352" height="524">http://projects.l3ib.org/nitrogen/images/nitrogen-shot1.png</screenshot>
+    <screenshot width="475" height="560">http://projects.l3ib.org/nitrogen/images/nitrogen-ss-2.png</screenshot>
   </screenshots>
 
   <url type="homepage">http://projects.l3ib.org/nitrogen/</url>
