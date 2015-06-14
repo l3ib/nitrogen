@@ -97,11 +97,11 @@ std::string Config::get_file(const Glib::ustring filename) const
     for (VecStrs::const_iterator i = config_paths.begin(); i != config_paths.end(); i++) {
         cfgfile = Glib::build_filename(*i, "nitrogen", filename);
         if (Glib::file_test(cfgfile, Glib::FILE_TEST_EXISTS)) {
-            break;
+            return cfgfile;
         }
     }
 
-    return cfgfile;
+    return "";
 }
 
 /**
