@@ -35,6 +35,9 @@ namespace Util {
     std::string pick_random_file(std::string path);
     std::string pick_random_file(VecStrs paths);
 
+    std::pair<VecStrs, VecStrs> get_image_files(std::string path, bool recurse = false);
+    bool is_image(std::string file);
+
     bool is_display_relevant(Gtk::Window* window, Glib::ustring display);
     Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filename, Glib::ustring display);
 }

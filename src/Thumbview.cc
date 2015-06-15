@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "gcs-i18n.h"
 #include "string.h"
 
+using namespace Util;
+
 typedef std::pair<Glib::ustring, Glib::ustring> PairStrs;
 
 /**
@@ -230,95 +232,47 @@ void Thumbview::load_dir(std::string dir)
  */
 void Thumbview::load_dir(const VecStrs& dirs)
 {
-	std::queue<PairStrs> queue_dirs;
-	Glib::Dir *dirhandle;	
-    VecStrs dir_list;       // full list of the dirs we've seen so we don't get dups
-
     for (VecStrs::const_iterator i = dirs.begin(); i != dirs.end(); i++)
     {
-        if (std::find(dir_list.begin(), dir_list.end(), *i) == dir_list.end())
-        {
-            dir_list.push_back(*i);
-            queue_dirs.push(PairStrs(*i, *i));
-            m_list_loaded_rootdirs.push_back(*i);
-        }
-    }
-	
-	// loop it
-	while ( ! queue_dirs.empty() ) {
+        m_list_loaded_rootdirs.push_back(*i);
 
-		// pop first
-        PairStrs curpair = queue_dirs.front();
+        std::pair<VecStrs, VecStrs> lists = Util::get_image_files(*i, Config::get_instance()->get_recurse());
 
-		Glib::ustring curdir = curpair.first;
-        Glib::ustring rootdir = curpair.second;
-		queue_dirs.pop();
-		
-		try {
-			dirhandle = new Glib::Dir(curdir);
-			//Util::program_log("load_dir(): Opening dir %s\n", curdir.c_str());
+        VecStrs file_list = lists.first;
+        VecStrs dir_list = lists.second;
 
-		} catch (Glib::FileError e) {
-			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";
-			continue;
-		}
+        for (VecStrs::const_iterator fi = file_list.begin(); fi != file_list.end(); fi++)
+            add_file(*fi, *i);  // file, root dir
 
 #ifdef USE_INOTIFY
+        for (VecStrs::const_iterator di = dir_list.begin(); di != dir_list.end(); di++) {
+            std::string curdir = *di;
 
-		// check if we're already monitoring this dir.
-		if (watches.find(curdir) == watches.end()) {
-			// this dir was successfully opened. monitor it for changes with inotify.
-			// the Watch will be cleaned up automatically if the dir is deleted.
-			Inotify::Watch * watch = Inotify::Watch::create(curdir);
-			if (watch) {
-				// no error occurred.
+            // check if we're already monitoring this dir.
+            if (watches.find(curdir) == watches.end()) {
+                // this dir was successfully opened. monitor it for changes with inotify.
+                // the Watch will be cleaned up automatically if the dir is deleted.
+                Inotify::Watch * watch = Inotify::Watch::create(curdir);
+                if (watch) {
+                    // no error occurred.
 
-				// emitted when a file is deleted in this dir.
-				watch->signal_deleted.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
-				// emitted when a file is modified or created in this dir.
-				watch->signal_write_closed.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
-				// two signals that are emitted when a file is renamed in this dir.
-				// the best way to handle this IMO is to remove the file upon receiving
-				// 'moved_from', and then to add the file upon receiving 'moved_to'.
-				watch->signal_moved_from.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
-				watch->signal_moved_to.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
-				watch->signal_created.connect(sigc::mem_fun(this, &Thumbview::file_created_callback));
+                    // emitted when a file is deleted in this dir.
+                    watch->signal_deleted.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
+                    // emitted when a file is modified or created in this dir.
+                    watch->signal_write_closed.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
+                    // two signals that are emitted when a file is renamed in this dir.
+                    // the best way to handle this IMO is to remove the file upon receiving
+                    // 'moved_from', and then to add the file upon receiving 'moved_to'.
+                    watch->signal_moved_from.connect(sigc::mem_fun(this, &Thumbview::file_deleted_callback));
+                    watch->signal_moved_to.connect(sigc::mem_fun(this, &Thumbview::file_changed_callback));
+                    watch->signal_created.connect(sigc::mem_fun(this, &Thumbview::file_created_callback));
 
-				watches[curdir] = watch;
-			}
-		}
-
-#endif
-
-		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
-			Glib::ustring fullstr = curdir + Glib::ustring("/");
-			try {
-				fullstr += /*Glib::filename_to_utf8(*/*i;//);
-			} catch (Glib::ConvertError& error) {
-				std::cerr << _("Invalid UTF-8 encountered. Skipping file") << " " << *i << std::endl;
-				continue;
-			}
-
-			if ( Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR) )
-			{
-				if ( Config::get_instance()->get_recurse() )
-                {
-                    if (std::find(dir_list.begin(), dir_list.end(), fullstr) == dir_list.end())
-                    {
-                        dir_list.push_back(fullstr);
-                        queue_dirs.push(PairStrs(fullstr, rootdir));
-                    }
+                    watches[curdir] = watch;
                 }
-			}
-			else {			
-				if ( this->is_image(fullstr) ) {
-                    add_file(fullstr, rootdir);
-				}
-			}
-		}
-
-		delete dirhandle;
-	}
+            }
+        }
+#endif
+    }
 }
 
 /**
@@ -372,27 +326,6 @@ bool Thumbview::select(const Gtk::TreeModel::iterator *iter)
 
     delete iter;
     return false;
-}
-
-/**
- * Tests the file to see if it is an image
- * TODO: come up with less sux way of doing it than extension
- *
- * @param	file	The filename to test
- * @return			If its an image or not
- */
-bool Thumbview::is_image(std::string file) {
-	if (file.find (".png")  != std::string::npos ||
-		file.find (".PNG")  != std::string::npos || 
-		file.find (".jpg")  != std::string::npos || 
-		file.find (".JPG")  != std::string::npos || 
-		file.find (".jpeg") != std::string::npos || 
-		file.find (".JPEG") != std::string::npos ||
-		file.find (".gif")  != std::string::npos ||
-		file.find (".GIF")  != std::string::npos ) 
-		return true;
-
-	return false;
 }
 
 /**

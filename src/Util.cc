@@ -161,6 +161,80 @@ std::string pick_random_file(VecStrs paths)
 }
 
 /**
+ * Returns a pair of image files, directories discovered from searching the given path.
+ *
+ * If recurse is not true, the second part of the pair will always be length 1 and match
+ * the passed in path.
+ */
+std::pair<VecStrs, VecStrs> get_image_files(std::string path, bool recurse)
+{
+	std::queue<std::string> queue_dirs;
+	Glib::Dir *dirhandle;
+    VecStrs dir_list;       // full list of the dirs we've seen so we don't get dups
+    VecStrs file_list;
+
+    queue_dirs.push(path);
+
+    while (!queue_dirs.empty()) {
+        std::string curdir = queue_dirs.front();
+        queue_dirs.pop();
+
+        try {
+            dirhandle = new Glib::Dir(curdir);
+		} catch (Glib::FileError e) {
+			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";
+			continue;
+		}
+
+		for (Glib::Dir::iterator i = dirhandle->begin(); i != dirhandle->end(); i++) {
+			Glib::ustring fullstr = Glib::build_filename(curdir, *i);
+
+			if (Glib::file_test(fullstr, Glib::FILE_TEST_IS_DIR))
+			{
+				if (recurse)
+                {
+                    if (std::find(dir_list.begin(), dir_list.end(), fullstr) == dir_list.end())
+                    {
+                        dir_list.push_back(fullstr);
+                        queue_dirs.push(fullstr);
+                    }
+                }
+			}
+			else {
+				if (is_image(fullstr) ) {
+                    file_list.push_back(fullstr);
+				}
+			}
+		}
+
+		delete dirhandle;
+	}
+
+    return std::pair<VecStrs, VecStrs>(file_list, dir_list);
+}
+
+/**
+ * Tests the file to see if it is an image
+ * TODO: come up with less sux way of doing it than extension
+ *
+ * @param	file	The filename to test
+ * @return			If its an image or not
+ */
+bool is_image(std::string file) {
+	if (file.find(".png")  != std::string::npos ||
+		file.find(".PNG")  != std::string::npos ||
+		file.find(".jpg")  != std::string::npos ||
+		file.find(".JPG")  != std::string::npos ||
+		file.find(".jpeg") != std::string::npos ||
+		file.find(".JPEG") != std::string::npos ||
+		file.find(".gif")  != std::string::npos ||
+		file.find(".GIF")  != std::string::npos)
+		return true;
+
+	return false;
+}
+
+/**
  * Determines if the passed display is one that is currently seen by the program.
  *
  * Displays are passed in here to determine if they need to be shown as the "current

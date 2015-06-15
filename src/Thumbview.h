@@ -185,7 +185,6 @@ class Thumbview : public Gtk::ScrolledWindow {
         gboolean m_icon_captions;
 
 		// utility functions
-		bool is_image(std::string file);
 		Glib::ustring cache_file(Glib::ustring file);
 		void update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb);
 		
