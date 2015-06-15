@@ -92,6 +92,10 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 						Gtk::AccelKey("<control>W"),
 						sigc::mem_fun(*this, &NWindow::sighandle_accel_quit));
 
+    m_action_group->add(Gtk::Action::create("Random", Gtk::Stock::RANDOM),
+                        Gtk::AccelKey("<control>R"),
+                        sigc::mem_fun(*this, &NWindow::sighandle_random));
+
 	m_ui_manager = Gtk::UIManager::create();
 	m_ui_manager->insert_action_group(m_action_group);
 
@@ -100,6 +104,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 	Glib::ustring ui = "<ui>"
 						"<menubar name='MenuBar'>"
 						"<menu action='FileMenu'>"
+						"<menuitem action='Random' />"
 						"<menuitem action='Close' />"
 						"<menuitem action='Quit' />"
 						"</menu>"
@@ -132,6 +137,13 @@ void NWindow::show (void) {
 void NWindow::sighandle_accel_quit() {
     if (!handle_exit_request())
         hide();
+}
+
+/**
+ * Handles the user pressing Ctrl+R to get a random image.
+ */
+void NWindow::sighandle_random() {
+
 }
 
 /**

@@ -63,6 +63,7 @@ class NWindow : public Gtk::Window {
         void setup_select_boxes();
 
         void sighandle_accel_quit();
+        void sighandle_random();
         void sighandle_togb_list_toggled();
         void sighandle_togb_icon_toggled();
         void sighandle_btn_prefs();
