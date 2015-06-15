@@ -47,12 +47,12 @@ int set_bg_once(Config *cfg, SetBG* bg_setter, Glib::ustring path, int head, Set
     if (random) {
         if (path.length() > 0) {
             if (Glib::file_test, Glib::FILE_TEST_IS_DIR) {
-                file = Util::pick_random_file(path);
+                file = Util::pick_random_file(path, cfg->get_recurse());
             } else {
                 file = path;
             }
         } else {
-            file = Util::pick_random_file(cfg->get_dirs());
+            file = Util::pick_random_file(cfg->get_dirs(), cfg->get_recurse());
         }
     } else {
         if (Glib::file_test(path, Glib::FILE_TEST_IS_REGULAR|Glib::FILE_TEST_IS_SYMLINK)) {

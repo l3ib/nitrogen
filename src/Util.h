@@ -32,8 +32,8 @@ namespace Util {
 	Glib::ustring path_to_abs_path(Glib::ustring path);
 	ArgParser* create_arg_parser();
 	std::string fix_start_dir(std::string startdir);
-    std::string pick_random_file(std::string path);
-    std::string pick_random_file(VecStrs paths);
+    std::string pick_random_file(std::string path, bool recurse = false);
+    std::string pick_random_file(VecStrs paths, bool recurse = false);
 
     std::pair<VecStrs, VecStrs> get_image_files(std::string path, bool recurse = false);
     bool is_image(std::string file);

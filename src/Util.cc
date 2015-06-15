@@ -147,17 +147,31 @@ std::string fix_start_dir(std::string startdir) {
 /**
  * Picks a random file from the given path.
  */
-std::string pick_random_file(std::string path)
+std::string pick_random_file(std::string path, bool recurse)
 {
-    return "";
+    std::pair<VecStrs, VecStrs> lists = get_image_files(path, recurse);
+    Glib::Rand rando;
+
+    int idx = rando.get_int_range(0, lists.first.size());
+    return lists.first[idx];
 }
 
 /**
  * Picks a given file from the given paths.
  */
-std::string pick_random_file(VecStrs paths)
+std::string pick_random_file(VecStrs paths, bool recurse)
 {
-    return "";
+    VecStrs all_files;
+    Glib::Rand rando;
+
+    for (VecStrs::const_iterator i = paths.begin(); i != paths.end(); i++) {
+        std::pair<VecStrs, VecStrs> lists = get_image_files(*i, recurse);
+
+        all_files.insert(all_files.end(), lists.first.begin(), lists.first.end());
+    }
+
+    int idx = rando.get_int_range(0, all_files.size());
+    return all_files[idx];
 }
 
 /**
