@@ -98,6 +98,7 @@ ArgParser* create_arg_parser() {
     parser->register_option("set-color", _("background color in hex, #000000 by default"), true);
     parser->register_option("head", _("Select xinerama/multihead display in GUI, 0..n, -1 for full"), true);
     parser->register_option("force-setter", _("Force setter engine: xwindows, xinerama, gnome"), true);
+    parser->register_option("random", _("Choose random background from config or given directory"));
 
     // command line set modes
     Glib::ustring openp(" (");
@@ -141,6 +142,22 @@ std::string fix_start_dir(std::string startdir) {
 	}
 
 	return startdir;
+}
+
+/**
+ * Picks a random file from the given path.
+ */
+std::string pick_random_file(std::string path)
+{
+    return "";
+}
+
+/**
+ * Picks a given file from the given paths.
+ */
+std::string pick_random_file(VecStrs paths)
+{
+    return "";
 }
 
 /**

@@ -32,6 +32,8 @@ namespace Util {
 	Glib::ustring path_to_abs_path(Glib::ustring path);
 	ArgParser* create_arg_parser();
 	std::string fix_start_dir(std::string startdir);
+    std::string pick_random_file(std::string path);
+    std::string pick_random_file(VecStrs paths);
 
     bool is_display_relevant(Gtk::Window* window, Glib::ustring display);
     Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filename, Glib::ustring display);

@@ -38,10 +38,30 @@ void restore_bgs(SetBG* bg_setter)
 	Util::program_log("leaving restore_bgs()");
 }
 
-void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode mode, bool save, Gdk::Color col)
+int set_bg_once(Config *cfg, SetBG* bg_setter, Glib::ustring path, int head, SetBG::SetMode mode, bool save, Gdk::Color col, bool random)
 {
 	Util::program_log("entering set_bg_once()");
 	Glib::ustring disp;
+    Glib::ustring file;
+
+    if (random) {
+        if (path.length() > 0) {
+            if (Glib::file_test, Glib::FILE_TEST_IS_DIR) {
+                file = Util::pick_random_file(path);
+            } else {
+                file = path;
+            }
+        } else {
+            file = Util::pick_random_file(cfg->get_dirs());
+        }
+    } else {
+        if (Glib::file_test(path, Glib::FILE_TEST_IS_REGULAR|Glib::FILE_TEST_IS_SYMLINK)) {
+            file = path;
+        } else {
+            std::cerr << "Set must be called with a file!\n";
+            return 1;
+        }
+    }
 
     // saving of pixmaps is for interactive only
     bg_setter->disable_pixmap_save();
@@ -54,6 +74,7 @@ void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode 
 		Gtk::Main::iteration();
 
 	Util::program_log("leaving set_bg_once()");
+    return 0;
 }
 
 bool on_window_close_save_pos(GdkEventAny* event, Gtk::Window *window)
@@ -79,6 +100,9 @@ bool poll_inotify(void) {
 
 int main (int argc, char ** argv) {
     int xin_head = -1;
+    bool random = false;
+    bool set_once = false;
+    SetBG::SetMode mode;
 
 
     // set up i18n
@@ -143,12 +167,17 @@ int main (int argc, char ** argv) {
     // get the starting dir
     std::string startdir = parser->get_extra_args();
     bool bcmdlinedir = startdir.length() > 0;
-    //	if (!bcmd <= 0) {
-    //		startdir = ".";
-    //        cfg->set_recurse(false);
-    //	}
-    if (bcmdlinedir)
+    if (bcmdlinedir) {
         startdir = Util::fix_start_dir(std::string(startdir));
+
+        if (!Glib::file_test(startdir, Glib::FILE_TEST_EXISTS)) {
+            std::cerr << "Given path \"" << startdir << "\" does not exist!\n";
+            return 1;
+        }
+    }
+
+    // load configuration if there is one
+    cfg->load_cfg();
 
     // should we set on the command line?
     Gdk::Color color("#000000");
@@ -160,43 +189,48 @@ int main (int argc, char ** argv) {
     if ( parser->has_argument("head") )
         xin_head = parser->get_intvalue("head");
 
+    if (parser->has_argument("random"))
+        random = true;
+
     if ( parser->has_argument("set-tiled") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_TILE, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_TILE;
     }
 
     if ( parser->has_argument("set-scaled") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_SCALE, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_SCALE;
     }
 
     if ( parser->has_argument("set-auto") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_AUTO, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_AUTO;
     }
 
     if ( parser->has_argument("set-zoom") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_ZOOM, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_ZOOM;
     }
 
     if ( parser->has_argument("set-zoom-fill") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_ZOOM_FILL, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_ZOOM_FILL;
     }
 
     if ( parser->has_argument("set-centered") )	{
-        set_bg_once(setter, startdir, xin_head, SetBG::SET_CENTER, parser->has_argument("save"), color);
-        return 0;
+        set_once = true;
+        mode = SetBG::SET_CENTER;
+    }
+
+    if (set_once) {
+        set_once = true;
+        return set_bg_once(cfg, setter, startdir, xin_head, mode, parser->has_argument("save"), color, random);
     }
 
     if ( parser->has_argument("no-recurse") )
         cfg->set_recurse(false);
     else
     	cfg->set_recurse(cfg->get_recurse());
-
-    // load configuration if there is one
-    cfg->load_cfg();
 
     guint w, h;
     cfg->get_size(w, h);
