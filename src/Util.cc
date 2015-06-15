@@ -152,6 +152,10 @@ std::string pick_random_file(std::string path, bool recurse)
     std::pair<VecStrs, VecStrs> lists = get_image_files(path, recurse);
     Glib::Rand rando;
 
+    if (lists.first.size() == 0) {
+        return "";
+    }
+
     int idx = rando.get_int_range(0, lists.first.size());
     return lists.first[idx];
 }
@@ -168,6 +172,10 @@ std::string pick_random_file(VecStrs paths, bool recurse)
         std::pair<VecStrs, VecStrs> lists = get_image_files(*i, recurse);
 
         all_files.insert(all_files.end(), lists.first.begin(), lists.first.end());
+    }
+
+    if (all_files.size() == 0) {
+        return "";
     }
 
     int idx = rando.get_int_range(0, all_files.size());

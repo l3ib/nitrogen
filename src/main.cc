@@ -54,6 +54,11 @@ int set_bg_once(Config *cfg, SetBG* bg_setter, Glib::ustring path, int head, Set
         } else {
             file = Util::pick_random_file(cfg->get_dirs(), cfg->get_recurse());
         }
+
+        if (file.length() == 0) {
+            std::cerr << "Could not find an image to set!\n";
+            return 1;
+        }
     } else {
         if (Glib::file_test(path, Glib::FILE_TEST_IS_REGULAR|Glib::FILE_TEST_IS_SYMLINK)) {
             file = path;
