@@ -220,13 +220,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
 
 #ifdef USE_XINERAMA
     // determine if xinerama is in play
-    //
-    XineramaScreenInfo *xinerama_info;
-    gint xinerama_num_screens;
-
-    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(display->gobj()), &xinerama_num_screens);
-
-    if (xinerama_num_screens > 1)
+    if (XineramaIsActive(GDK_DISPLAY_XDISPLAY(display->gobj())))
         return SetBG::XINERAMA;
 #endif
 
@@ -627,7 +621,8 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     window->get_geometry(winx, winy, winw, winh, wind);
 
     // get target dimensions
-    this->get_target_dimensions(disp, winx, winy, winw, winh, tarx, tary, tarw, tarh);
+    if (!get_target_dimensions(disp, winx, winy, winw, winh, tarx, tary, tarw, tarh))
+        return false;
 
     // create gc and colormap
     gc_ = Gdk::GC::create(window);
@@ -674,12 +669,14 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
  * For this base version, simply copies the window dimensions to the target
  * dimensions.
  */
-void SetBG::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
+bool SetBG::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
 {
     tarx = winx;
     tary = winy;
     tarw = winw;
     tarh = winh;
+
+    return true;
 }
 
 /**
@@ -1069,7 +1066,7 @@ Glib::ustring SetBGXinerama::make_display_key(gint head)
  * For this Xinerama version, it examines the disp string and uses the stored
  * xinerama info about each screen to set the target.
  */
-void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
+bool SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh)
 {
     gint xin_screen_num;
     int xin_offset = -1;
@@ -1089,7 +1086,7 @@ void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint w
 
         if (xin_offset == -1) {
             std::cerr << _("Could not find Xinerama screen number") << " " << xin_screen_num << "\n";
-            return;  // @TODO: throw?
+            return false;
         }
     }
 
@@ -1104,6 +1101,8 @@ void SetBGXinerama::get_target_dimensions(Glib::ustring& disp, gint winx, gint w
 		tarw = xinerama_info[xin_offset].width;
 		tarh = xinerama_info[xin_offset].height;
 	}
+
+    return true;
 }
 
 #endif
