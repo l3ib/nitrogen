@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ namespace Util {
 // http://primates.ximian.com/~federico/news-2006-03.html#09
 //
 // this functiona always does something.  If the enable-debug flag is
-// on when configured, this prints out to stdout.  if not, it tries to 
+// on when configured, this prints out to stdout.  if not, it tries to
 // access() a string which is useful for the link above.
 void program_log (const char *format, ...)
 {
@@ -52,9 +52,9 @@ void program_log (const char *format, ...)
     g_printf("%s\n", str);
 #else
 	access (str, F_OK);
-#endif    
+#endif
     g_free (str);
-} 
+}
 
 // Converts a relative path to an absolute path.
 // Probably works best if the path doesn't start with a '/' :)
@@ -69,10 +69,10 @@ Glib::ustring path_to_abs_path(Glib::ustring path) {
 		path.erase(0, 3);
 		parents++;
 	}
-	
+
 	// now erase that many directories from the path to the current
 	// directory.
-	
+
 	while( parents ) {
 		if ( (pos = cwd.rfind ('/')) != Glib::ustring::npos) {
 			// remove this directory from the path
@@ -80,7 +80,7 @@ Glib::ustring path_to_abs_path(Glib::ustring path) {
 		}
 		parents--;
 	}
-	
+
 	return cwd + '/' + path;
 }
 
@@ -134,7 +134,7 @@ std::string fix_start_dir(std::string startdir) {
 	if ( startdir[startdir.length()-1] == '/' ) {
 		startdir.resize(startdir.length()-1);
 	}
-	
+
 	// if this is not an absolute path, make it one.
 	if ( !Glib::path_is_absolute(startdir) ) {
 		startdir = Util::path_to_abs_path(startdir);
@@ -168,7 +168,7 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
 {
     // cast window to an NWindow.  we have to do this to avoid a circular dep
     NWindow *nwindow = dynamic_cast<NWindow*>(window);
-    
+
     Glib::ustring shortfile(filename, filename.rfind("/")+1);
     if (!is_display_relevant(window, display))
         return shortfile;
@@ -178,7 +178,7 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
 
     if (nwindow->map_displays.size() > 1)
         ostr << " " << _("for") << " " << nwindow->map_displays[display];
-   
+
     ostr << "</i>";
 
     return ostr.str();

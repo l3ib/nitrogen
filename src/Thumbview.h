@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 struct TreePair {
 	Glib::ustring file;
-	Gtk::TreeModel::iterator iter;	
+	Gtk::TreeModel::iterator iter;
 	Glib::RefPtr<Gdk::Pixbuf> thumb;
 };
 
@@ -111,13 +111,13 @@ class Thumbview : public Gtk::ScrolledWindow {
 			SORT_TIME,
 			SORT_RTIME
 		} SortMode;
-		
+
 		Glib::RefPtr<DelayLoadingStore> store;
 		Gtk::TreeView view;
         Gtk::IconView iview;
         ThumbviewRecord record;
-	
-		// dispatcher 
+
+		// dispatcher
 		Glib::Dispatcher dispatch_thumb;
 
 		// thread/idle funcs
@@ -140,7 +140,7 @@ class Thumbview : public Gtk::ScrolledWindow {
         std::map<Glib::ustring, Glib::ustring> map_setbgs;
         void load_map_setbgs();
 
-        DisplayMode m_curmode; 
+        DisplayMode m_curmode;
 
         void set_current_display_mode(DisplayMode newmode);
         DisplayMode get_current_display_mode() { return m_curmode; }
@@ -153,7 +153,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 
         const Glib::TimeVal& get_last_loaded_time()
             { return m_last_loaded_time; }
-	
+
 	protected:
 
         Glib::TimeVal m_last_loaded_time;
@@ -175,10 +175,10 @@ class Thumbview : public Gtk::ScrolledWindow {
 		void handle_dispatch_thumb();
 
         VecStrs m_list_loaded_rootdirs;
-		
+
 		Gtk::TreeViewColumn *col_thumb;
 		Gtk::TreeViewColumn *col_desc;
-		
+
 		Gtk::CellRendererPixbuf rend_img;
 		Gtk::CellRendererText rend;
 
@@ -188,7 +188,7 @@ class Thumbview : public Gtk::ScrolledWindow {
 		bool is_image(std::string file);
 		Glib::ustring cache_file(Glib::ustring file);
 		void update_thumbnail(Glib::ustring file, Gtk::TreeModel::iterator iter, Glib::RefPtr<Gdk::Pixbuf> pb);
-		
+
 		// load thumbnail queue
 		GAsyncQueue* aqueue_loadthumbs;
 		GAsyncQueue* aqueue_createthumbs;

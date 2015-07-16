@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ typedef int (*XErrorHandler)(Display*, XErrorEvent*);
  */
 class SetBG {
 	public:
-        // NOTE: do not change the order of these, they are changed to integer and 
+        // NOTE: do not change the order of these, they are changed to integer and
         // put on disk.
 		enum SetMode {
 			SET_SCALE,
