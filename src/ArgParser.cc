@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ArgParser.h"
 #include "gcs-i18n.h"
 
-bool ArgParser::parse 
+bool ArgParser::parse
 			(int argc, char ** argv) {
 	int count = 1;
 	bool retval = true;
@@ -36,7 +36,7 @@ bool ArgParser::parse
 			received_args["help"];
 			continue;
 		}
-		
+
 		std::string::size_type minuspos;
 		if ((minuspos = key.find ("--")) == std::string::npos) {
 			// this is not an arg, append it
@@ -48,9 +48,9 @@ bool ArgParser::parse
 			extra_arg_str += key;
 			continue;
 		}
-		
+
 		key = std::string (key, minuspos + 2);
-		
+
 		std::string::size_type pos = key.find ('=');
 		if (pos != std::string::npos) {
 			key.erase (pos);
@@ -59,7 +59,7 @@ bool ArgParser::parse
 
 		std::map<std::string, Arg>::const_iterator iter;
 		Arg current;
-		
+
 		if ((iter = expected_args.find (key)) == expected_args.end ()) {
 			// ignore this argument and set the error string
 			retval = false;
@@ -68,7 +68,7 @@ bool ArgParser::parse
 		} else {
 			current = iter->second;
 		}
-		
+
 		if (current.get_has_arg () && !value.length ()) {
 			// this expects an arg, but has received none.
 			retval = false;
@@ -84,7 +84,7 @@ bool ArgParser::parse
 			error_str += key + _(" conflicts with another argument.") + "\n";
 			continue;
 		}
-		
+
 		// save it.
 		received_args[key] = value;
 	}
@@ -109,7 +109,7 @@ std::string ArgParser::help_text (void) const {
 
 bool ArgParser::conflicts (std::string key) {
 	std::vector< std::vector<std::string> >::const_iterator iter;
-	
+
 	// Look through the exclusive iter. Cramped together to fit
 	// into 80 columns.
 	for (iter=exclusive.begin();iter!=exclusive.end();iter++) {

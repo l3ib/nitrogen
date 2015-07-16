@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2009  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -200,7 +200,7 @@ void NPrefsWindow::sighandle_click_deldir()
     std::string dir = (*iter)[m_tmc_dir];
 
     Glib::ustring msg = Glib::ustring::compose(_("Are you sure you want to delete <b>%1</b>?"), dir);
-   
+
     Gtk::MessageDialog dialog(*this, msg, true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
 
     int result = dialog.run();

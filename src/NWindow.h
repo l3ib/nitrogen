@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -45,7 +45,7 @@ class NWindow : public Gtk::Window {
 
         void set_bg(Glib::ustring file);
 
-    protected:        
+    protected:
         Glib::RefPtr<Gtk::ActionGroup> m_action_group;
         Glib::RefPtr<Gtk::UIManager> m_ui_manager;
         Gtk::VBox main_vbox;

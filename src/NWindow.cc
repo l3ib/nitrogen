@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 	bot_hbox.pack_start (select_mode, FALSE, FALSE, 0);
 	bot_hbox.pack_start (select_display, FALSE, FALSE, 0);
 	bot_hbox.pack_start(button_bgcolor, FALSE, FALSE, 0);
-	
+
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
 	bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
 
@@ -63,7 +63,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
     view.signal_selected.connect(sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
     btn_prefs.signal_clicked().connect(sigc::mem_fun(*this, &NWindow::sighandle_btn_prefs));
-	
+
     // set icon
 	try {
 		Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
@@ -79,7 +79,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 	} catch  (Gtk::IconThemeError e) {
 		// don't even worry about it!
 	}
-	
+
 	// accel group for keyboard shortcuts
 	// unfortunately we have to basically make a menu which we never add to the UI
 	m_action_group = Gtk::ActionGroup::create();
@@ -135,7 +135,7 @@ void NWindow::sighandle_accel_quit() {
 }
 
 /**
- * Handles the user double clicking on a row in the view. 
+ * Handles the user double clicking on a row in the view.
  */
 void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 
@@ -158,7 +158,7 @@ void NWindow::sighandle_click_apply (void) {
 /**
  * Performs the apply action
  * Grabs the selected items and
- * calls set_bg on it. It also saves the bg and closes the application if 
+ * calls set_bg on it. It also saves the bg and closes the application if
  * the app is not multiheaded, or the full xin desktop is selected.
  */
 void NWindow::apply_bg () {
@@ -173,10 +173,10 @@ void NWindow::apply_bg () {
     m_dirty = false;
 
     SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-    Glib::ustring thedisp = this->select_display.get_active_data(); 
+    Glib::ustring thedisp = this->select_display.get_active_data();
     Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
-    // save 
+    // save
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
     // tell the bg setter to forget about the first pixmap
@@ -259,7 +259,7 @@ bool NWindow::on_delete_event(GdkEventAny *event)
 }
 
 /**
- * Queries the necessary widgets to get the data needed to set a bg.  * 
+ * Queries the necessary widgets to get the data needed to set a bg.  *
  * @param	file	The file to set the bg to
  */
 void NWindow::set_bg(const Glib::ustring file) {
@@ -280,7 +280,7 @@ NWindow::~NWindow () {}
  * Creates our ImageCombo boxes
  */
 void NWindow::setup_select_boxes() {
-		
+
 	Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
 	Glib::RefPtr<Gdk::Pixbuf> icon, genericicon, video_display_icon;
 
@@ -347,8 +347,8 @@ void NWindow::setup_select_boxes() {
 }
 
 /**
- * Sets the file selection, mode combo box, and color button to appropriate default values, based on 
- * what is in the configuration file.  
+ * Sets the file selection, mode combo box, and color button to appropriate default values, based on
+ * what is in the configuration file.
  */
 void NWindow::set_default_selections()
 {

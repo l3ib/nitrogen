@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2009  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "main.h"
 #include "Config.h"
 
-class NPrefsWindow : public Gtk::Dialog 
+class NPrefsWindow : public Gtk::Dialog
 {
     public:
         NPrefsWindow(Gtk::Window& parent, Config* cfg);

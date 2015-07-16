@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -28,23 +28,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Thumbview.h"
 
 /**
- * Static class that interfaces with the configuration. 
- * 
+ * Static class that interfaces with the configuration.
+ *
  * @author	Dave Foster <daf@minuslab.net>
  * @date	6 Sept 2005
  */
 class Config {
 	private:
-		
-		bool check_dir();		
-			
+
+		bool check_dir();
+
 		bool recurse;
         DisplayMode m_display_mode;
         gint m_posx, m_posy;
         guint m_sizex, m_sizey;
         gboolean m_icon_captions;
         VecStrs m_vec_dirs;
-	Thumbview::SortMode m_sort_mode;		
+	Thumbview::SortMode m_sort_mode;
 
 		Glib::ustring color_to_string(Gdk::Color color);
 
@@ -53,7 +53,7 @@ class Config {
         std::string get_file(const Glib::ustring filename) const;
 
 	public:
-		
+
 		// instance getter
 		static Config* get_instance();
 

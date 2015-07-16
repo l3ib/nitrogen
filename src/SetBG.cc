@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -251,12 +251,12 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_scale(const Glib::RefPtr<Gdk::Pixbuf> orig
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_tile(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
 	// copy and resize (mainly just resize :)
 	Glib::RefPtr<Gdk::Pixbuf> retval = orig->scale_simple(winw, winh, Gdk::INTERP_NEAREST);
-	
+
 	int orig_width = orig->get_width();
 	int orig_height = orig->get_height();
-	
+
 	unsigned count = 0;
-	
+
 	// copy across horizontally first
 	unsigned iterations = (unsigned)ceil((double)winw / (double)orig_width);
 	for (count = 0; count < iterations; count++) {
@@ -269,7 +269,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_tile(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	for (count = 1; count < iterations; count++) {
 		retval->copy_area(0, 0, winw, ((count+ 1)*orig_height) > winh ? orig_height - (((count+1) * orig_height) - winh) : orig_height, retval, 0, count * orig_height);
 	}
-			
+
 	return retval;
 }
 
@@ -282,7 +282,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_tile(const Glib::RefPtr<Gdk::Pixbuf> orig,
  * @param	bgcolor	Background color
  */
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_center(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
-	
+
 	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(	orig->get_colorspace(),
 															orig->get_has_alpha(),
 															orig->get_bits_per_sample(),
@@ -291,7 +291,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_center(const Glib::RefPtr<Gdk::Pixbuf> ori
 
 	// use passed bg color
 	retval->fill(GdkColorToUint32(bgcolor));
-			
+
 	int destx = (winw - orig->get_width()) >> 1;
 	int desty = (winh - orig->get_height()) >> 1;
 	int srcx = 0;
@@ -311,7 +311,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_center(const Glib::RefPtr<Gdk::Pixbuf> ori
 	}
 
 	orig->copy_area(srcx, srcy, cpyw, cpyh, retval, destx, desty);
-	
+
 	return retval;
 }
 
@@ -324,10 +324,10 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_center(const Glib::RefPtr<Gdk::Pixbuf> ori
  * @param	bgcolor	Background color
  */
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
-		
+
 	int x, y, resx, resy;
 	x = y = 0;
-		
+
 	// depends on bigger side
 	unsigned orig_w = orig->get_width();
 	unsigned orig_h = orig->get_height();
@@ -338,7 +338,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig,
 		resy = (int)(((float)(orig->get_height()*resx))/(float)orig->get_width());
 		x = 0;
 		y = (winh - resy) >> 1;
-			
+
 	} else {
 		resy = winh;
 		resx = (int)(((float)(orig->get_width()*resy))/(float)orig->get_height());
@@ -370,7 +370,7 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig,
 	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);
 
 	return retval;
-}		
+}
 
 /**
  * Handles SET_ZOOM_FILL mode.
@@ -381,9 +381,9 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom(const Glib::RefPtr<Gdk::Pixbuf> orig,
  * @param	bgcolor	Background color
  */
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
-		
+
 	int x, y, w, h;
-		
+
 	// depends on bigger side
 	unsigned orig_w = orig->get_width();
 	unsigned orig_h = orig->get_height();
@@ -422,12 +422,12 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> 
 }
 
 /**
- * Utility function to convert a mode (an enum) to a string. 
+ * Utility function to convert a mode (an enum) to a string.
  */
 Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 
 	Glib::ustring ret;
-	
+
 	switch ( mode ) {
 		case SET_SCALE:
 			ret = Glib::ustring(_("Scale"));
@@ -448,7 +448,7 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
             ret = Glib::ustring(_("Auto"));
             break;
 	};
-	
+
 	return ret;
 }
 
@@ -490,7 +490,7 @@ guint32 SetBG::GdkColorToUint32(const Gdk::Color col)
 
 	// alpha should always be full (this caused ticket 4)
 	ret |= 255;
-	
+
 	return ret;
 }
 
