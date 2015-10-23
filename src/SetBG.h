@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ typedef int (*XErrorHandler)(Display*, XErrorEvent*);
  */
 class SetBG {
 	public:
-        // NOTE: do not change the order of these, they are changed to integer and 
+        // NOTE: do not change the order of these, they are changed to integer and
         // put on disk.
 		enum SetMode {
 			SET_SCALE,
@@ -56,6 +56,7 @@ class SetBG {
             XFCE,
             UNKNOWN,
             XINERAMA,
+            NEMO,
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
@@ -76,6 +77,11 @@ class SetBG {
 		static Glib::ustring mode_to_string( const SetMode mode );
 		static SetMode string_to_mode( const Glib::ustring str );
 
+        // public methods used on save/shutdown to work with first pixmaps
+        void clear_first_pixmaps();
+        void reset_first_pixmaps();
+        void disable_pixmap_save();
+
 	protected:
 
         virtual Glib::ustring get_prefix() = 0;
@@ -90,12 +96,21 @@ class SetBG {
 		static guint32 GdkColorToUint32(const Gdk::Color);
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
+        static int find_desktop_window(Display *display, Window curwindow);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
-        virtual Glib::RefPtr<Gdk::Display> get_display(Glib::ustring& disp);
+        virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
 
-        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
-        Glib::RefPtr<Gdk::Pixmap> get_or_create_pixmap(Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap);
+        virtual bool get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
+        Glib::RefPtr<Gdk::Pixmap> get_or_create_pixmap(Glib::ustring disp, Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap);
+
+
+        Pixmap* get_current_pixmap(Glib::RefPtr<Gdk::Display> _display);
+        void set_current_pixmap(Glib::RefPtr<Gdk::Display> _display, Pixmap* new_pixmap);
+
+        // data for saving initial pixmap on first set (for restore later)
+        bool has_set_once;
+        std::map<Glib::ustring, Pixmap*> first_pixmaps;
 };
 
 /**
@@ -125,7 +140,7 @@ class SetBGXinerama : public SetBG {
 
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
-        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
+        virtual bool get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
 };
 #endif
 
@@ -141,6 +156,14 @@ class SetBGGnome : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
+        virtual Glib::ustring get_gsettings_key();
+        virtual void set_show_desktop();
+};
+
+class SetBGNemo : public SetBGGnome {
+    protected:
+        virtual Glib::ustring get_gsettings_key();
+        virtual void set_show_desktop();
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -28,27 +28,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Thumbview.h"
 
 /**
- * Static class that interfaces with the configuration. 
- * 
+ * Static class that interfaces with the configuration.
+ *
  * @author	Dave Foster <daf@minuslab.net>
  * @date	6 Sept 2005
  */
 class Config {
 	private:
-		
-		bool check_dir();		
-			
+
+		bool check_dir();
+
 		bool recurse;
         DisplayMode m_display_mode;
         gint m_posx, m_posy;
         guint m_sizex, m_sizey;
         gboolean m_icon_captions;
         VecStrs m_vec_dirs;
-		
+	Thumbview::SortMode m_sort_mode;
+
 		Glib::ustring color_to_string(Gdk::Color color);
 
+        std::string get_bg_config_file() const { return get_file("bg-saved.cfg"); }
+        std::string get_config_file() const { return get_file("nitrogen.cfg"); }
+        std::string get_file(const Glib::ustring filename) const;
+
 	public:
-		
+
 		// instance getter
 		static Config* get_instance();
 
@@ -63,8 +68,8 @@ class Config {
 		// get all groups (bg_saved.cfg)
 		bool get_bg_groups(std::vector<Glib::ustring> &groups);
 
-		bool get_recurse() { return Config::recurse; }
-		void set_recurse(bool n) { Config::recurse = n; }
+		bool get_recurse() { return recurse; }
+		void set_recurse(bool n) { recurse = n; }
         DisplayMode get_display_mode() { return m_display_mode; }
         void set_display_mode(DisplayMode mode) { m_display_mode = mode; }
         bool get_icon_captions() { return m_icon_captions; }
@@ -74,6 +79,9 @@ class Config {
         void set_pos(gint x, gint y);
         void get_size(guint &w, guint &h);
         void set_size(guint w, guint h);
+
+        void set_sort_mode(Thumbview::SortMode s) { m_sort_mode = s; }
+        Thumbview::SortMode get_sort_mode(){ return m_sort_mode; }
 
         VecStrs get_dirs();
         void set_dirs(const VecStrs& new_dirs);

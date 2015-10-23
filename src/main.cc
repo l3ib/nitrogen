@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -43,6 +43,9 @@ void set_bg_once(SetBG* bg_setter, Glib::ustring file, int head, SetBG::SetMode 
 	Util::program_log("entering set_bg_once()");
 	Glib::ustring disp;
 
+    // saving of pixmaps is for interactive only
+    bg_setter->disable_pixmap_save();
+
     disp = bg_setter->make_display_key(head);
     bg_setter->set_bg(disp, file, mode, col);
 
@@ -64,7 +67,7 @@ bool on_window_close_save_pos(GdkEventAny* event, Gtk::Window *window)
     window->get_size(w, h);
     cfg->set_size(w, h);
 
-    return false; 
+    return false;
 }
 
 #ifdef USE_INOTIFY
@@ -189,6 +192,8 @@ int main (int argc, char ** argv) {
 
     if ( parser->has_argument("no-recurse") )
         cfg->set_recurse(false);
+    else
+    	cfg->set_recurse(cfg->get_recurse());
 
     // load configuration if there is one
     cfg->load_cfg();
@@ -234,6 +239,8 @@ int main (int argc, char ** argv) {
 
         main_window->view.set_sort_mode (mode);
     }
+    else
+    	main_window->view.set_sort_mode(cfg->get_sort_mode());
 
     // remove parser
     delete parser;

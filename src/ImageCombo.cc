@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ ImageCombo::ImageCombo() {
 
 	this->add_attribute( this->rend_text, "text", 1 );
 	this->add_attribute( this->rend_img, "pixbuf", 0 );
-	
+
 }
 
 /**
@@ -59,7 +59,7 @@ ImageCombo::~ImageCombo() {
  * @param	active	Whether to set this row as active or not
  */
 void ImageCombo::add_image_row(Glib::RefPtr<Gdk::Pixbuf> img, Glib::ustring desc, Glib::ustring data, bool active) {
-		
+
 	Gtk::TreeModel::iterator iter = this->store->append ();
 	Gtk::TreeModel::Row row = *iter;
 

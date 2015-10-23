@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2009  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "main.h"
 #include "Config.h"
 
-class NPrefsWindow : public Gtk::Dialog 
+class NPrefsWindow : public Gtk::Dialog
 {
     public:
         NPrefsWindow(Gtk::Window& parent, Config* cfg);
@@ -36,13 +36,22 @@ class NPrefsWindow : public Gtk::Dialog
     protected:
         Gtk::VBox m_vbox_view;
         Gtk::VBox m_vbox_dirs;
+        Gtk::VBox m_vbox_sort;
         Gtk::HBox m_hbox_dirbtns;
         Gtk::Frame m_frame_view;
         Gtk::Frame m_frame_dirs;
+        Gtk::Frame m_frame_sort;
         Gtk::Alignment m_align_view;
         Gtk::Alignment m_align_dirs;
+        Gtk::Alignment m_align_sort;
         Gtk::RadioButton m_rb_view_icon;
+        Gtk::RadioButton m_rb_view_icon_caps;
         Gtk::RadioButton m_rb_view_list;
+        Gtk::RadioButton m_rb_sort_alpha;
+        Gtk::RadioButton m_rb_sort_ralpha;
+        Gtk::RadioButton m_rb_sort_time;
+        Gtk::RadioButton m_rb_sort_rtime;
+        Gtk::CheckButton m_cb_recurse;
 
         Gtk::ScrolledWindow m_scrolledwin;
         Gtk::TreeView m_list_dirs;

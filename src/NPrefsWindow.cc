@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2009  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -27,22 +27,52 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Preferences"), parent, true, false),
                                 m_frame_view(_("View Options")),
                                 m_frame_dirs(_("Directories")),
+                                m_frame_sort(_("Sort by")),
                                 m_rb_view_icon(_("_Icon"), true),
+                                m_rb_view_icon_caps(_("_Icon with captions"), true),
                                 m_rb_view_list(_("_List"), true),
+                                m_rb_sort_rtime(_("_Time (descending)"), true),
+                                m_rb_sort_time(_("_Time (ascending)"), true),
+                                m_rb_sort_alpha(_("_Name (ascending)"), true),
+                                m_rb_sort_ralpha(_("_Name (descending)"), true),
+                                m_cb_recurse(_("Recurse"), true),
                                 m_btn_adddir(Gtk::Stock::ADD),
                                 m_btn_deldir(Gtk::Stock::DELETE)
 {
     // radio button grouping
     Gtk::RadioButton::Group group = m_rb_view_icon.get_group();
+    m_rb_view_icon_caps.set_group(group);
     m_rb_view_list.set_group(group);
-   
+
+    Gtk::RadioButton::Group sort_group = m_rb_sort_alpha.get_group();
+    m_rb_sort_rtime.set_group(sort_group);
+    m_rb_sort_time.set_group(sort_group);
+    m_rb_sort_ralpha.set_group(sort_group);
+
     m_cfg = cfg;
     DisplayMode mode = m_cfg->get_display_mode();
 
-    if (mode == ICON)
-        m_rb_view_icon.set_active(true);
+    if (mode == ICON) {
+        if (m_cfg->get_icon_captions())
+            m_rb_view_icon_caps.set_active(true);
+        else
+            m_rb_view_icon.set_active(true);
+    }
     else
         m_rb_view_list.set_active(true);
+
+    bool recurse = m_cfg->get_recurse();
+    m_cb_recurse.set_active(recurse);
+
+    Thumbview::SortMode sort_mode = m_cfg->get_sort_mode();
+    if (sort_mode == Thumbview::SORT_ALPHA)
+        m_rb_sort_alpha.set_active(true);
+    else if (sort_mode == Thumbview::SORT_RALPHA)
+        m_rb_sort_ralpha.set_active(true);
+    else if (sort_mode == Thumbview::SORT_TIME)
+        m_rb_sort_time.set_active(true);
+    else
+        m_rb_sort_rtime.set_active(true);
 
     // signal handlers for directory buttons
     m_btn_adddir.signal_clicked().connect(sigc::mem_fun(this, &NPrefsWindow::sighandle_click_adddir));
@@ -71,7 +101,17 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
     m_frame_view.add(m_align_view);
     m_frame_view.set_shadow_type(Gtk::SHADOW_NONE);
     m_vbox_view.pack_start(m_rb_view_icon, false, true);
+    m_vbox_view.pack_start(m_rb_view_icon_caps, false, true);
     m_vbox_view.pack_start(m_rb_view_list, false, true);
+
+    m_align_sort.set_padding(0, 0, 12, 0);
+    m_align_sort.add(m_vbox_sort);
+    m_frame_sort.add(m_align_sort);
+    m_frame_sort.set_shadow_type(Gtk::SHADOW_NONE);
+    m_vbox_sort.pack_start(m_rb_sort_alpha, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_ralpha, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_time, false, true);
+    m_vbox_sort.pack_start(m_rb_sort_rtime, false, true);
 
     m_align_dirs.set_padding(0, 0, 12, 0);
     m_align_dirs.add(m_vbox_dirs);
@@ -87,15 +127,17 @@ NPrefsWindow::NPrefsWindow(Gtk::Window& parent, Config *cfg) : Gtk::Dialog(_("Pr
 
     m_hbox_dirbtns.pack_start(m_btn_adddir, false, true);
     m_hbox_dirbtns.pack_start(m_btn_deldir, false, true);
+    m_hbox_dirbtns.pack_end(m_cb_recurse, false, true);
 
     get_vbox()->pack_start(m_frame_view, false, true);
+    get_vbox()->pack_start(m_frame_sort, false, true);
     get_vbox()->pack_start(m_frame_dirs, true, true);
 
     add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     add_button(Gtk::Stock::OK, Gtk::RESPONSE_OK);
     set_response_sensitive(Gtk::RESPONSE_CANCEL);
-	
-    set_default_size(300, 250);
+
+    set_default_size(350, 350);
 
     show_all();
 }
@@ -106,8 +148,18 @@ void NPrefsWindow::on_response(int response_id)
 {
     if (response_id == Gtk::RESPONSE_OK)
     {
-        DisplayMode mode = (m_rb_view_icon.get_active()) ? ICON : LIST;
+        DisplayMode mode = (m_rb_view_icon.get_active() || m_rb_view_icon_caps.get_active()) ? ICON : LIST;
         m_cfg->set_display_mode(mode);
+        m_cfg->set_icon_captions(m_rb_view_icon_caps.get_active());
+        m_cfg->set_recurse((m_cb_recurse.get_active()) ? true : false);
+        if (m_rb_sort_alpha.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_ALPHA);
+        else if (m_rb_sort_ralpha.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_RALPHA);
+        else if (m_rb_sort_time.get_active())
+            m_cfg->set_sort_mode(Thumbview::SORT_TIME);
+        else
+            m_cfg->set_sort_mode(Thumbview::SORT_RTIME);
 
         m_cfg->save_cfg();
     }
@@ -148,7 +200,7 @@ void NPrefsWindow::sighandle_click_deldir()
     std::string dir = (*iter)[m_tmc_dir];
 
     Glib::ustring msg = Glib::ustring::compose(_("Are you sure you want to delete <b>%1</b>?"), dir);
-   
+
     Gtk::MessageDialog dialog(*this, msg, true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
 
     int result = dialog.run();

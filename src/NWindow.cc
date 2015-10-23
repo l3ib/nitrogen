@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 	bot_hbox.pack_start (select_mode, FALSE, FALSE, 0);
 	bot_hbox.pack_start (select_display, FALSE, FALSE, 0);
 	bot_hbox.pack_start(button_bgcolor, FALSE, FALSE, 0);
-	
+
 	bot_hbox.pack_end(apply, FALSE, FALSE, 0);
 	bot_hbox.pack_end(btn_prefs, FALSE, FALSE, 0);
 
@@ -63,7 +63,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
     view.signal_selected.connect(sigc::mem_fun(*this, &NWindow::sighandle_dblclick_item));
 	apply.signal_clicked ().connect (sigc::mem_fun(*this, &NWindow::sighandle_click_apply));
     btn_prefs.signal_clicked().connect(sigc::mem_fun(*this, &NWindow::sighandle_btn_prefs));
-	
+
     // set icon
 	try {
 		Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
@@ -79,7 +79,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 	} catch  (Gtk::IconThemeError e) {
 		// don't even worry about it!
 	}
-	
+
 	// accel group for keyboard shortcuts
 	// unfortunately we have to basically make a menu which we never add to the UI
 	m_action_group = Gtk::ActionGroup::create();
@@ -130,11 +130,12 @@ void NWindow::show (void) {
  * Handles the user pressing Ctrl+Q or Ctrl+W, standard quit buttons.
  */
 void NWindow::sighandle_accel_quit() {
-	Gtk::Main::quit();
+    if (!handle_exit_request())
+        hide();
 }
 
 /**
- * Handles the user double clicking on a row in the view. 
+ * Handles the user double clicking on a row in the view.
  */
 void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 
@@ -148,27 +149,38 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 }
 
 /**
- * Handles the user pressing the apply button.  Grabs the selected items and
- * calls set_bg on it. It also saves the bg and closes the application if 
- * the app is not multiheaded, or the full xin desktop is selected.
+ * Handles the user pressing the apply button.
  */
 void NWindow::sighandle_click_apply (void) {
-	
-	// find out which image is currently selected
-	Gtk::TreeModel::iterator iter = view.get_selected ();
-	Gtk::TreeModel::Row row = *iter;
+    this->apply_bg();
+}
+
+/**
+ * Performs the apply action
+ * Grabs the selected items and
+ * calls set_bg on it. It also saves the bg and closes the application if
+ * the app is not multiheaded, or the full xin desktop is selected.
+ */
+void NWindow::apply_bg () {
+
+    // find out which image is currently selected
+    Gtk::TreeModel::iterator iter = view.get_selected ();
+    Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
-	this->set_bg(file);
+    this->set_bg(file);
 
     // apply - remove dirty flag
     m_dirty = false;
 
     SetBG::SetMode mode = SetBG::string_to_mode( this->select_mode.get_active_data() );
-	Glib::ustring thedisp = this->select_display.get_active_data(); 
-	Gdk::Color bgcolor = this->button_bgcolor.get_color();
+    Glib::ustring thedisp = this->select_display.get_active_data();
+    Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
-	// save	
+    // save
     Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
+
+    // tell the bg setter to forget about the first pixmap
+    bg_setter->clear_first_pixmaps();
 
     // tell the row that he's now on thedisp
     row[view.record.CurBGOnDisp] = thedisp;
@@ -180,7 +192,7 @@ void NWindow::sighandle_click_apply (void) {
     // old background on thedisp, but could be 2 items if xinerama individual bgs
     // are replaced by the fullscreen xinerama.
     for (Gtk::TreeIter i = view.store->children().begin(); i != view.store->children().end(); i++)
-	{
+    {
         Glib::ustring curbgondisp = (*i)[view.record.CurBGOnDisp];
         if (curbgondisp == "")
             continue;
@@ -201,32 +213,53 @@ void NWindow::sighandle_click_apply (void) {
         else
             (*i)[view.record.Description] = Util::make_current_set_string(this, filename, (*mapiter).first);
     }
+}
 
+/**
+ * Common handler for window delete or key accels.
+ *
+ * Prompts the user to save if necessary.
+ */
+bool NWindow::handle_exit_request()
+{
+    if (m_dirty)
+    {
+        int result;
+        Gtk::MessageDialog dialog(*this,
+            _("You previewed an image without applying it, apply?"), false,
+            Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_NONE, true);
+
+        dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+        dialog.add_button(Gtk::Stock::NO, Gtk::RESPONSE_NO);
+        dialog.add_button(Gtk::Stock::YES, Gtk::RESPONSE_YES);
+
+        dialog.set_default_response(Gtk::RESPONSE_YES);
+        result = dialog.run();
+
+        switch (result)
+        {
+            case Gtk::RESPONSE_YES:
+                this->apply_bg();
+                break;
+            case Gtk::RESPONSE_NO:
+                bg_setter->reset_first_pixmaps();
+                break;
+            case Gtk::RESPONSE_CANCEL:
+            case Gtk::RESPONSE_DELETE_EVENT:
+                return true;
+        };
+    }
+
+    return false;
 }
 
 bool NWindow::on_delete_event(GdkEventAny *event)
 {
-    if (m_dirty)
-    {
-        Gtk::MessageDialog dialog(*this, _("You previewed an image without applying it, exit anyway?"), false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO, true);
-
-        int result = dialog.run();
-        switch (result)
-        {
-            case Gtk::RESPONSE_YES:
-
-                break;
-            case Gtk::RESPONSE_NO:
-                return true;
-                break;
-        };
-    }
-
-    return Gtk::Window::on_delete_event(event);
+    return handle_exit_request();
 }
 
 /**
- * Queries the necessary widgets to get the data needed to set a bg.  * 
+ * Queries the necessary widgets to get the data needed to set a bg.  *
  * @param	file	The file to set the bg to
  */
 void NWindow::set_bg(const Glib::ustring file) {
@@ -247,7 +280,7 @@ NWindow::~NWindow () {}
  * Creates our ImageCombo boxes
  */
 void NWindow::setup_select_boxes() {
-		
+
 	Glib::RefPtr<Gtk::IconTheme> icontheme = Gtk::IconTheme::get_default();
 	Glib::RefPtr<Gdk::Pixbuf> icon, genericicon, video_display_icon;
 
@@ -314,8 +347,8 @@ void NWindow::setup_select_boxes() {
 }
 
 /**
- * Sets the file selection, mode combo box, and color button to appropriate default values, based on 
- * what is in the configuration file.  
+ * Sets the file selection, mode combo box, and color button to appropriate default values, based on
+ * what is in the configuration file.
  */
 void NWindow::set_default_selections()
 {
@@ -391,6 +424,9 @@ void NWindow::sighandle_btn_prefs()
     {
         // figure out what directories to reload and what directories to not reload!
         // do this before we reload the main config!
+        //
+        // if the recurse flag changed, we need to unload/reload everything
+        bool recurse_changed = cfg->get_recurse() != clone->get_recurse();
 
         VecStrs vec_load;
         VecStrs vec_unload;
@@ -398,22 +434,25 @@ void NWindow::sighandle_btn_prefs()
         VecStrs vec_cfg_dirs = cfg->get_dirs();
         VecStrs vec_clone_dirs = clone->get_dirs();
         for (VecStrs::iterator i = vec_cfg_dirs.begin(); i != vec_cfg_dirs.end(); i++)
-            if (find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
+            if (recurse_changed || find(vec_clone_dirs.begin(), vec_clone_dirs.end(), *i) == vec_clone_dirs.end())
                 vec_unload.push_back(*i);
 
         for (VecStrs::iterator i = vec_clone_dirs.begin(); i != vec_clone_dirs.end(); i++)
-            if (find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
+            if (recurse_changed || find(vec_cfg_dirs.begin(), vec_cfg_dirs.end(), *i) == vec_cfg_dirs.end())
                 vec_load.push_back(*i);
 
         cfg->load_cfg();        // tells the global instance to reload itself from disk, which the prefs dialog
                                 // told our clone to save to
         view.set_current_display_mode(cfg->get_display_mode());
+        view.set_icon_captions(cfg->get_icon_captions());
 
         for (VecStrs::iterator i = vec_unload.begin(); i != vec_unload.end(); i++)
             view.unload_dir(*i);
 
         for (VecStrs::iterator i = vec_load.begin(); i != vec_load.end(); i++)
             view.load_dir(*i);
+
+        view.set_sort_mode(cfg->get_sort_mode());
     }
 
 }

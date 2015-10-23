@@ -1,7 +1,9 @@
 SUBDIRS = icons
 
+appdatadir = /usr/share/appdata
 desktopdir = $(datadir)/applications
 desktop_DATA = nitrogen.desktop
+appdata_DATA = nitrogen.appdata.xml
 
 UPDATE_DESKTOP = update-desktop-database $(datadir)/applications || :
 
