@@ -92,7 +92,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 						Gtk::AccelKey("<control>W"),
 						sigc::mem_fun(*this, &NWindow::sighandle_accel_quit));
 
-    m_action_group->add(Gtk::Action::create("Random", Gtk::Stock::RANDOM),
+    m_action_group->add(Gtk::Action::create("Random", Gtk::Stock::MEDIA_NEXT),
                         Gtk::AccelKey("<control>R"),
                         sigc::mem_fun(*this, &NWindow::sighandle_random));
 
@@ -143,7 +143,16 @@ void NWindow::sighandle_accel_quit() {
  * Handles the user pressing Ctrl+R to get a random image.
  */
 void NWindow::sighandle_random() {
+    Glib::Rand rand;
 
+    guint size = view.store->children().size();
+    guint idx = rand.get_int_range(0, size);
+
+    Glib::ustring tidx = Glib::ustring::compose("%1", idx);
+    Gtk::TreeModel::Path path(tidx);
+    Gtk::TreeModel::const_iterator iter = view.store->get_iter(path);
+
+    view.set_selected(path, &iter);
 }
 
 /**

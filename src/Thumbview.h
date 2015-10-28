@@ -149,6 +149,7 @@ class Thumbview : public Gtk::ScrolledWindow {
         gboolean get_icon_captions() { return m_icon_captions; }
 
         Gtk::TreeModel::iterator get_selected();
+        void set_selected(const Gtk::TreePath&, Gtk::TreeModel::const_iterator*);
         sigc::signal<void, const Gtk::TreePath&> signal_selected;
 
         const Glib::TimeVal& get_last_loaded_time()

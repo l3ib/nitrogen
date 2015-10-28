@@ -602,6 +602,21 @@ void Thumbview::load_map_setbgs()
 }
 
 /**
+ * Sets the current selection with all triggers.
+ */
+void Thumbview::set_selected(const Gtk::TreePath& path, Gtk::TreeModel::const_iterator *iter)
+{
+    // visually select
+    this->select(new Gtk::TreeModel::const_iterator(*iter));
+
+    // now activate
+    if (m_curmode == ICON)
+        iview.item_activated(path);
+    else
+        view.row_activated(path, *this->col_thumb);
+}
+
+/**
  * Gets the currently selected image, regardless of which view it came from.
  */
 Gtk::TreeModel::iterator Thumbview::get_selected()
