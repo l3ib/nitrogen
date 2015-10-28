@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ Config::Config()
     m_sizey = 500;
 
     m_icon_captions = false;
-    
+
     m_sort_mode = Thumbview::SORT_ALPHA;
 }
 
@@ -120,10 +120,10 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
         return false;
 
 	GKeyFile *kf = g_key_file_new();
-	
+
 	GError *ge = NULL;
 	if ( g_key_file_load_from_file(kf, cfgfile.c_str(), G_KEY_FILE_NONE, &ge) == FALSE ) {
-		
+
 		std::cerr << _("ERROR: Unable to load config file") << " (" << cfgfile << "): " << ge->message << "\n";
 		g_clear_error(&ge);
 		g_key_file_free(kf);
@@ -138,9 +138,9 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 		std::cerr << _("Couldn't find group for") << " " << disp << "." << std::endl;
 		return false;
 	}
-	
+
 	// get data
-	
+
 	gchar *fileptr = g_key_file_get_string(kf, disp.c_str(), "file", NULL);
 	if ( fileptr ) {
 		file = Glib::ustring(fileptr);
@@ -151,7 +151,7 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 		return false;
 	}
 		//error = true;
-	
+
 	mode = (SetBG::SetMode)g_key_file_get_integer(kf, disp.c_str(), "mode", &ge);
 	if (ge) {
 		g_clear_error(&ge);
@@ -173,18 +173,18 @@ bool Config::get_bg(const Glib::ustring disp, Glib::ustring &file, SetBG::SetMod
 		tcol = color;
 		free(color);
 	}
-	
+
 	// did not fail
 	// Glib::ustring tcol(color);
 	// free(color);
 	bgcolor.set(tcol);
-	
+
 	g_key_file_free(kf);
 
 
 	// this function looks like less of an eyesore without all the
 	// failed trix.
-	
+
 	return true; // success
 }
 
@@ -227,7 +227,7 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 
 	// must do complex removals if xinerama occurs
 	if (realdisp.find("xin_", 0, 4) != Glib::ustring::npos) {
-		
+
 		if (realdisp == "xin_-1") {
 			// get all keys, remove all keys that exist with xin_ prefixes
 			gchar **groups;
@@ -238,7 +238,7 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 					g_key_file_remove_group(kf, groups[i], NULL);
 
 		} else {
-			
+
 			// a normal xinerama screen, therefore
 			// remove the big realdisp if it occurs
 			if (g_key_file_has_group(kf, "xin_-1"))
@@ -251,13 +251,13 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 	g_key_file_set_string(kf, realdisp.c_str(), "file", file.c_str());
 	g_key_file_set_integer(kf, realdisp.c_str(), "mode", (gint)mode);
 	g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
-	
+
 	// output it
 	Glib::ustring outp = g_key_file_to_data(kf, NULL, NULL);
 	std::ofstream outf(cfgfile.c_str());
 	outf << outp;
 	outf.close();
-	
+
 	g_key_file_free(kf);
 
 	return true;
@@ -276,9 +276,9 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
         return false;
 
 	GKeyFile *kf = g_key_file_new();
-	
+
 	if ( g_key_file_load_from_file(kf, cfgfile.c_str(), G_KEY_FILE_NONE, NULL) == FALSE ) {
-		
+
 		// do not output anything here, we just want to know
 		g_key_file_free(kf);
 		return false;
@@ -292,10 +292,10 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
 	for (unsigned int i=0; i<num; i++) {
 		res.push_back(Glib::ustring(filegroups[i]));
 	}
-	
+
 	g_strfreev(filegroups);
 	groups = res;
-	
+
 	g_key_file_free(kf);
 	return true;
 }
@@ -306,13 +306,13 @@ bool Config::get_bg_groups(std::vector<Glib::ustring> &groups) {
  * @return	If it exists, or it was able to make it
  */
 bool Config::check_dir() {
-		
+
 	Glib::ustring dirname = Glib::build_filename(Glib::ustring(g_get_user_config_dir()), "nitrogen");
 	if ( !Glib::file_test(dirname, Glib::FILE_TEST_EXISTS ) )
 		if ( g_mkdir_with_parents(dirname.c_str(), 0755) == -1 )
 			// TODO: throw
 			return false;
-	
+
 	return true;
 }
 
@@ -328,10 +328,10 @@ Glib::ustring Config::color_to_string(Gdk::Color color) {
 	guchar blue = guchar(color.get_blue_p() * 255);
 
 	char * c_str = new char[7];
-	
+
 	snprintf(c_str, 7, "%.2x%.2x%.2x", red, green, blue);
 	Glib::ustring string = '#' + Glib::ustring(c_str);
-	
+
 	delete[] c_str;
 	return string;
 }
@@ -427,7 +427,7 @@ bool Config::load_cfg()
     if (cfgfile.empty())
         return false;
 
-    // TODO: use load_from_data_dirs?    
+    // TODO: use load_from_data_dirs?
     Glib::KeyFile kf;
     if (!kf.load_from_file(cfgfile))
         return false;
@@ -462,7 +462,7 @@ bool Config::load_cfg()
         else if (sort_mode == Glib::ustring("rtime"))
             m_sort_mode = Thumbview::SORT_RTIME;
     }
-  
+
     return true;
 }
 
@@ -481,7 +481,7 @@ void Config::set_dirs(const VecStrs& new_dirs)
  *
  * Does not add if the passed dir already is in the list of dirs.
  * Returns a boolean to indicate if this call resulted in an add.
- * If it returns false, it didn't add a new one becuase it already 
+ * If it returns false, it didn't add a new one becuase it already
  * existed.
  */
 bool Config::add_dir(const std::string& dir)

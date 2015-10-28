@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ typedef int (*XErrorHandler)(Display*, XErrorEvent*);
  */
 class SetBG {
 	public:
-        // NOTE: do not change the order of these, they are changed to integer and 
+        // NOTE: do not change the order of these, they are changed to integer and
         // put on disk.
 		enum SetMode {
 			SET_SCALE,
@@ -101,7 +101,7 @@ class SetBG {
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
 
-        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
+        virtual bool get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
         Glib::RefPtr<Gdk::Pixmap> get_or_create_pixmap(Glib::ustring disp, Glib::RefPtr<Gdk::Display> _display, Glib::RefPtr<Gdk::Window> window, gint winw, gint winh, gint wind, Glib::RefPtr<Gdk::Colormap> colormap);
 
 
@@ -140,7 +140,7 @@ class SetBGXinerama : public SetBG {
 
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
-        virtual void get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
+        virtual bool get_target_dimensions(Glib::ustring& disp, gint winx, gint winy, gint winw, gint winh, gint& tarx, gint& tary, gint& tarw, gint& tarh);
 };
 #endif
 

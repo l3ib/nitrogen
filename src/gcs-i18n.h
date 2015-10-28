@@ -17,8 +17,8 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the 
- *    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+ *    along with this program; if not, write to the
+ *    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  *    Boston, MA  02111-1307  USA
  *
  *******************************************************************************/
@@ -45,8 +45,8 @@
 #define gettext(String) (String)
 #define dgettext(Domain,String) (String)
 #define dcgettext(Domain,String,Type) (String)
-#define bindtextdomain(Domain,Directory) (Domain) 
-#define bind_textdomain_codeset(Domain,Codeset) (Codeset) 
+#define bindtextdomain(Domain,Directory) (Domain)
+#define bind_textdomain_codeset(Domain,Codeset) (Codeset)
 #endif /* ENABLE_NLS */
 
 #endif /* __GCS_I18N_H_ */

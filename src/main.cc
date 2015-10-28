@@ -1,6 +1,6 @@
 /*
 
-This file is from Nitrogen, an X11 background setter.  
+This file is from Nitrogen, an X11 background setter.
 Copyright (C) 2006  Dave Foster & Javeed Shaikh
 
 This program is free software; you can redistribute it and/or
@@ -93,7 +93,7 @@ bool on_window_close_save_pos(GdkEventAny* event, Gtk::Window *window)
     window->get_size(w, h);
     cfg->set_size(w, h);
 
-    return false; 
+    return false;
 }
 
 #ifdef USE_INOTIFY
