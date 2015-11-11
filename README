@@ -8,7 +8,7 @@ REQUIREMENTS:
 
 BUILDING:
 
-    ./bootstrap
+    autoreconf -fi
     ./configure
     make
     make install (as root or a user with proper permissions)
@@ -28,7 +28,7 @@ USAGE:
 
 CONTACT:
     If you want to tell us about the many bugs that we have, drop by #l3ib on
-    irc.freenode.net, and talk to m4re or jvd.
+    irc.freenode.net, and talk to mz4 or jvd.
 
 LICENSE:
     Nitrogen is licensed under the GPL.  See COPYING.
