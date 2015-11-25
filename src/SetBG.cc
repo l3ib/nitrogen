@@ -1017,10 +1017,8 @@ std::map<Glib::ustring, Glib::ustring> SetBGXinerama::get_active_displays()
 {
     std::map<Glib::ustring, Glib::ustring> map_displays;
 
-    // if at least 2 screens, add the full screen
-    // reason being if xinerama on but only one screen, full screen is the same as the first display
-    if (this->xinerama_num_screens > 1)
-        map_displays[this->get_fullscreen_key()] = _("Full Screen");
+    // always add full screen as we need the -1 key always
+    map_displays[this->get_fullscreen_key()] = _("Full Screen");
 
     // add individual screens
     for (int i=0; i < xinerama_num_screens; i++) {
