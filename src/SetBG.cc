@@ -1163,7 +1163,7 @@ std::map<Glib::ustring, Glib::ustring> SetBGGnome::get_active_displays()
 
 Glib::ustring SetBGGnome::get_prefix()
 {
-    Glib::ustring display("????");
+    Glib::ustring display("");
     return display;
 }
 
@@ -1173,7 +1173,7 @@ Glib::ustring SetBGGnome::get_prefix()
  */
 Glib::ustring SetBGGnome::get_fullscreen_key()
 {
-    Glib::ustring display("????");
+    Glib::ustring display("dummy");
     return display;
 }
 
@@ -1183,7 +1183,7 @@ Glib::ustring SetBGGnome::get_fullscreen_key()
  */
 Glib::ustring SetBGGnome::make_display_key(gint head)
 {
-    return Glib::ustring("");
+    return Glib::ustring("dummy");
 }
 
 /**
