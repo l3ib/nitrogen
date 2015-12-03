@@ -218,6 +218,18 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
         return retval;
     }
 
+    // check for mutter atoms on root window
+    ret = gdk_property_get(rootwin->gobj(),
+            gdk_atom_intern("_MUTTER_SENTINEL", FALSE),
+            gdk_atom_intern("CARDINAL", FALSE),
+            0L,
+            4L,
+            FALSE, &type, &format, &length, &data);
+
+    if (ret) {
+        return SetBG::NAUTILUS; // mutter uses same keys
+    }
+
 #ifdef USE_XINERAMA
     // determine if xinerama is in play
     if (XineramaIsActive(GDK_DISPLAY_XDISPLAY(display->gobj())))
