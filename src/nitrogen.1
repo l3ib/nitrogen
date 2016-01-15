@@ -1,4 +1,4 @@
-.TH NITROGEN 1 "MARCH 2006" "NITROGEN" "NITROGEN"
+.TH NITROGEN 1 "JANUARY 2016" "NITROGEN" "NITROGEN"
 .SH NAME
 nitrogen \- X11 background previewer and setter
 .SH SYNOPSIS
@@ -11,10 +11,10 @@ In normal working mode, provides an interface which displays all pictures in the
 .P
 When the --restore option is passed, nitrogen sets all backgrounds that it has a configuration for and exits immediatly, for use in an .xinitrc or .xsession file.
 .SH OPTIONS
-.IP --no-recurse
-Do not recurse into subdirectories of DIRECTORY.
 .IP --restore
 Restores previously saved pictures to the root displays.
+.IP --no-recurse
+Do not recurse into subdirectories of DIRECTORY.
 .IP --sort=[option]
 Sorts the background list by the given option.  By default, items are sorted as they are found on the filesystem, giving a quasi-newest first sorting order.  Valid options are:
 .RS
@@ -27,19 +27,49 @@ Modified time, ascending.
 .IP rtime
 Modified time, descending.
 .RE
+.IP --set-auto
+Set the background specified by DIRECTORY using the automatic size setting.
+.IP --set-centered
+Set the background specified by DIRECTORY using the centered size setting.
+.IP --set-scaled
+Set the background specified by DIRECTORY using the scaled size setting.
+.IP --set-tiled
+Set the background specified by DIRECTORY using the tiled size setting.
+.IP --set-zoom
+Set the background specified by DIRECTORY using the zoom size setting.
+.IP --set-zoom-fill
+Set the background specified by DIRECTORY using the zoom fill size setting.
+.IP --save
+Saves the background permanently in the config. Only used with one of the --set-xxx options.
+.IP --set-color=[arg]
+Sets background color in hex, #000000 by default. Only used with one of the --set-xxx options.
+.IP --random
+Choose random background from config or given directory. Only used with one of the --set-xxx options.
+.IP --head=[option]
+Select Xinerama/multihead display in GUI, 0..n, use -1 for full screen (Xinerama only).
+.IP --force-setter=[option]
+DEBUG: Forces the background setting engine to use a specific backend. This is for advanced debugging use only. Valid options are:
+.RS
+.IP xwindows
+Standard XWindows primitives.
+.IP xinerama
+Xinerama/XWindows primitives.
+.IP gnome
+GNOME/Nautilus based.
+.RE
 .IP --help
-A mystery option which saves the iguanas of Sweden.
+I'm just here so I won't get fined.
 .SH FILES
 .I ~/.config/nitrogen/
-.RS 
+.RS
 Holds the configuration for saved backgrounds.
 .RE
 .SH BUGS
-There are probably plenty of them.  Report all bugs to Dave Foster <daf@minuslab.net>.
+Use the GitHub issue tracker: https://github.com/l3ib/nitrogen/issues
 .SH AUTHORS
 Dave Foster <daf@minuslab.net>
 Javeed Shaikh <syscrash2k@gmail.com>
 .SH AVAILABILITY
-Homepage - http://projects.l3ib.org/nitrogen/.  The git repository is at http://code.l3ib.org/nitrogen.git
+Nitrogen is developed on GitHub: https://github.com/l3ib/nitrogen/
 
 
