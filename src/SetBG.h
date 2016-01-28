@@ -167,4 +167,14 @@ class SetBGNemo : public SetBGGnome {
         virtual void set_show_desktop();
 };
 
+class SetBGPcmanfm : public SetBGGnome {
+    public:
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+};
+
 #endif

@@ -1235,3 +1235,41 @@ void SetBGNemo::set_show_desktop()
     Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(Glib::ustring("org.nemo.desktop"));
     settings->set_boolean("draw-background", true);
 }
+
+/*
+ * **************************************************************************
+ * SetBGPcmanfm
+ * **************************************************************************
+ */
+
+bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+    Glib::ustring strmode;
+    switch(mode) {
+        case SetBG::SET_SCALE:      strmode = "stretch";  break;
+        case SetBG::SET_TILE:       strmode = "tile"; break;
+        case SetBG::SET_CENTER:     strmode = "center"; break;
+        case SetBG::SET_ZOOM:       strmode = "screen"; break;
+        case SetBG::SET_ZOOM_FILL:  strmode = "crop"; break;
+        default:                    strmode = "fit"; break;
+	};
+
+    std::vector<std::string> vecCmdLine;
+
+    vecCmdLine.push_back(std::string("pcmanfm"));
+    vecCmdLine.push_back(std::string("--set-wallpaper"));
+    vecCmdLine.push_back(file);
+    vecCmdLine.push_back(std::string("--wallpaper-mode"));
+    vecCmdLine.push_back(strmode);
+
+
+    return true;
+}
+
+std::map<Glib::ustring, Glib::ustring> SetBGPcmanfm::get_active_displays()
+{
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+    map_displays["dummy"] = "Pcmanfm";
+    return map_displays;
+}
+
