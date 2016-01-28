@@ -199,6 +199,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
                     if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
                     if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
                     if (strclass == std::string("Nemo"))      retval = SetBG::NEMO;     else
+                    if (strclass == std::string("Pcmanfm"))   retval = SetBG::PCMANFM;  else
                     {
                         std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
                         retval = SetBG::UNKNOWN;

@@ -57,6 +57,7 @@ class SetBG {
             UNKNOWN,
             XINERAMA,
             NEMO,
+            PCMANFM,
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
