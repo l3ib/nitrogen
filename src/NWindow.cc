@@ -422,9 +422,17 @@ void NWindow::set_default_selections()
     }
 }
 
+/**
+ * Sets the display combobox to the given display value.
+ *
+ * There will always be a selected item as long as there are items after calling this.
+ * 
+ * @param   display     The display index to use. If not found, use first available.
+ */
 void NWindow::set_default_display(int display)
 {
-    select_display.select_value(this->bg_setter->make_display_key(display));
+    if (!select_display.select_value(this->bg_setter->make_display_key(display)))
+        select_display.set_active(0);
 }
 
 /////////////////////////////////////////////////////////////////////////////

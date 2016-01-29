@@ -30,7 +30,7 @@ class ImageCombo : public Gtk::ComboBox {
 		void add_image_row(Glib::RefPtr<Gdk::Pixbuf> img, Glib::ustring desc, Glib::ustring data, bool active);
 		Glib::ustring get_active_data();
 
-		void select_value(Glib::ustring);
+		bool select_value(Glib::ustring);
 
 	protected:
 

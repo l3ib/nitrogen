@@ -82,17 +82,20 @@ Glib::ustring ImageCombo::get_active_data() {
 }
 
 /**
- * Selects the entry with the value specified.  If the value does not exist, don't do anything.
+ * Selects the entry with the value specified.
  *
  * @param	value	The value to search for and select.
+ * @returns         If the value was able to be set.
  */
-void ImageCombo::select_value(Glib::ustring value)
+bool ImageCombo::select_value(Glib::ustring value)
 {
 	for (Gtk::TreeIter iter = store->children().begin(); iter != store->children().end(); iter++) {
 
 		if ( (*iter)[tmc_data] == value ) {
 			set_active(iter);
-			break;
+            return true;
 		}
 	}
+
+    return false;
 }
