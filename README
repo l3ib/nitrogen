@@ -21,7 +21,8 @@ BUILDING:
           CXXFLAGS="-O2" ./configure
     
           PACKAGERS: Make sure you set CXXFLAGS to an appropriate value for
-          the target system.
+          the target system. For instance, CXXFLAGS=" -std=c++11" if using 
+          gcc 5.x.
 
 USAGE:
     See the man page. It *might* be up to date.
