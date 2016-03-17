@@ -5,4 +5,7 @@ Name=@PACKAGE_NAME@
 Categories=Utility;GTK;
 Icon=@PACKAGE@
 Comment=Browse and set desktop backgrounds
+Comment[bs]=Pregledaj i postavi pozadinske slike
+Comment[hr]=Pregledaj i postavi pozadinske slike
+Comment[sr]=Прегледај и постави позадинске слике
 Keywords=background;desktop;
