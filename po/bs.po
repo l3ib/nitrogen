@@ -1,0 +1,263 @@
+# Bosnian translations for Nitrogen.
+# Copyright (C) 2016 l3ib.org
+# This file is distributed under the same license as the Nitrogen package.
+# Dino Duratović <dinomol@mail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.5.2\n"
+"Report-Msgid-Bugs-To: daf@minuslab.net\n"
+"POT-Creation-Date: 2011-04-19 22:03-0400\n"
+"PO-Revision-Date: 2016-03-17 07:58+0100\n"
+"Language-Team: \n"
+"Language: bs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: Dino Duratović <dinomol@mail.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/ArgParser.cc:66
+msgid "Unexpected argument "
+msgstr "Neočekivani argument"
+
+#: src/ArgParser.cc:75
+msgid " expects an argument."
+msgstr " očekuje argument."
+
+#: src/ArgParser.cc:78
+msgid " does not expect an argument."
+msgstr " ne očekuje argument."
+
+#: src/ArgParser.cc:84
+msgid " conflicts with another argument."
+msgstr " je u sukobu sa drugim argumentom."
+
+#: src/ArgParser.cc:96
+msgid "Usage:"
+msgstr "Upotreba:"
+
+#: src/Config.cc:92
+msgid "Could not open config directory."
+msgstr "Nije moguće otvoriti konfiguracioni direktorij."
+
+#: src/Config.cc:102 src/Config.cc:191
+msgid "ERROR: Unable to load config file"
+msgstr "GREŠKA: Nemoguće učitati konfiguracioni fajl"
+
+#: src/Config.cc:113
+msgid "Couldn't find group for"
+msgstr "Nije moguće pronaći grupu za"
+
+#: src/Config.cc:125
+msgid "Could not get filename from config file."
+msgstr "Nije moguće dobiti ime fajla iz konfiguracionog fajla."
+
+#: src/Config.cc:134
+msgid "Could not get mode from config file."
+msgstr "Nije moguće dobiti način iz konfiguracionog fajla."
+
+#: src/Config.cc:193
+msgid "The error code returned was"
+msgstr "Kod greške je"
+
+#: src/Config.cc:194
+msgid "We expected"
+msgstr "Očekivali smo"
+
+#: src/Config.cc:194
+msgid "or"
+msgstr "ili"
+
+#: src/NWindow.cc:175
+msgid "You previewed an image without applying it, exit anyway?"
+msgstr "Pregledali ste sliku bez prihvatanja, ipak napustiti?"
+
+#: src/NWindow.cc:238
+msgid "Automatic"
+msgstr "Automatski"
+
+#: src/NWindow.cc:245
+msgid "Scaled"
+msgstr "Srazmjerno"
+
+#: src/NWindow.cc:253
+msgid "Centered"
+msgstr "Centrirano"
+
+#: src/NWindow.cc:261
+msgid "Tiled"
+msgstr "Popločano"
+
+#: src/NWindow.cc:270
+msgid "Zoomed"
+msgstr "Uvećano"
+
+#: src/NWindow.cc:271
+msgid "Zoomed Fill"
+msgstr "Uvećano popunjenje"
+
+#: src/NWindow.cc:284 src/NWindow.cc:315
+msgid "Screen"
+msgstr "Ekran"
+
+#: src/NWindow.cc:309 src/NWindow.cc:311
+msgid "Full Screen"
+msgstr "Preko cijelog ekrana"
+
+#: src/NWindow.cc:332
+msgid "Default"
+msgstr "Podrazumijevani"
+
+#: src/SetBG.cc:53 src/SetBG.cc:231
+msgid "Could not open display"
+msgstr "Ne mogu otvoriti displej"
+
+# Provjeriti da li slijedi nešto poslije
+#: src/SetBG.cc:89 src/SetBG.cc:315
+msgid "ERROR: Could not load file in bg set"
+msgstr "GREŠKA: Ne mogu učitati pozadinski fajl"
+
+# Provjeriti da li slijedi nešto poslije
+#: src/SetBG.cc:126
+msgid "Unknown mode for saved bg on"
+msgstr "Nepoznat način za sačuvanu pozadinu"
+
+#: src/SetBG.cc:170 src/SetBG.cc:365
+msgid "ERROR: BG set could not make atoms."
+msgstr "GREŠKA: postavljena pozadina ne može napraviti atome."
+
+#: src/SetBG.cc:223
+msgid "Could not find Xinerama screen number"
+msgstr "Nije moguće pronaći broj Xinerama ekrana"
+
+#: src/SetBG.cc:352
+msgid "Unknown mode for saved bg"
+msgstr "Nepoznat način za sačuvanu pozadinu"
+
+#: src/SetBG.cc:453
+msgid "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
+msgstr "NEPOZAT TIP ROOT PROZORA PRONAĐEN, pokušaću postaviti preko normalne X procedure"
+
+#: src/SetBG.cc:511
+msgid "ERROR"
+msgstr "GREŠKA"
+
+#: src/SetBG.cc:727 src/SetBG.cc:755
+msgid "Scale"
+msgstr "Skaliraj"
+
+#: src/SetBG.cc:730 src/SetBG.cc:757
+msgid "Center"
+msgstr "Centar"
+
+#: src/SetBG.cc:733 src/SetBG.cc:759
+msgid "Tile"
+msgstr "Popločaj"
+
+#: src/SetBG.cc:736 src/SetBG.cc:761
+msgid "Zoom"
+msgstr "Uvećaj"
+
+#: src/SetBG.cc:739 src/SetBG.cc:763
+msgid "ZoomFill"
+msgstr "Uvećaj i popuni"
+
+#: src/SetBG.cc:742 src/SetBG.cc:765
+msgid "Auto"
+msgstr "Automatski"
+
+#: src/Thumbview.cc:262
+msgid "Could not open dir"
+msgstr "Ne mogu otvoriti direktorij"
+
+#: src/Thumbview.cc:298
+msgid "Invalid UTF-8 encountered. Skipping file"
+msgstr "Naišao na nevažeći UTF-8. Preskačem fajl"
+
+#: src/Util.cc:103
+msgid "Could not get bg groups from config file."
+msgstr "Nemoguće dobiti pozadinske grupe iz konfiguracionog fajla."
+
+#: src/Util.cc:135
+msgid "Could not get bg info for fullscreen xinerama"
+msgstr "Nemoguće dobiti pozadinsku informaciju za Xineramu preko cijelog ekrana"
+
+#: src/Util.cc:147
+msgid "Could not get bg info for"
+msgstr "Nemoguće dobiti pozadinsku informaciju za"
+
+#: src/Util.cc:173
+msgid "Could not get bg info"
+msgstr "Nemoguće dobiti pozadinsku informaciju"
+
+#: src/Util.cc:188
+msgid "Restore saved backgrounds"
+msgstr "Povrati sačuvane pozadine"
+
+#: src/Util.cc:189
+msgid "Do not recurse into subdirectories"
+msgstr "Ne zalazi u poddirektorije"
+
+#: src/Util.cc:190
+msgid ""
+"How to sort the backgrounds. Valid options are:\n"
+"\t\t\t* alpha, for alphanumeric sort\n"
+"\t\t\t* ralpha, for reverse alphanumeric sort\n"
+"\t\t\t* time, for last modified time sort (oldest first)\n"
+"\t\t\t* rtime, for reverse last modified time sort (newest first)"
+msgstr ""
+"Kako sortirati pozadine. Važeće opcije su:\n"
+"\t\t\t* alpha, prema abecedi\n"
+"\t\t\t* ralpha, prema obrnutom redoslijedu abecede\n"
+"\t\t\t* time, prema posljednjem datumu izmjene (najstariji prvo)\n"
+"\t\t\t* rtime, prema obrnutom posljednjem datumu izmjene (najnoviji prvo)"
+
+#: src/Util.cc:191
+msgid "background color in hex, #000000 by default"
+msgstr "pozadinska boja u hexu, #000000 podrazumijevano"
+
+#: src/Util.cc:196 src/Util.cc:197 src/Util.cc:198 src/Util.cc:199
+#: src/Util.cc:200 src/Util.cc:201
+msgid "Sets the background to the given file"
+msgstr "Postavlja pozadinu na zadati fajl"
+
+#: src/Util.cc:196
+msgid "scaled"
+msgstr "skalirano"
+
+#: src/Util.cc:197
+msgid "tiled"
+msgstr "popločano"
+
+#: src/Util.cc:198
+msgid "auto"
+msgstr "automatski"
+
+#: src/Util.cc:199
+msgid "centered"
+msgstr "centrirano"
+
+#: src/Util.cc:200
+msgid "zoom"
+msgstr "uvećano"
+
+#: src/Util.cc:201
+msgid "zoom-fill"
+msgstr "uvećano-popunjeno"
+
+#: src/Util.cc:202
+msgid "Saves the background permanently"
+msgstr "Sačuva pozadinu trajno"
+
+#: src/Util.cc:275
+msgid "Currently set background"
+msgstr "Trenutno postavljena pozadina"
+
+#: src/Util.cc:278
+msgid "for"
+msgstr "za"
+
+#: src/main.cc:97
+msgid "Error parsing command line"
+msgstr "Greška pri rasčlanjivanju komandne linije"
