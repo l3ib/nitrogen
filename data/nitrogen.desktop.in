@@ -2,10 +2,13 @@
 Type=Application
 Exec=@PACKAGE@
 Name=@PACKAGE_NAME@
-Categories=Utility;GTK;
+GenericName=Background Setter
+GenericName[ru]=Установщик фонов
+Categories=Utility;GTK;DesktopSettings;
 Icon=@PACKAGE@
 Comment=Browse and set desktop backgrounds
 Comment[bs]=Pregledaj i postavi pozadinske slike
 Comment[hr]=Pregledaj i postavi pozadinske slike
 Comment[sr]=Прегледај и постави позадинске слике
+Comment[ru]=Просмотр и выбор фонов рабочих столов
 Keywords=background;desktop;
