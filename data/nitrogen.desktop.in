@@ -2,7 +2,7 @@
 Type=Application
 Exec=@PACKAGE@
 Name=@PACKAGE_NAME@
-GenericName=Background Setter
+GenericName=Wallpaper Setter
 GenericName[ru]=Установщик фонов
 Categories=Utility;GTK;DesktopSettings;
 Icon=@PACKAGE@
