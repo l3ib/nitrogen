@@ -61,6 +61,9 @@ SetBG* SetBG::get_bg_setter()
             ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
             break;
 #endif
+        case SetBG::PCMANFM:
+            setter = new SetBGPcmanfm();
+            break;
         case SetBG::DEFAULT:
         default:
             setter = new SetBGXWindows();
@@ -1262,6 +1265,20 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
     vecCmdLine.push_back(std::string("--wallpaper-mode"));
     vecCmdLine.push_back(strmode);
 
+    try {
+        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+    }
+    catch (Glib::SpawnError e)
+    {
+        std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+            std::cerr << *i << " ";
+
+        std::cerr << "\n";
+
+        return false;
+    }
 
     return true;
 }
