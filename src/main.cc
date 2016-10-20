@@ -156,6 +156,8 @@ int main (int argc, char ** argv) {
         }
         else if (setter_str == "gnome")
             setter = new SetBGGnome();
+        else if (setter_str == "pcmanfm")
+            setter = new SetBGPcmanfm();
         else
             setter = SetBG::get_bg_setter();
 
