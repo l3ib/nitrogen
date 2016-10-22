@@ -139,6 +139,44 @@ int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
 }
 
 /**
+ * Finds any false desktop/root window, either via root window hint or recursively.
+ *
+ * @returns The Window's ID, or 0.
+ */
+guint SetBG::get_root_window(Glib::RefPtr<Gdk::Display> display) {
+	GdkAtom type;
+    gint format;
+    gint length;
+	guchar *data;
+    gboolean ret = FALSE;
+    Glib::RefPtr<Gdk::Window> rootwin = display->get_default_screen()->get_root_window();
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+    guint wid = 0;
+
+    ret = gdk_property_get(rootwin->gobj(),
+                           gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
+                           gdk_atom_intern("WINDOW", FALSE),
+                           0L,
+                           4L, /* length of a window is 32bits*/
+                           FALSE, &type, &format, &length, &data);
+
+    if (ret) {
+        wid = *(guint*)data;
+        g_free(data);
+    } else {
+        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
+        // now we have to search for it!
+        Window xwin = DefaultRootWindow(xdisp);
+        gint wwid = find_desktop_window(xdisp, xwin);
+
+        if (wwid != -1)
+            wid = (guint)wwid;
+    }
+
+    return wid;
+}
+
+/**
  * Determines if Nautilus is being used to draw the root desktop.
  *
  * @returns 	True if nautilus is drawing the desktop.
@@ -157,24 +195,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
     rootwin = display->get_default_screen()->get_root_window();
     Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
 
-	ret =    gdk_property_get(rootwin->gobj(),
-						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
-                              gdk_atom_intern("WINDOW", FALSE),
-							  0L,
-							  4L, /* length of a window is 32bits*/
-							  FALSE, &type, &format, &length, &data);
-
-    if (ret) {
-        wid = *(guint*)data;
-    } else {
-        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
-        // now we have to search for it!
-        Window xwin = DefaultRootWindow(xdisp);
-        gint wwid = find_desktop_window(xdisp, xwin);
-
-        if (wwid != -1)
-            wid = (guint)wwid;
-    }
+    wid = get_root_window(display);
 
     if (wid > 0) {
 
@@ -215,10 +236,6 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
             XFree(tprop.value);
         }
 
-        // need to free what we got from property get
-        if (ret)
-            g_free(data);
-
         return retval;
     }
 
@@ -231,6 +248,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
             FALSE, &type, &format, &length, &data);
 
     if (ret) {
+        g_free(data);
         return SetBG::NAUTILUS; // mutter uses same keys
     }
 
