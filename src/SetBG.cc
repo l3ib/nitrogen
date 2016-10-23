@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <algorithm>
 #include <functional>
+#include <sstream>
 
 using namespace Util;
 
@@ -1265,37 +1266,152 @@ void SetBGNemo::set_show_desktop()
 
 bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
 {
+	Atom ret_type;
+    int ret_format;
+    gulong ret_items;
+    gulong ret_bytesleft;
+	guchar *data;
     Glib::ustring strmode;
     switch(mode) {
         case SetBG::SET_SCALE:      strmode = "stretch";  break;
         case SetBG::SET_TILE:       strmode = "tile"; break;
         case SetBG::SET_CENTER:     strmode = "center"; break;
-        case SetBG::SET_ZOOM:       strmode = "screen"; break;
+        case SetBG::SET_ZOOM:       strmode = "fit"; break;
         case SetBG::SET_ZOOM_FILL:  strmode = "crop"; break;
         default:                    strmode = "fit"; break;
 	};
 
-    std::vector<std::string> vecCmdLine;
+    // default to "LXDE" for profile name
+    Glib::ustring profileName = Glib::ustring("LXDE");
 
-    vecCmdLine.push_back(std::string("pcmanfm"));
-    vecCmdLine.push_back(std::string("--set-wallpaper"));
-    vecCmdLine.push_back(file);
-    vecCmdLine.push_back(std::string("--wallpaper-mode"));
-    vecCmdLine.push_back(strmode);
+    // find pcmanfm process (pull off root window)
+    Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
+    Display* xdisp = GDK_DISPLAY_XDISPLAY(display->gobj());
 
-    try {
-        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
-    }
-    catch (Glib::SpawnError e)
-    {
-        std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+    guint wid = get_root_window(display);
 
-        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
-            std::cerr << *i << " ";
+    if (wid > 0) {
+        // pull PID atom from pcman desktop window
+        Window curwindow = (Window)wid;
 
-        std::cerr << "\n";
+        Atom propatom = XInternAtom(xdisp, "_NET_WM_PID", False);
 
-        return false;
+        int result = XGetWindowProperty(xdisp,
+                                        curwindow,
+                                        propatom,
+                                        0, G_MAXLONG,
+                                        False, XA_CARDINAL, &ret_type, &ret_format, &ret_items, &ret_bytesleft, &data);
+
+        if (result != Success) {
+            // throw?
+            throw false;
+            return false;
+        }
+
+        long pid = 0;
+
+        if (ret_type == XA_CARDINAL && ret_format == 32 && ret_items == 1) {
+            pid = ((long* )data)[0];
+            XFree(data);
+        }
+
+        if (pid > 0) {
+
+            // attempt to pull profile name from pcmanfm process command line
+            std::ostringstream ss;
+            ss << pid;
+
+            std::string filename = Glib::build_filename("/", "proc", ss.str(), "cmdline");
+            if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
+                std::string contents = Glib::file_get_contents(filename);
+
+                // contents is a string with null characters. glib doesn't seem to like splitting on the null character,
+                // so we have to do it manually.
+                std::vector<Glib::ustring> splits;
+
+                std::string::const_iterator i = contents.begin();
+                while (i != contents.end()) {
+                    std::string::const_iterator next = std::find(i, (std::string::const_iterator)contents.end(), '\0');
+                    splits.push_back(std::string(i, next));
+                    i = next + 1;
+                }
+
+                // use our own ArgParse
+                ArgParser* parser = new ArgParser();
+                parser->register_option("profile", "", true);
+                parser->register_option("desktop");
+
+                if (parser->parse(splits)) {
+                   if (parser->has_argument("profile"))
+                       profileName = parser->get_value("profile");
+                   else
+                       // found pcmanfm exe, but no profile arg?  use 'default' instead of LXDE
+                       profileName = std::string("default");
+                }
+
+                // cleanup
+                delete parser;
+            }
+
+            // find configuration file in profile directory (do a minimal create if needed)
+            // mimics logic in pcmanfm_get_profile_dir
+            std::string configdir = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName);
+            if (!Glib::file_test(configdir, Glib::FILE_TEST_EXISTS)) {
+                Glib::RefPtr<Gio::File> giof = Gio::File::create_for_path(configdir);
+                giof->make_directory_with_parents();
+            }
+
+            // SPECIAL HANDLING: for "full screen", all configs must be set to the same bg and stretch across mode
+            if (disp == this->get_fullscreen_key()) {
+
+                // iterate all screens
+                std::map<Glib::ustring, Glib::ustring> map_displays = this->get_active_displays();
+                for (std::map<Glib::ustring, Glib::ustring>::const_iterator i = map_displays.begin(); i != map_displays.end(); i++) {
+
+                    // skip fullscreen key, there's no config file for that
+                    if (i->first == disp)
+                        continue;
+
+                    // read config file, set, save
+                    std::string configfile = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName, Glib::ustring::compose("desktop-items-%1.conf", i->first));
+
+                    Glib::KeyFile kf;
+                    kf.load_from_file(configfile);
+
+                    kf.set_string("*", "wallpaper_mode", "screen");
+                    kf.set_string("*", "wallpaper_common", "1");
+                    kf.set_string("*", "wallpaper", file);
+                    kf.set_string("*", "desktop_bg", Util::color_to_string(bgcolor));
+
+                    if (kf.has_key("*", "wallpapers_configured"))
+                        kf.remove_key("*", "wallpapers_configured");
+                    if (kf.has_key("*", "wallpaper0"))
+                        kf.remove_key("*", "wallpaper0");
+
+                    kf.save_to_file(configfile);
+                }
+
+            } else {
+                // read config file, set, save
+                std::string configfile = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName, Glib::ustring::compose("desktop-items-%1.conf", disp));
+
+                Glib::KeyFile kf;
+                kf.load_from_file(configfile);
+
+                kf.set_string("*", "wallpaper_mode", strmode);
+                kf.set_string("*", "wallpaper_common", "0");
+                kf.set_string("*", "wallpapers_configured", "1");
+                kf.set_string("*", "wallpaper0", file);
+                kf.set_string("*", "desktop_bg", Util::color_to_string(bgcolor));
+
+                kf.save_to_file(configfile);
+            }
+
+            // send USR1 to pcmanfm
+            kill(pid, SIGUSR1);
+        } else {
+            throw "failboat";
+        }
     }
 
     return true;
@@ -1303,8 +1419,40 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
 
 std::map<Glib::ustring, Glib::ustring> SetBGPcmanfm::get_active_displays()
 {
+    Glib::RefPtr<Gdk::Display> disp = Gdk::DisplayManager::get()->get_default_display();
     std::map<Glib::ustring, Glib::ustring> map_displays;
-    map_displays["dummy"] = "Pcmanfm";
+
+    map_displays[this->get_fullscreen_key()] = _("Full Screen");
+
+    for (int i=0; i < disp->get_n_screens(); i++) {
+        Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
+
+        for (int j=0; j < screen->get_n_monitors(); j++) {
+            std::ostringstream ostr;
+            ostr << _("Screen") << " " << j;
+
+            map_displays[this->make_display_key(j)] = ostr.str();
+        }
+    }
+
     return map_displays;
+}
+
+/**
+ * Gets the full key for "full screen" for this setter.
+ *
+ * For Pcmanfm, simply "-1".
+ */
+Glib::ustring SetBGPcmanfm::get_fullscreen_key() {
+    return this->make_display_key(-1);
+}
+
+/*
+ * Make a usable display key to pass to set_bg with a given head number.
+ *
+ * For Pcmanfm, return simply the head number.
+ */
+Glib::ustring SetBGPcmanfm::make_display_key(gint head) {
+    return Glib::ustring::compose("%1", head);
 }
 

@@ -170,12 +170,15 @@ class SetBGNemo : public SetBGGnome {
 
 class SetBGPcmanfm : public SetBGGnome {
     public:
+        virtual Glib::ustring get_fullscreen_key();
 		virtual bool set_bg(Glib::ustring &disp,
                             Glib::ustring file,
                             SetMode mode,
                             Gdk::Color bgcolor);
 
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+    protected:
+        virtual Glib::ustring make_display_key(gint head);
 };
 
 #endif
