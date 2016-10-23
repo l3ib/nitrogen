@@ -1404,6 +1404,9 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
                 kf.set_string("*", "wallpaper0", file);
                 kf.set_string("*", "desktop_bg", Util::color_to_string(bgcolor));
 
+                if (kf.has_key("*", "wallpaper"))
+                    kf.remove_key("*", "wallpaper");
+
                 kf.save_to_file(configfile);
             }
 
