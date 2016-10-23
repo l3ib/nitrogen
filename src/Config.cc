@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <glib/gstdio.h>
 #include "gcs-i18n.h"
+#include "Util.h"
 
 /**
  * Constructor, initializes default settings.
@@ -250,7 +251,7 @@ bool Config::set_bg(const Glib::ustring disp, const Glib::ustring file, const Se
 	// set data
 	g_key_file_set_string(kf, realdisp.c_str(), "file", file.c_str());
 	g_key_file_set_integer(kf, realdisp.c_str(), "mode", (gint)mode);
-	g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", color_to_string(bgcolor).c_str());
+	g_key_file_set_string(kf, realdisp.c_str(), "bgcolor", Util::color_to_string(bgcolor).c_str());
 
 	// output it
 	Glib::ustring outp = g_key_file_to_data(kf, NULL, NULL);
@@ -314,26 +315,6 @@ bool Config::check_dir() {
 			return false;
 
 	return true;
-}
-
-/**
- * Converts a Gdk::Color to a string representation with a #.
- *
- * @param	color	The color to convert
- * @return			A hex string
- */
-Glib::ustring Config::color_to_string(Gdk::Color color) {
-	guchar red = guchar(color.get_red_p() * 255);
-	guchar green = guchar(color.get_green_p() * 255);
-	guchar blue = guchar(color.get_blue_p() * 255);
-
-	char * c_str = new char[7];
-
-	snprintf(c_str, 7, "%.2x%.2x%.2x", red, green, blue);
-	Glib::ustring string = '#' + Glib::ustring(c_str);
-
-	delete[] c_str;
-	return string;
 }
 
 /**

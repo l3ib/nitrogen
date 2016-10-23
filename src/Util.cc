@@ -297,4 +297,24 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
     return ostr.str();
 }
 
+/**
+ * Converts a Gdk::Color to a string representation with a #.
+ *
+ * @param	color	The color to convert
+ * @return			A hex string
+ */
+Glib::ustring color_to_string(Gdk::Color color) {
+	guchar red = guchar(color.get_red_p() * 255);
+	guchar green = guchar(color.get_green_p() * 255);
+	guchar blue = guchar(color.get_blue_p() * 255);
+
+	char * c_str = new char[7];
+
+	snprintf(c_str, 7, "%.2x%.2x%.2x", red, green, blue);
+	Glib::ustring string = '#' + Glib::ustring(c_str);
+
+	delete[] c_str;
+	return string;
+}
+
 }
