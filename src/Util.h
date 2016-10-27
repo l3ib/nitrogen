@@ -40,6 +40,8 @@ namespace Util {
 
     bool is_display_relevant(Gtk::Window* window, Glib::ustring display);
     Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filename, Glib::ustring display);
+
+    Glib::ustring color_to_string(Gdk::Color color);
 }
 
 #endif

@@ -97,7 +97,7 @@ ArgParser* create_arg_parser() {
     parser->register_option("sort", _("How to sort the backgrounds. Valid options are:\n\t\t\t* alpha, for alphanumeric sort\n\t\t\t* ralpha, for reverse alphanumeric sort\n\t\t\t* time, for last modified time sort (oldest first)\n\t\t\t* rtime, for reverse last modified time sort (newest first)"), true);
     parser->register_option("set-color", _("background color in hex, #000000 by default"), true);
     parser->register_option("head", _("Select xinerama/multihead display in GUI, 0..n, -1 for full"), true);
-    parser->register_option("force-setter", _("Force setter engine: xwindows, xinerama, gnome"), true);
+    parser->register_option("force-setter", _("Force setter engine: xwindows, xinerama, gnome, pcmanfm"), true);
     parser->register_option("random", _("Choose random background from config or given directory"));
 
     // command line set modes
@@ -295,6 +295,26 @@ Glib::ustring make_current_set_string(Gtk::Window* window, Glib::ustring filenam
     ostr << "</i>";
 
     return ostr.str();
+}
+
+/**
+ * Converts a Gdk::Color to a string representation with a #.
+ *
+ * @param	color	The color to convert
+ * @return			A hex string
+ */
+Glib::ustring color_to_string(Gdk::Color color) {
+	guchar red = guchar(color.get_red_p() * 255);
+	guchar green = guchar(color.get_green_p() * 255);
+	guchar blue = guchar(color.get_blue_p() * 255);
+
+	char * c_str = new char[7];
+
+	snprintf(c_str, 7, "%.2x%.2x%.2x", red, green, blue);
+	Glib::ustring string = '#' + Glib::ustring(c_str);
+
+	delete[] c_str;
+	return string;
 }
 
 }

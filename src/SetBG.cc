@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <algorithm>
 #include <functional>
+#include <sstream>
 
 using namespace Util;
 
@@ -61,6 +62,9 @@ SetBG* SetBG::get_bg_setter()
             ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
             break;
 #endif
+        case SetBG::PCMANFM:
+            setter = new SetBGPcmanfm();
+            break;
         case SetBG::DEFAULT:
         default:
             setter = new SetBGXWindows();
@@ -136,6 +140,44 @@ int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
 }
 
 /**
+ * Finds any false desktop/root window, either via root window hint or recursively.
+ *
+ * @returns The Window's ID, or 0.
+ */
+guint SetBG::get_root_window(Glib::RefPtr<Gdk::Display> display) {
+	GdkAtom type;
+    gint format;
+    gint length;
+	guchar *data;
+    gboolean ret = FALSE;
+    Glib::RefPtr<Gdk::Window> rootwin = display->get_default_screen()->get_root_window();
+    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+    guint wid = 0;
+
+    ret = gdk_property_get(rootwin->gobj(),
+                           gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
+                           gdk_atom_intern("WINDOW", FALSE),
+                           0L,
+                           4L, /* length of a window is 32bits*/
+                           FALSE, &type, &format, &length, &data);
+
+    if (ret) {
+        wid = *(guint*)data;
+        g_free(data);
+    } else {
+        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
+        // now we have to search for it!
+        Window xwin = DefaultRootWindow(xdisp);
+        gint wwid = find_desktop_window(xdisp, xwin);
+
+        if (wwid != -1)
+            wid = (guint)wwid;
+    }
+
+    return wid;
+}
+
+/**
  * Determines if Nautilus is being used to draw the root desktop.
  *
  * @returns 	True if nautilus is drawing the desktop.
@@ -154,24 +196,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
     rootwin = display->get_default_screen()->get_root_window();
     Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
 
-	ret =    gdk_property_get(rootwin->gobj(),
-						      gdk_atom_intern("NAUTILUS_DESKTOP_WINDOW_ID", FALSE),
-                              gdk_atom_intern("WINDOW", FALSE),
-							  0L,
-							  4L, /* length of a window is 32bits*/
-							  FALSE, &type, &format, &length, &data);
-
-    if (ret) {
-        wid = *(guint*)data;
-    } else {
-        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
-        // now we have to search for it!
-        Window xwin = DefaultRootWindow(xdisp);
-        gint wwid = find_desktop_window(xdisp, xwin);
-
-        if (wwid != -1)
-            wid = (guint)wwid;
-    }
+    wid = get_root_window(display);
 
     if (wid > 0) {
 
@@ -199,6 +224,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
                     if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
                     if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
                     if (strclass == std::string("Nemo"))      retval = SetBG::NEMO;     else
+                    if (strclass == std::string("Pcmanfm"))   retval = SetBG::PCMANFM;  else
                     {
                         std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
                         retval = SetBG::UNKNOWN;
@@ -210,10 +236,6 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
             }
             XFree(tprop.value);
         }
-
-        // need to free what we got from property get
-        if (ret)
-            g_free(data);
 
         return retval;
     }
@@ -227,6 +249,7 @@ SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> displ
             FALSE, &type, &format, &length, &data);
 
     if (ret) {
+        g_free(data);
         return SetBG::NAUTILUS; // mutter uses same keys
     }
 
@@ -914,6 +937,16 @@ void SetBG::disable_pixmap_save()
     has_set_once = true;
 }
 
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * Override this in alternate setters that may directly touch external configurations.
+ */
+bool SetBG::save_to_config()
+{
+    return true;
+}
+
 /*
  * **************************************************************************
  * SetBGXwindows
@@ -1208,6 +1241,16 @@ void SetBGGnome::set_show_desktop()
     settings->set_boolean("draw-background", true);
 }
 
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Gnome mode is completely external.
+ */
+bool SetBGGnome::save_to_config()
+{
+    return false;
+}
+
 /*
  * **************************************************************************
  * SetBGNemo
@@ -1234,3 +1277,232 @@ void SetBGNemo::set_show_desktop()
     Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(Glib::ustring("org.nemo.desktop"));
     settings->set_boolean("draw-background", true);
 }
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Nemo mode is completely external.
+ */
+bool SetBGNemo::save_to_config()
+{
+    return false;
+}
+
+/*
+ * **************************************************************************
+ * SetBGPcmanfm
+ * **************************************************************************
+ */
+
+bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+	Atom ret_type;
+    int ret_format;
+    gulong ret_items;
+    gulong ret_bytesleft;
+	guchar *data;
+    Glib::ustring strmode;
+    switch(mode) {
+        case SetBG::SET_SCALE:      strmode = "stretch";  break;
+        case SetBG::SET_TILE:       strmode = "tile"; break;
+        case SetBG::SET_CENTER:     strmode = "center"; break;
+        case SetBG::SET_ZOOM:       strmode = "fit"; break;
+        case SetBG::SET_ZOOM_FILL:  strmode = "crop"; break;
+        default:                    strmode = "fit"; break;
+	};
+
+    // default to "LXDE" for profile name
+    Glib::ustring profileName = Glib::ustring("LXDE");
+
+    // find pcmanfm process (pull off root window)
+    Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
+    Display* xdisp = GDK_DISPLAY_XDISPLAY(display->gobj());
+
+    guint wid = get_root_window(display);
+
+    if (wid > 0) {
+        // pull PID atom from pcman desktop window
+        Window curwindow = (Window)wid;
+
+        Atom propatom = XInternAtom(xdisp, "_NET_WM_PID", False);
+
+        int result = XGetWindowProperty(xdisp,
+                                        curwindow,
+                                        propatom,
+                                        0, G_MAXLONG,
+                                        False, XA_CARDINAL, &ret_type, &ret_format, &ret_items, &ret_bytesleft, &data);
+
+        if (result != Success) {
+            std::cerr << "ERROR: Could not determine pid of Pcmanfm desktop window, is _NET_WM_PID set on X root window?\n";
+            return false;
+        }
+
+        long pid = 0;
+
+        if (ret_type == XA_CARDINAL && ret_format == 32 && ret_items == 1) {
+            pid = ((long* )data)[0];
+            XFree(data);
+        }
+
+        if (pid > 0) {
+
+            // attempt to pull profile name from pcmanfm process command line
+            std::ostringstream ss;
+            ss << pid;
+
+            std::string filename = Glib::build_filename("/", "proc", ss.str(), "cmdline");
+            if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
+                std::string contents = Glib::file_get_contents(filename);
+
+                // contents is a string with null characters. glib doesn't seem to like splitting on the null character,
+                // so we have to do it manually.
+                std::vector<Glib::ustring> splits;
+
+                std::string::const_iterator i = contents.begin();
+                while (i != contents.end()) {
+                    std::string::const_iterator next = std::find(i, (std::string::const_iterator)contents.end(), '\0');
+                    splits.push_back(std::string(i, next));
+                    i = next + 1;
+                }
+
+                // use our own ArgParse
+                ArgParser* parser = new ArgParser();
+                parser->register_option("profile", "", true);
+                parser->register_option("desktop");
+
+                if (parser->parse(splits)) {
+                   if (parser->has_argument("profile"))
+                       profileName = parser->get_value("profile");
+                   else
+                       // found pcmanfm exe, but no profile arg?  use 'default' instead of LXDE
+                       profileName = std::string("default");
+                }
+
+                // cleanup
+                delete parser;
+            }
+
+            // find configuration file in profile directory (do a minimal create if needed)
+            // mimics logic in pcmanfm_get_profile_dir
+            std::string configdir = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName);
+            if (!Glib::file_test(configdir, Glib::FILE_TEST_EXISTS)) {
+                Glib::RefPtr<Gio::File> giof = Gio::File::create_for_path(configdir);
+                giof->make_directory_with_parents();
+            }
+
+            // SPECIAL HANDLING: for "full screen", all configs must be set to the same bg and stretch across mode
+            if (disp == this->get_fullscreen_key()) {
+
+                // iterate all screens
+                std::map<Glib::ustring, Glib::ustring> map_displays = this->get_active_displays();
+                for (std::map<Glib::ustring, Glib::ustring>::const_iterator i = map_displays.begin(); i != map_displays.end(); i++) {
+
+                    // skip fullscreen key, there's no config file for that
+                    if (i->first == disp)
+                        continue;
+
+                    // read config file, set, save
+                    std::string configfile = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName, Glib::ustring::compose("desktop-items-%1.conf", i->first));
+
+                    Glib::KeyFile kf;
+                    kf.load_from_file(configfile);
+
+                    kf.set_string("*", "wallpaper_mode", "screen");
+                    kf.set_string("*", "wallpaper_common", "1");
+                    kf.set_string("*", "wallpaper", file);
+                    kf.set_string("*", "desktop_bg", Util::color_to_string(bgcolor));
+
+                    if (kf.has_key("*", "wallpapers_configured"))
+                        kf.remove_key("*", "wallpapers_configured");
+                    if (kf.has_key("*", "wallpaper0"))
+                        kf.remove_key("*", "wallpaper0");
+
+                    kf.save_to_file(configfile);
+                }
+
+            } else {
+                // read config file, set, save
+                std::string configfile = Glib::build_filename(Glib::get_user_config_dir(), "pcmanfm", profileName, Glib::ustring::compose("desktop-items-%1.conf", disp));
+
+                Glib::KeyFile kf;
+                kf.load_from_file(configfile);
+
+                kf.set_string("*", "wallpaper_mode", strmode);
+                kf.set_string("*", "wallpaper_common", "0");
+                kf.set_string("*", "wallpapers_configured", "1");
+                kf.set_string("*", "wallpaper0", file);
+                kf.set_string("*", "desktop_bg", Util::color_to_string(bgcolor));
+
+                if (kf.has_key("*", "wallpaper"))
+                    kf.remove_key("*", "wallpaper");
+
+                kf.save_to_file(configfile);
+            }
+
+            // send USR1 to pcmanfm
+            kill(pid, SIGUSR1);
+        } else {
+            std::cerr << "ERROR: _NET_WM_PID set on X root window, but pid not readable.\n";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
+std::map<Glib::ustring, Glib::ustring> SetBGPcmanfm::get_active_displays()
+{
+    Glib::RefPtr<Gdk::Display> disp = Gdk::DisplayManager::get()->get_default_display();
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+
+    map_displays[this->get_fullscreen_key()] = _("Full Screen");
+
+    for (int i=0; i < disp->get_n_screens(); i++) {
+        Glib::RefPtr<Gdk::Screen> screen = disp->get_screen(i);
+
+        for (int j=0; j < screen->get_n_monitors(); j++) {
+            std::ostringstream ostr;
+            ostr << _("Screen") << " " << j;
+
+            map_displays[this->make_display_key(j)] = ostr.str();
+        }
+    }
+
+    return map_displays;
+}
+
+/**
+ * Gets the full key for "full screen" for this setter.
+ *
+ * For Pcmanfm, simply "-1".
+ */
+Glib::ustring SetBGPcmanfm::get_fullscreen_key() {
+    return this->make_display_key(-1);
+}
+
+/*
+ * Make a usable display key to pass to set_bg with a given head number.
+ *
+ * For Pcmanfm, return simply the head number.
+ */
+Glib::ustring SetBGPcmanfm::make_display_key(gint head) {
+    return Glib::ustring::compose("%1", head);
+}
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Pcmanfm mode is completely external.
+ */
+bool SetBGPcmanfm::save_to_config()
+{
+    return false;
+}
+

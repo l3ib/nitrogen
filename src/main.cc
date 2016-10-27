@@ -72,9 +72,11 @@ int set_bg_once(Config *cfg, SetBG* bg_setter, Glib::ustring path, int head, Set
     bg_setter->disable_pixmap_save();
 
     disp = bg_setter->make_display_key(head);
-    bg_setter->set_bg(disp, file, mode, col);
+    bool shouldSave = bg_setter->set_bg(disp, file, mode, col);
 
-	if (save) Config::get_instance()->set_bg(disp, file, mode, col);
+	if (save && shouldSave)
+        Config::get_instance()->set_bg(disp, file, mode, col);
+
 	while (Gtk::Main::events_pending())
 		Gtk::Main::iteration();
 
@@ -156,6 +158,8 @@ int main (int argc, char ** argv) {
         }
         else if (setter_str == "gnome")
             setter = new SetBGGnome();
+        else if (setter_str == "pcmanfm")
+            setter = new SetBGPcmanfm();
         else
             setter = SetBG::get_bg_setter();
 

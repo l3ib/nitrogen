@@ -46,8 +46,6 @@ class Config {
         VecStrs m_vec_dirs;
 	Thumbview::SortMode m_sort_mode;
 
-		Glib::ustring color_to_string(Gdk::Color color);
-
         std::string get_bg_config_file() const { return get_file("bg-saved.cfg"); }
         std::string get_config_file() const { return get_file("nitrogen.cfg"); }
         std::string get_file(const Glib::ustring filename) const;

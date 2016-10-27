@@ -24,11 +24,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 bool ArgParser::parse
 			(int argc, char ** argv) {
-	int count = 1;
+    std::vector<Glib::ustring> argVec;
+    for (int i = 0; i < argc; i++) {
+        argVec.push_back(Glib::ustring(argv[i]));
+    }
+
+    return this->parse(argVec);
+}
+
+bool ArgParser::parse
+            (std::vector<Glib::ustring> argVec) {
 	bool retval = true;
 
-	while (count < argc) {
-		std::string arg (argv[count++]);
+    for (std::vector<Glib::ustring>::const_iterator i = argVec.begin() + 1; i != argVec.end(); i++) {
+		std::string arg(*i);
 		std::string key = arg;
 		std::string value;
 

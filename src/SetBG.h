@@ -57,6 +57,7 @@ class SetBG {
             UNKNOWN,
             XINERAMA,
             NEMO,
+            PCMANFM,
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
@@ -82,6 +83,8 @@ class SetBG {
         void reset_first_pixmaps();
         void disable_pixmap_save();
 
+        virtual bool save_to_config();
+
 	protected:
 
         virtual Glib::ustring get_prefix() = 0;
@@ -97,6 +100,7 @@ class SetBG {
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
         static int find_desktop_window(Display *display, Window curwindow);
+        static guint get_root_window(Glib::RefPtr<Gdk::Display> display);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
@@ -153,6 +157,7 @@ class SetBGGnome : public SetBG {
 
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
         virtual Glib::ustring get_fullscreen_key();
+        virtual bool save_to_config();
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
@@ -161,9 +166,25 @@ class SetBGGnome : public SetBG {
 };
 
 class SetBGNemo : public SetBGGnome {
+    public:
+        virtual bool save_to_config();
     protected:
         virtual Glib::ustring get_gsettings_key();
         virtual void set_show_desktop();
+};
+
+class SetBGPcmanfm : public SetBGGnome {
+    public:
+        virtual Glib::ustring get_fullscreen_key();
+		virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual bool save_to_config();
+    protected:
+        virtual Glib::ustring make_display_key(gint head);
 };
 
 #endif

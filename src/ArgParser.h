@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <glibmm.h>
 
 class Arg {
 	public:
@@ -120,6 +121,7 @@ class ArgParser {
 
 		// parses away.
 		bool parse (int argc, char ** argv);
+        bool parse (std::vector<Glib::ustring> argVec);
 
 		// returns the help text (--help)
 		std::string help_text (void) const;

@@ -163,10 +163,9 @@ void NWindow::sighandle_dblclick_item (const Gtk::TreeModel::Path& path) {
 	// find out which image was double clicked
 	Gtk::TreeModel::iterator iter = (view.store)->get_iter(path);
 	Gtk::TreeModel::Row row = *iter;
-	this->set_bg(row[view.record.Filename]);
 
-    // preview - set dirty flag
-    m_dirty = true;
+    // preview - set dirty flag, if setter says we should
+	m_dirty = this->set_bg(row[view.record.Filename]);
 }
 
 /**
@@ -188,7 +187,7 @@ void NWindow::apply_bg () {
     Gtk::TreeModel::iterator iter = view.get_selected ();
     Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
-    this->set_bg(file);
+    bool saveToConfig = this->set_bg(file);
 
     // apply - remove dirty flag
     m_dirty = false;
@@ -198,7 +197,8 @@ void NWindow::apply_bg () {
     Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
     // save
-    Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
+    if (saveToConfig)
+        Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
 
     // tell the bg setter to forget about the first pixmap
     bg_setter->clear_first_pixmaps();
@@ -282,8 +282,10 @@ bool NWindow::on_delete_event(GdkEventAny *event)
 /**
  * Queries the necessary widgets to get the data needed to set a bg.  *
  * @param	file	The file to set the bg to
+ *
+ * @returns If the dirty flag should be set or not
  */
-void NWindow::set_bg(const Glib::ustring file) {
+bool NWindow::set_bg(const Glib::ustring file) {
 
 	// get the data from the active items
 	SetBG::SetMode mode   = SetBG::string_to_mode(this->select_mode.get_active_data());
@@ -292,6 +294,8 @@ void NWindow::set_bg(const Glib::ustring file) {
 
 	// set it
     bg_setter->set_bg(thedisp, file, mode, bgcolor);
+
+    return bg_setter->save_to_config();
 }
 
 // leethax destructor
