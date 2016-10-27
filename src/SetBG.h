@@ -83,6 +83,8 @@ class SetBG {
         void reset_first_pixmaps();
         void disable_pixmap_save();
 
+        virtual bool save_to_config();
+
 	protected:
 
         virtual Glib::ustring get_prefix() = 0;
@@ -155,6 +157,7 @@ class SetBGGnome : public SetBG {
 
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
         virtual Glib::ustring get_fullscreen_key();
+        virtual bool save_to_config();
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
@@ -163,6 +166,8 @@ class SetBGGnome : public SetBG {
 };
 
 class SetBGNemo : public SetBGGnome {
+    public:
+        virtual bool save_to_config();
     protected:
         virtual Glib::ustring get_gsettings_key();
         virtual void set_show_desktop();
@@ -177,6 +182,7 @@ class SetBGPcmanfm : public SetBGGnome {
                             Gdk::Color bgcolor);
 
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual bool save_to_config();
     protected:
         virtual Glib::ustring make_display_key(gint head);
 };

@@ -937,6 +937,16 @@ void SetBG::disable_pixmap_save()
     has_set_once = true;
 }
 
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * Override this in alternate setters that may directly touch external configurations.
+ */
+bool SetBG::save_to_config()
+{
+    return true;
+}
+
 /*
  * **************************************************************************
  * SetBGXwindows
@@ -1231,6 +1241,16 @@ void SetBGGnome::set_show_desktop()
     settings->set_boolean("draw-background", true);
 }
 
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Gnome mode is completely external.
+ */
+bool SetBGGnome::save_to_config()
+{
+    return false;
+}
+
 /*
  * **************************************************************************
  * SetBGNemo
@@ -1256,6 +1276,16 @@ void SetBGNemo::set_show_desktop()
 {
     Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(Glib::ustring("org.nemo.desktop"));
     settings->set_boolean("draw-background", true);
+}
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Nemo mode is completely external.
+ */
+bool SetBGNemo::save_to_config()
+{
+    return false;
 }
 
 /*
@@ -1464,5 +1494,15 @@ Glib::ustring SetBGPcmanfm::get_fullscreen_key() {
  */
 Glib::ustring SetBGPcmanfm::make_display_key(gint head) {
     return Glib::ustring::compose("%1", head);
+}
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The Pcmanfm mode is completely external.
+ */
+bool SetBGPcmanfm::save_to_config()
+{
+    return false;
 }
 
