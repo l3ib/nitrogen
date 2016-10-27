@@ -1303,8 +1303,7 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
                                         False, XA_CARDINAL, &ret_type, &ret_format, &ret_items, &ret_bytesleft, &data);
 
         if (result != Success) {
-            // throw?
-            throw false;
+            std::cerr << "ERROR: Could not determine pid of Pcmanfm desktop window, is _NET_WM_PID set on X root window?\n";
             return false;
         }
 
@@ -1413,13 +1412,21 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
             // send USR1 to pcmanfm
             kill(pid, SIGUSR1);
         } else {
-            throw "failboat";
+            std::cerr << "ERROR: _NET_WM_PID set on X root window, but pid not readable.\n";
+            return false;
         }
     }
 
     return true;
 }
 
+/**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
 std::map<Glib::ustring, Glib::ustring> SetBGPcmanfm::get_active_displays()
 {
     Glib::RefPtr<Gdk::Display> disp = Gdk::DisplayManager::get()->get_default_display();
