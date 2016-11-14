@@ -12,4 +12,5 @@ install-data-hook:
 uninstall-hook: 
 	$(UPDATE_DESKTOP)
 
-EXTRA_DIST = icon-theme-installer
+EXTRA_DIST = icon-theme-installer nitrogen.appdata.xml
+
