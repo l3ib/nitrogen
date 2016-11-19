@@ -146,6 +146,7 @@ int main (int argc, char ** argv) {
 
         if (setter_str == "xwindows")
             setter = new SetBGXWindows();
+#ifdef USE_XINERAMA
         else if (setter_str == "xinerama") {
             setter = new SetBGXinerama();
 
@@ -156,6 +157,7 @@ int main (int argc, char ** argv) {
             xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
             ((SetBGXinerama*)setter)->set_xinerama_info(xinerama_info, xinerama_num_screens);
         }
+#endif /* USE_XINERAMA */
         else if (setter_str == "gnome")
             setter = new SetBGGnome();
         else if (setter_str == "pcmanfm")
