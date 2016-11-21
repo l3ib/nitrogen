@@ -1,0 +1,241 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR l3ib.org
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: daf@minuslab.net\n"
+"POT-Creation-Date: 2016-11-21 09:50+0100\n"
+"PO-Revision-Date: 2016-11-21 10:03+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: pl\n"
+
+#: src/ArgParser.cc:75
+msgid "Unexpected argument "
+msgstr "Niespodziewany argument"
+
+#: src/ArgParser.cc:84
+msgid " expects an argument."
+msgstr "wymaga argumentu."
+
+#: src/ArgParser.cc:87
+msgid " does not expect an argument."
+msgstr "nie wymaga argumentu."
+
+#: src/ArgParser.cc:93
+msgid " conflicts with another argument."
+msgstr "jest w konflikcie z innym argumentem."
+
+#: src/ArgParser.cc:105
+msgid "Usage:"
+msgstr "Użycie: "
+
+#: src/Config.cc:128 src/Config.cc:217
+msgid "ERROR: Unable to load config file"
+msgstr "BŁĄD: Nie udało się wczytać pliku konfiguracyjnego"
+
+#: src/Config.cc:139
+msgid "Couldn't find group for"
+msgstr ""
+
+#: src/Config.cc:151
+msgid "Could not get filename from config file."
+msgstr ""
+
+#: src/Config.cc:160
+msgid "Could not get mode from config file."
+msgstr ""
+
+#: src/Config.cc:219
+msgid "The error code returned was"
+msgstr ""
+
+#: src/Config.cc:220
+msgid "We expected"
+msgstr ""
+
+#: src/Config.cc:220
+msgid "or"
+msgstr "lub"
+
+#: src/NWindow.cc:250
+msgid "You previewed an image without applying it, apply?"
+msgstr "Podglądasz obraz bez zastosowania go, zastosować?"
+
+#: src/NWindow.cc:326
+msgid "Automatic"
+msgstr "Automatycznie"
+
+#: src/NWindow.cc:333
+msgid "Scaled"
+msgstr "Skalowanie"
+
+#: src/NWindow.cc:341
+msgid "Centered"
+msgstr "Wycentrowane"
+
+#: src/NWindow.cc:349
+msgid "Tiled"
+msgstr "Sąsiadująco"
+
+#: src/NWindow.cc:358
+msgid "Zoomed"
+msgstr "Powiększone"
+
+#: src/NWindow.cc:359
+msgid "Zoomed Fill"
+msgstr "Powiększone wypełniając"
+
+#: src/SetBG.cc:229
+msgid "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
+msgstr ""
+
+#: src/SetBG.cc:468 src/SetBG.cc:496
+msgid "Scale"
+msgstr "Skalowanie"
+
+#: src/SetBG.cc:471 src/SetBG.cc:498
+msgid "Center"
+msgstr "Wycentrowanie"
+
+#: src/SetBG.cc:474 src/SetBG.cc:500
+msgid "Tile"
+msgstr "Sąsiadująco"
+
+#: src/SetBG.cc:477 src/SetBG.cc:502
+msgid "Zoom"
+msgstr "Powiększenie"
+
+#: src/SetBG.cc:480 src/SetBG.cc:504
+msgid "ZoomFill"
+msgstr "Powiększenie i wypełnienie"
+
+#: src/SetBG.cc:483 src/SetBG.cc:506
+msgid "Auto"
+msgstr "Automatycznie"
+
+#: src/SetBG.cc:574
+msgid "Could not get bg groups from config file."
+msgstr ""
+
+#: src/SetBG.cc:598 src/SetBG.cc:605
+msgid "ERROR"
+msgstr "BŁĄD"
+
+#: src/SetBG.cc:617 src/SetBG.cc:992
+msgid "Could not open display"
+msgstr ""
+
+#: src/SetBG.cc:678
+msgid "ERROR: Could not load file in bg set"
+msgstr ""
+
+#: src/SetBG.cc:756
+msgid "Unknown mode for saved bg"
+msgstr ""
+
+#: src/SetBG.cc:870
+msgid "ERROR: BG set could not make atoms."
+msgstr ""
+
+#: src/SetBG.cc:971 src/SetBG.cc:1071 src/SetBG.cc:1472
+msgid "Screen"
+msgstr "Ekran"
+
+#: src/SetBG.cc:1066 src/SetBG.cc:1465
+msgid "Full Screen"
+msgstr "Pełny ekran"
+
+#: src/SetBG.cc:1131
+msgid "Could not find Xinerama screen number"
+msgstr ""
+
+#: src/Util.cc:95
+msgid "Restore saved backgrounds"
+msgstr ""
+
+#: src/Util.cc:96
+msgid "Do not recurse into subdirectories"
+msgstr ""
+
+#: src/Util.cc:97
+msgid ""
+"How to sort the backgrounds. Valid options are:\n"
+"\t\t\t* alpha, for alphanumeric sort\n"
+"\t\t\t* ralpha, for reverse alphanumeric sort\n"
+"\t\t\t* time, for last modified time sort (oldest first)\n"
+"\t\t\t* rtime, for reverse last modified time sort (newest first)"
+msgstr ""
+
+#: src/Util.cc:98
+msgid "background color in hex, #000000 by default"
+msgstr ""
+
+#: src/Util.cc:99
+msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
+msgstr ""
+
+#: src/Util.cc:100
+msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
+msgstr ""
+
+#: src/Util.cc:101
+msgid "Choose random background from config or given directory"
+msgstr "Wybierz losowe tło z pliku konfiguracyjnego lub podanego katalogu"
+
+#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
+#: src/Util.cc:110 src/Util.cc:111
+msgid "Sets the background to the given file"
+msgstr "Ustawia podany plik jako tło"
+
+#: src/Util.cc:106
+msgid "scaled"
+msgstr "przeskalowane"
+
+#: src/Util.cc:107
+msgid "tiled"
+msgstr "sąsiadująco"
+
+#: src/Util.cc:108
+msgid "auto"
+msgstr "automatycznie"
+
+#: src/Util.cc:109
+msgid "centered"
+msgstr "wycentrowane"
+
+#: src/Util.cc:110
+msgid "zoom"
+msgstr "powiększone"
+
+#: src/Util.cc:111
+msgid "zoom-fill"
+msgstr "powiększone i wypełnione"
+
+#: src/Util.cc:112
+msgid "Saves the background permanently"
+msgstr "Zapisuje tło na stałe"
+
+#: src/Util.cc:207
+msgid "Could not open dir"
+msgstr "Nie mogę otworzyć katalogu"
+
+#: src/Util.cc:292
+msgid "Currently set background"
+msgstr "Obecnie ustawione tło"
+
+#: src/Util.cc:295
+msgid "for"
+msgstr "dla"
+
+#: src/main.cc:132
+msgid "Error parsing command line"
+msgstr "Błąd przetwarzania linii komend"
