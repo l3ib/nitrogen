@@ -75,7 +75,7 @@ SetBG* SetBG::get_bg_setter()
 }
 
 /**
- * Handles a BadWindow error in get_rootwindowtype.
+ * Handles a BadWindow error in check_window_type.
  *
  * This is rather hax, but not sure how else to handle it.
  */
@@ -189,7 +189,7 @@ std::pair<Window, SetBG::RootWindowType> SetBG::get_root_window_type(Glib::RefPt
             Window xwin = DefaultRootWindow(xdisp);
             std::vector<std::pair<Window, SetBG::RootWindowType>> rootVec = find_desktop_windows(xdisp, xwin);
 
-            if (rootVec.size() > 0) {
+            if (rootVec.size() > 1) {
                 // @TODO: REPORT ERROR, FIND FIRST ONE THATS LEGIT, SET FLAG SOMEWHERE TO INDICATE ISSUE
             } else if (rootVec.size() == 1) {
                 return rootVec[0];
@@ -243,8 +243,9 @@ SetBG::RootWindowType SetBG::check_window_type(Display *display, Window window)
                 if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
                 if (strclass == std::string("Nemo"))      retval = SetBG::NEMO;     else
                 if (strclass == std::string("Pcmanfm"))   retval = SetBG::PCMANFM;  else
+                if (strclass == std::string("Conky"))     retval = SetBG::IGNORE;   else        // discard Conky!
                 {
-                    std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
+                    std::cerr << "UNKNOWN ROOT WINDOW TYPE DETECTED (" << strclass << "), please file a bug\n";
                     retval = SetBG::UNKNOWN;
                 }
             }
