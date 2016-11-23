@@ -58,6 +58,7 @@ class SetBG {
             XINERAMA,
             NEMO,
             PCMANFM,
+            IGNORE      // Conky, etc
         };
 
 		virtual bool set_bg(Glib::ustring &disp,
@@ -99,8 +100,9 @@ class SetBG {
 		static guint32 GdkColorToUint32(const Gdk::Color);
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
-        static int find_desktop_window(Display *display, Window curwindow);
-        static guint get_root_window(Glib::RefPtr<Gdk::Display> display);
+        static std::vector<std::pair<Window, RootWindowType>> find_desktop_windows(Display *display, Window curwindow);
+        static std::pair<Window, RootWindowType> get_root_window_type(Glib::RefPtr<Gdk::Display> display);
+        static RootWindowType check_window_type(Display *display, Window window);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
