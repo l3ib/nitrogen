@@ -97,12 +97,8 @@ int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
  * Recursive function to find windows with _NET_WM_WINDOW_TYPE set to
  * _NET_WM_WINDOW_TYPE_DESKTOP that we understand how to deal with.
  *
- * Returns a vector of RootWindows with all found desktop windows,
+ * Returns a vector of RootWindowData objects with all found desktop windows,
  * ignoring known non-root-windows.
- *
- * Certain applications like conky with own_window and own_window_type='desktop'
- * are valid and should be ignored. This method will log anything
- * found.
  */
 std::vector<SetBG::RootWindowData> SetBG::find_desktop_windows(Display *xdisp, Window curwindow) {
     Window rr, pr;
@@ -146,9 +142,13 @@ std::vector<SetBG::RootWindowData> SetBG::find_desktop_windows(Display *xdisp, W
 }
 
 /**
- * Finds any false desktop/root window, either via root window hint or recursively.
+ * Determines the root window type that will be used to generate a setter.
  *
- * @returns The Window's ID, or 0.
+ * Returns a RootWindowData structure with the proper information that should be used
+ * to create a Setter instance. It:
+ * - Checks for Nautilus/Mutter Atoms
+ * - Launches recursive method to iterate windows and find possible desktop matches
+ * - Decides which most corresponds to the user's setup and returns it
  */
 SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> display) {
 	GdkAtom type;
@@ -231,15 +231,12 @@ SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> dis
 /**
  * Determines if the passed in Window is a window type that marks a false root window.
  *
- * Returns the RootWindowData if found, or UNKNOWN if not.
+ * Returns a RootWindowData always, if window is not anything we recognize, the type will
+ * be set to UNKNOWN.
  *
  * Certain applications like conky with own_window and own_window_type='desktop'
  * are valid and should be ignored. This method will log anything
  * found.
- *
- * Returns:
- * UNKNOWN if can't be determined
- * RootWindowType if known
  */
 SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
 {
