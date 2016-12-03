@@ -61,6 +61,17 @@ class SetBG {
             IGNORE      // Conky, etc
         };
 
+        typedef struct RootWindowData {
+            Window window;
+            RootWindowType type;
+            std::string wm_class;
+
+            RootWindowData() : type(UNKNOWN) {}
+            RootWindowData(Window newWindow) : type(UNKNOWN), window(newWindow) {}
+            RootWindowData(Window newWindow, RootWindowType newType) : type(newType), window(newWindow) {}
+            RootWindowData(Window newWindow, RootWindowType newType, std::string newClass) : type(newType), window(newWindow), wm_class(newClass) {}
+        } RootWindowData;
+
 		virtual bool set_bg(Glib::ustring &disp,
                             Glib::ustring file,
                             SetMode mode,
@@ -72,7 +83,7 @@ class SetBG {
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays() = 0;
         virtual Glib::ustring get_fullscreen_key() = 0;
 
-		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Display> display);
+		static SetBG::RootWindowData get_rootwindowdata(Glib::RefPtr<Gdk::Display> display);
 
         static SetBG* get_bg_setter();
 
@@ -100,9 +111,9 @@ class SetBG {
 		static guint32 GdkColorToUint32(const Gdk::Color);
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
-        static std::vector<std::pair<Window, RootWindowType>> find_desktop_windows(Display *display, Window curwindow);
-        static std::pair<Window, RootWindowType> get_root_window_type(Glib::RefPtr<Gdk::Display> display);
-        static RootWindowType check_window_type(Display *display, Window window);
+        static std::vector<RootWindowData> find_desktop_windows(Display *display, Window curwindow);
+        static RootWindowData get_root_window_type(Glib::RefPtr<Gdk::Display> display);
+        static RootWindowData check_window_type(Display *display, Window window);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);
