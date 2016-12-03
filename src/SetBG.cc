@@ -41,7 +41,7 @@ SetBG* SetBG::get_bg_setter()
     Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
 
     SetBG* setter = NULL;
-    SetBG::RootWindowData wd = SetBG::get_rootwindowdata(dpy);
+    SetBG::RootWindowData wd = SetBG::get_root_window_data(dpy);
 
     Util::program_log("root window type %d\n", wd.type);
 
@@ -150,7 +150,7 @@ std::vector<SetBG::RootWindowData> SetBG::find_desktop_windows(Display *xdisp, W
  *
  * @returns The Window's ID, or 0.
  */
-SetBG::RootWindowData SetBG::get_root_window_type(Glib::RefPtr<Gdk::Display> display) {
+SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> display) {
 	GdkAtom type;
     gint format;
     gint length;
@@ -158,6 +158,7 @@ SetBG::RootWindowData SetBG::get_root_window_type(Glib::RefPtr<Gdk::Display> dis
     gboolean ret = FALSE;
     Glib::RefPtr<Gdk::Window> rootwin = display->get_default_screen()->get_root_window();
     Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+    Window xrootwin = (Window)GDK_WINDOW_XID(rootwin->gobj());
     guint wid = 0;
 
     ret = gdk_property_get(rootwin->gobj(),
@@ -183,7 +184,7 @@ SetBG::RootWindowData SetBG::get_root_window_type(Glib::RefPtr<Gdk::Display> dis
 
         if (ret) {
             g_free(data);
-            return SetBG::RootWindowData((Window)GDK_WINDOW_XID(rootwin->gobj()), SetBG::NAUTILUS, std::string("_MUTTER_SENTINEL"));
+            return SetBG::RootWindowData(xrootwin, SetBG::NAUTILUS, std::string("_MUTTER_SENTINEL"));
         } else {
             // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
             // now we have to search for it!
@@ -218,7 +219,13 @@ SetBG::RootWindowData SetBG::get_root_window_type(Glib::RefPtr<Gdk::Display> dis
         }
     }
 
-    return SetBG::RootWindowData(0, SetBG::UNKNOWN, std::string(""));
+#ifdef USE_XINERAMA
+    // determine if xinerama is in play
+    if (XineramaIsActive(xdisp))
+        return SetBG::RootWindowData(xrootwin, SetBG::XINERAMA, std::string("default"));
+#endif
+
+    return SetBG::RootWindowData(xrootwin, SetBG::DEFAULT, std::string("default"));
 }
 
 /**
@@ -278,28 +285,6 @@ SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
     }
 
     return retval;
-}
-
-/**
- * Determines the RootWindowData that should be used to construct a SetBG object.
- */
-SetBG::RootWindowData SetBG::get_rootwindowdata(Glib::RefPtr<Gdk::Display> display)
-{
-    Glib::RefPtr<Gdk::Window> rootwin = display->get_default_screen()->get_root_window();
-    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
-
-    SetBG::RootWindowData rootData = get_root_window_type(display);
-
-    if (rootData.type != SetBG::UNKNOWN)
-        return rootData;
-
-#ifdef USE_XINERAMA
-    // determine if xinerama is in play
-    if (XineramaIsActive(GDK_DISPLAY_XDISPLAY(display->gobj())))
-        return SetBG::RootWindowData((Window)GDK_WINDOW_XID(rootwin->gobj()), SetBG::XINERAMA, std::string(""));
-#endif
-
-    return SetBG::RootWindowData((Window)GDK_WINDOW_XID(rootwin->gobj()), SetBG::DEFAULT, std::string(""));
 }
 
 /**
@@ -1358,7 +1343,7 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
     Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
     Display* xdisp = GDK_DISPLAY_XDISPLAY(display->gobj());
 
-    SetBG::RootWindowData rootData = get_root_window_type(display);
+    SetBG::RootWindowData rootData = get_root_window_data(display);
 
     if (rootData.type == SetBG::PCMANFM) {
         // pull PID atom from pcman desktop window

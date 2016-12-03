@@ -83,8 +83,6 @@ class SetBG {
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays() = 0;
         virtual Glib::ustring get_fullscreen_key() = 0;
 
-		static SetBG::RootWindowData get_rootwindowdata(Glib::RefPtr<Gdk::Display> display);
-
         static SetBG* get_bg_setter();
 
 		static Glib::ustring mode_to_string( const SetMode mode );
@@ -112,7 +110,7 @@ class SetBG {
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
         static std::vector<RootWindowData> find_desktop_windows(Display *display, Window curwindow);
-        static RootWindowData get_root_window_type(Glib::RefPtr<Gdk::Display> display);
+        static RootWindowData get_root_window_data(Glib::RefPtr<Gdk::Display> display);
         static RootWindowData check_window_type(Display *display, Window window);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
