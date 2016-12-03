@@ -58,7 +58,19 @@ class SetBG {
             XINERAMA,
             NEMO,
             PCMANFM,
+            IGNORE      // Conky, etc
         };
+
+        typedef struct RootWindowData {
+            Window window;
+            RootWindowType type;
+            std::string wm_class;
+
+            RootWindowData() : type(UNKNOWN) {}
+            RootWindowData(Window newWindow) : type(UNKNOWN), window(newWindow) {}
+            RootWindowData(Window newWindow, RootWindowType newType) : type(newType), window(newWindow) {}
+            RootWindowData(Window newWindow, RootWindowType newType, std::string newClass) : type(newType), window(newWindow), wm_class(newClass) {}
+        } RootWindowData;
 
 		virtual bool set_bg(Glib::ustring &disp,
                             Glib::ustring file,
@@ -70,8 +82,6 @@ class SetBG {
         virtual Glib::ustring make_display_key(gint head) = 0;
         virtual std::map<Glib::ustring, Glib::ustring> get_active_displays() = 0;
         virtual Glib::ustring get_fullscreen_key() = 0;
-
-		static SetBG::RootWindowType get_rootwindowtype(Glib::RefPtr<Gdk::Display> display);
 
         static SetBG* get_bg_setter();
 
@@ -99,8 +109,9 @@ class SetBG {
 		static guint32 GdkColorToUint32(const Gdk::Color);
 
         static int handle_x_errors(Display *display, XErrorEvent *error);
-        static int find_desktop_window(Display *display, Window curwindow);
-        static guint get_root_window(Glib::RefPtr<Gdk::Display> display);
+        static std::vector<RootWindowData> find_desktop_windows(Display *display, Window curwindow);
+        static RootWindowData get_root_window_data(Glib::RefPtr<Gdk::Display> display);
+        static RootWindowData check_window_type(Display *display, Window window);
 
         Glib::RefPtr<Gdk::Pixbuf> make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> pixbuf, SetBG::SetMode mode, Gdk::Color bgcolor, gint tarw, gint tarh);
         virtual Glib::RefPtr<Gdk::Display> get_display(const Glib::ustring& disp);

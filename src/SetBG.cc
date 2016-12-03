@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 #include <algorithm>
 #include <functional>
+#include <iomanip>
 #include <sstream>
 
 using namespace Util;
@@ -40,11 +41,11 @@ SetBG* SetBG::get_bg_setter()
     Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
 
     SetBG* setter = NULL;
-    SetBG::RootWindowType wt = SetBG::get_rootwindowtype(dpy);
+    SetBG::RootWindowData wd = SetBG::get_root_window_data(dpy);
 
-    Util::program_log("root window type %d\n", wt);
+    Util::program_log("root window type %d\n", wd.type);
 
-    switch (wt) {
+    switch (wd.type) {
         case SetBG::NAUTILUS:
             setter = new SetBGGnome();
             break;
@@ -75,7 +76,7 @@ SetBG* SetBG::get_bg_setter()
 }
 
 /**
- * Handles a BadWindow error in get_rootwindowtype.
+ * Handles a BadWindow error in check_window_type.
  *
  * This is rather hax, but not sure how else to handle it.
  */
@@ -93,16 +94,13 @@ int SetBG::handle_x_errors(Display *display, XErrorEvent *error)
 }
 
 /**
- * Recursive function to find a window with _NET_WM_WINDOW_TYPE set to
- * _NET_WM_WINDOW_TYPE_DESKTOP.
+ * Recursive function to find windows with _NET_WM_WINDOW_TYPE set to
+ * _NET_WM_WINDOW_TYPE_DESKTOP that we understand how to deal with.
  *
- * Returns the window id if found.
- *
- * Returns:
- * -1 if not found
- *  <wid> if found
+ * Returns a vector of RootWindowData objects with all found desktop windows,
+ * ignoring known non-root-windows.
  */
-int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
+std::vector<SetBG::RootWindowData> SetBG::find_desktop_windows(Display *xdisp, Window curwindow) {
     Window rr, pr;
     Window *children;
     unsigned int numchildren;
@@ -110,6 +108,8 @@ int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
     int ret_format;
     unsigned long ret_items, ret_bytesleft;
     Atom *prop_return;
+
+    std::vector<SetBG::RootWindowData> retVec;
 
     // search current window for atom
     Atom propatom = XInternAtom(xdisp, "_NET_WM_WINDOW_TYPE", False);
@@ -122,29 +122,35 @@ int SetBG::find_desktop_window(Display *xdisp, Window curwindow) {
     if (ret_type == XA_ATOM && ret_format == 32 && ret_items == 1) {
         if (prop_return[0] == propval) {
             XFree(prop_return);
-            return curwindow;
+
+            SetBG::RootWindowData bgRw = check_window_type(xdisp, curwindow);
+
+            if (bgRw.type != SetBG::IGNORE)
+                retVec.push_back(bgRw);
         }
     }
 
-
+    // iterate all children of current window
     XQueryTree(xdisp, curwindow, &rr, &pr, &children, &numchildren);
     for (int i = 0; i < numchildren; i++) {
-        int ret = find_desktop_window(xdisp, children[i]);
-        if (ret != -1) {
-            XFree(children);
-            return ret;
-        }
+        std::vector<SetBG::RootWindowData> childVec = find_desktop_windows(xdisp, children[i]);
+        retVec.insert(retVec.end(), childVec.begin(), childVec.end());
     }
+    XFree(children);
 
-    return -1;
+    return retVec;
 }
 
 /**
- * Finds any false desktop/root window, either via root window hint or recursively.
+ * Determines the root window type that will be used to generate a setter.
  *
- * @returns The Window's ID, or 0.
+ * Returns a RootWindowData structure with the proper information that should be used
+ * to create a Setter instance. It:
+ * - Checks for Nautilus/Mutter Atoms
+ * - Launches recursive method to iterate windows and find possible desktop matches
+ * - Decides which most corresponds to the user's setup and returns it
  */
-guint SetBG::get_root_window(Glib::RefPtr<Gdk::Display> display) {
+SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> display) {
 	GdkAtom type;
     gint format;
     gint length;
@@ -152,6 +158,7 @@ guint SetBG::get_root_window(Glib::RefPtr<Gdk::Display> display) {
     gboolean ret = FALSE;
     Glib::RefPtr<Gdk::Window> rootwin = display->get_default_screen()->get_root_window();
     Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+    Window xrootwin = (Window)GDK_WINDOW_XID(rootwin->gobj());
     guint wid = 0;
 
     ret = gdk_property_get(rootwin->gobj(),
@@ -164,102 +171,117 @@ guint SetBG::get_root_window(Glib::RefPtr<Gdk::Display> display) {
     if (ret) {
         wid = *(guint*)data;
         g_free(data);
+
+        return SetBG::RootWindowData((Window)wid, SetBG::NAUTILUS, "NAUTILUS_DESKTOP_WINDOW_ID");
     } else {
-        // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
-        // now we have to search for it!
-        Window xwin = DefaultRootWindow(xdisp);
-        gint wwid = find_desktop_window(xdisp, xwin);
+        // check for mutter atoms on root window
+        ret = gdk_property_get(rootwin->gobj(),
+                gdk_atom_intern("_MUTTER_SENTINEL", FALSE),
+                gdk_atom_intern("CARDINAL", FALSE),
+                0L,
+                4L,
+                FALSE, &type, &format, &length, &data);
 
-        if (wwid != -1)
-            wid = (guint)wwid;
-    }
+        if (ret) {
+            g_free(data);
+            return SetBG::RootWindowData(xrootwin, SetBG::NAUTILUS, std::string("_MUTTER_SENTINEL"));
+        } else {
+            // newer nautilus and nemo don't leave a hint on the root window (whyyyy)
+            // now we have to search for it!
+            Window xwin = DefaultRootWindow(xdisp);
+            std::vector<SetBG::RootWindowData> rootVec = find_desktop_windows(xdisp, xwin);
 
-    return wid;
-}
+            if (rootVec.size() > 1) {
+                std::vector<SetBG::RootWindowData>::const_iterator selIter = rootVec.end();
 
-/**
- * Determines if Nautilus is being used to draw the root desktop.
- *
- * @returns 	True if nautilus is drawing the desktop.
- */
-SetBG::RootWindowType SetBG::get_rootwindowtype(Glib::RefPtr<Gdk::Display> display)
-{
-	GdkAtom type;
-    gint format;
-    gint length;
-	guchar *data;
-    SetBG::RootWindowType retval = SetBG::DEFAULT;
-    gboolean ret = FALSE;
-    Glib::RefPtr<Gdk::Window> rootwin;
-    guint wid = 0;
+                std::cerr << "WARNING: More than one Desktop window found:\n";
 
-    rootwin = display->get_default_screen()->get_root_window();
-    Display *xdisp = GDK_DISPLAY_XDISPLAY(rootwin->get_display()->gobj());
+                for (std::vector<SetBG::RootWindowData>::const_iterator i = rootVec.begin(); i != rootVec.end(); i++) {
 
-    wid = get_root_window(display);
-
-    if (wid > 0) {
-
-        Atom propatom = XInternAtom(xdisp, "WM_CLASS", FALSE);
-
-        XTextProperty tprop;
-
-        gchar **list;
-        gint num;
-
-        XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
-        bool bGotText = XGetTextProperty(xdisp, wid, &tprop, propatom);
-        XSetErrorHandler(old_x_error_handler);
-
-        if (bGotText && tprop.nitems)
-        {
-            if (XTextPropertyToStringList(&tprop, &list, &num))
-            {
-                // expect 2 strings here (XLib tells us there are 3)
-                if (num != 3)
-                    retval = SetBG::DEFAULT;
-                else
-                {
-                    std::string strclass = std::string(list[1]);
-                    if (strclass == std::string("Xfdesktop")) retval = SetBG::XFCE;     else
-                    if (strclass == std::string("Nautilus"))  retval = SetBG::NAUTILUS; else
-                    if (strclass == std::string("Nemo"))      retval = SetBG::NEMO;     else
-                    if (strclass == std::string("Pcmanfm"))   retval = SetBG::PCMANFM;  else
-                    {
-                        std::cerr << _("UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure") << "\n";
-                        retval = SetBG::UNKNOWN;
+                    std::string selStr("    ");
+                    if (i->type != SetBG::UNKNOWN && selIter == rootVec.end()) {
+                        selIter = i;
+                        selStr = std::string("**  ");
                     }
 
-             }
+                    std::cerr << selStr << std::setw(6) << "0x" << std::setw(8) << std::hex << i->window << std::setw(4) << i->type << std::setw(12) << i->wm_class << "\n";
+                }
 
-                XFreeStringList(list);
+                if (selIter != rootVec.end())
+                    return *selIter;
+
+                // @TODO: SET FLAG SOMEWHERE TO INDICATE ISSUE
+            } else if (rootVec.size() == 1) {
+                return rootVec[0];
+            } else {
+                // no finds, fall through to default
             }
-            XFree(tprop.value);
         }
-
-        return retval;
-    }
-
-    // check for mutter atoms on root window
-    ret = gdk_property_get(rootwin->gobj(),
-            gdk_atom_intern("_MUTTER_SENTINEL", FALSE),
-            gdk_atom_intern("CARDINAL", FALSE),
-            0L,
-            4L,
-            FALSE, &type, &format, &length, &data);
-
-    if (ret) {
-        g_free(data);
-        return SetBG::NAUTILUS; // mutter uses same keys
     }
 
 #ifdef USE_XINERAMA
     // determine if xinerama is in play
-    if (XineramaIsActive(GDK_DISPLAY_XDISPLAY(display->gobj())))
-        return SetBG::XINERAMA;
+    if (XineramaIsActive(xdisp))
+        return SetBG::RootWindowData(xrootwin, SetBG::XINERAMA, std::string("default"));
 #endif
 
-    return SetBG::DEFAULT;
+    return SetBG::RootWindowData(xrootwin, SetBG::DEFAULT, std::string("default"));
+}
+
+/**
+ * Determines if the passed in Window is a window type that marks a false root window.
+ *
+ * Returns a RootWindowData always, if window is not anything we recognize, the type will
+ * be set to UNKNOWN.
+ *
+ * Certain applications like conky with own_window and own_window_type='desktop'
+ * are valid and should be ignored. This method will log anything
+ * found.
+ */
+SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
+{
+    SetBG::RootWindowData retval(window);
+    Atom propatom = XInternAtom(display, "WM_CLASS", FALSE);
+
+    XTextProperty tprop;
+
+    gchar **list;
+    gint num;
+
+    XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
+    bool bGotText = XGetTextProperty(display, window, &tprop, propatom);
+    XSetErrorHandler(old_x_error_handler);
+
+    if (bGotText && tprop.nitems)
+    {
+        if (XTextPropertyToStringList(&tprop, &list, &num))
+        {
+            // expect 2 strings here (XLib tells us there are 3)
+            if (num != 3) {
+                // @TODO: warn? does this even happen?
+                retval.type = SetBG::DEFAULT;
+            }
+            else
+            {
+                std::string strclass = std::string(list[1]);
+                retval.wm_class = strclass;
+
+                if (strclass == std::string("Xfdesktop")) retval.type = SetBG::XFCE;     else
+                if (strclass == std::string("Nautilus"))  retval.type = SetBG::NAUTILUS; else
+                if (strclass == std::string("Nemo"))      retval.type = SetBG::NEMO;     else
+                if (strclass == std::string("Pcmanfm"))   retval.type = SetBG::PCMANFM;  else
+                if (strclass == std::string("Conky"))     retval.type = SetBG::IGNORE;   else        // discard Conky!
+                {
+                    std::cerr << "UNKNOWN ROOT WINDOW TYPE DETECTED (" << strclass << "), please file a bug\n";
+                    retval.type = SetBG::UNKNOWN;
+                }
+            }
+            XFreeStringList(list);
+        }
+        XFree(tprop.value);
+    }
+
+    return retval;
 }
 
 /**
@@ -1318,11 +1340,11 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
     Glib::RefPtr<Gdk::Display> display = Gdk::DisplayManager::get()->get_default_display();
     Display* xdisp = GDK_DISPLAY_XDISPLAY(display->gobj());
 
-    guint wid = get_root_window(display);
+    SetBG::RootWindowData rootData = get_root_window_data(display);
 
-    if (wid > 0) {
+    if (rootData.type == SetBG::PCMANFM) {
         // pull PID atom from pcman desktop window
-        Window curwindow = (Window)wid;
+        Window curwindow = rootData.window;
 
         Atom propatom = XInternAtom(xdisp, "_NET_WM_PID", False);
 
@@ -1445,6 +1467,8 @@ bool SetBGPcmanfm::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode,
             std::cerr << "ERROR: _NET_WM_PID set on X root window, but pid not readable.\n";
             return false;
         }
+    } else {
+        // @TODO: what happened?
     }
 
     return true;
