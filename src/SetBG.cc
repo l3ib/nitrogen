@@ -191,13 +191,25 @@ SetBG::RootWindowData SetBG::get_root_window_type(Glib::RefPtr<Gdk::Display> dis
             std::vector<SetBG::RootWindowData> rootVec = find_desktop_windows(xdisp, xwin);
 
             if (rootVec.size() > 1) {
+                std::vector<SetBG::RootWindowData>::const_iterator selIter = rootVec.end();
+
                 std::cerr << "WARNING: More than one Desktop window found:\n";
 
                 for (std::vector<SetBG::RootWindowData>::const_iterator i = rootVec.begin(); i != rootVec.end(); i++) {
-                    std::cerr << std::setw(6) << "0x" << std::setw(8) << std::hex << i->window << std::setw(4) << i->type << std::setw(12) << i->wm_class << "\n";
+
+                    std::string selStr("    ");
+                    if (i->type != SetBG::UNKNOWN && selIter == rootVec.end()) {
+                        selIter = i;
+                        selStr = std::string("**  ");
+                    }
+
+                    std::cerr << selStr << std::setw(6) << "0x" << std::setw(8) << std::hex << i->window << std::setw(4) << i->type << std::setw(12) << i->wm_class << "\n";
                 }
 
-                // @TODO: REPORT ERROR, FIND FIRST ONE THATS LEGIT, SET FLAG SOMEWHERE TO INDICATE ISSUE
+                if (selIter != rootVec.end())
+                    return *selIter;
+
+                // @TODO: SET FLAG SOMEWHERE TO INDICATE ISSUE
             } else if (rootVec.size() == 1) {
                 return rootVec[0];
             } else {
