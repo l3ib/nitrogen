@@ -128,6 +128,31 @@ std::vector<SetBG::RootWindowData> SetBG::find_desktop_windows(Display *xdisp, W
             if (bgRw.type != SetBG::IGNORE)
                 retVec.push_back(bgRw);
         }
+    } else {
+        // mutter now just sets a single property, WM_NAME = "mutter guard window", so detect that
+        Atom nameatom = XInternAtom(xdisp, "WM_NAME", False);
+        XTextProperty tprop;
+
+        gchar **list;
+        gint num;
+
+        XErrorHandler old_x_error_handler = XSetErrorHandler(SetBG::handle_x_errors);
+        bool bGotText = XGetTextProperty(xdisp, curwindow, &tprop, nameatom);
+        XSetErrorHandler(old_x_error_handler);
+
+        if (bGotText && tprop.nitems)
+        {
+            if (XTextPropertyToStringList(&tprop, &list, &num))
+            {
+                if (num == 1 && std::string(list[0]) == std::string("mutter guard window")) {
+
+                    SetBG::RootWindowData bgMutter(curwindow, SetBG::NAUTILUS, std::string(""));
+                    retVec.push_back(bgMutter);
+                }
+                XFreeStringList(list);
+            }
+            XFree(tprop.value);
+        }
     }
 
     // iterate all children of current window
