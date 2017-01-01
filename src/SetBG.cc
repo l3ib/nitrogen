@@ -1216,7 +1216,7 @@ bool SetBGGnome::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, G
         case SetBG::SET_TILE:       strmode = "wallpaper"; break;
         case SetBG::SET_CENTER:     strmode = "centered"; break;
         case SetBG::SET_ZOOM:       strmode = "scaled"; break;
-        case SetBG::SET_ZOOM_FILL:
+        case SetBG::SET_ZOOM_FILL:  strmode = "spanned"; break;
         default:                    strmode = "zoom"; break;
 	};
 
