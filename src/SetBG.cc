@@ -295,7 +295,8 @@ SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
                 if (strclass == std::string("Nautilus"))  retval.type = SetBG::NAUTILUS; else
                 if (strclass == std::string("Nemo"))      retval.type = SetBG::NEMO;     else
                 if (strclass == std::string("Pcmanfm"))   retval.type = SetBG::PCMANFM;  else
-                if (strclass == std::string("Conky"))     retval.type = SetBG::IGNORE;   else        // discard Conky!
+                if (strclass == std::string("Conky") || strclass == std::string("conky"))
+                    retval.type = SetBG::IGNORE;   else        // discard Conky!
                 {
                     std::cerr << "UNKNOWN ROOT WINDOW TYPE DETECTED (" << strclass << "), please file a bug\n";
                     retval.type = SetBG::UNKNOWN;
