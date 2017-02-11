@@ -184,7 +184,10 @@ void NWindow::sighandle_click_apply (void) {
 void NWindow::apply_bg () {
 
     // find out which image is currently selected
-    Gtk::TreeModel::iterator iter = view.get_selected ();
+    Gtk::TreeModel::iterator iter = view.get_selected();
+    if (!iter)
+        return;
+
     Gtk::TreeModel::Row row = *iter;
     Glib::ustring file = row[view.record.Filename];
     bool saveToConfig = this->set_bg(file);

@@ -624,6 +624,9 @@ Gtk::TreeModel::iterator Thumbview::get_selected()
     if (m_curmode == ICON)
     {
         std::list<Gtk::TreePath> selected = iview.get_selected_items();
+        if (selected.size() == 0)
+            return store->children().end();
+
         return store->get_iter(*(selected.begin()));
     }
     else
