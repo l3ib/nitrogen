@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2011-04-19 22:03-0400\n"
+"POT-Creation-Date: 2017-02-11 13:29-0500\n"
 "PO-Revision-Date: 2013-01-06 14:15+0400\n"
 "Last-Translator:  <vmax0770@gmail.com>\n"
 "Language-Team: Russian\n"
@@ -18,188 +18,152 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/ArgParser.cc:66
+#: src/ArgParser.cc:75
 msgid "Unexpected argument "
 msgstr "Неожиданный аргумент "
 
-#: src/ArgParser.cc:75
+#: src/ArgParser.cc:84
 msgid " expects an argument."
 msgstr " ожидается аргумент."
 
-#: src/ArgParser.cc:78
+#: src/ArgParser.cc:87
 msgid " does not expect an argument."
 msgstr " не ожидался аргумент."
 
-#: src/ArgParser.cc:84
+#: src/ArgParser.cc:93
 msgid " conflicts with another argument."
 msgstr " конфликтует с другим аргументом."
 
-#: src/ArgParser.cc:96
+#: src/ArgParser.cc:105
 msgid "Usage:"
 msgstr "Использование:"
 
-#: src/Config.cc:92
-msgid "Could not open config directory."
-msgstr "Не удалось открыть папку с настройками."
-
-#: src/Config.cc:102 src/Config.cc:191
+#: src/Config.cc:128 src/Config.cc:217
 msgid "ERROR: Unable to load config file"
 msgstr "Ошибка: не удалось загрузить конфигурационный файл"
 
-#: src/Config.cc:113
+#: src/Config.cc:139
 msgid "Couldn't find group for"
 msgstr "Не удалось найти группу для"
 
-#: src/Config.cc:125
+#: src/Config.cc:151
 msgid "Could not get filename from config file."
 msgstr "Не удалось получить имя файла из конфигурационного файла."
 
-#: src/Config.cc:134
+#: src/Config.cc:160
 msgid "Could not get mode from config file."
 msgstr "Не удалось получить режим из конфигурационного файла."
 
-#: src/Config.cc:193
+#: src/Config.cc:219
 msgid "The error code returned was"
 msgstr "Программа завершилась с кодом"
 
-#: src/Config.cc:194
+#: src/Config.cc:220
 msgid "We expected"
 msgstr "Ожидалось"
 
-#: src/Config.cc:194
+#: src/Config.cc:220
 msgid "or"
 msgstr "или"
 
-#: src/NWindow.cc:175
-msgid "You previewed an image without applying it, exit anyway?"
+#: src/NWindow.cc:253
+#, fuzzy
+msgid "You previewed an image without applying it, apply?"
 msgstr "Изображение не было установлено как фон рабочего стола. Выйти?"
 
-#: src/NWindow.cc:238
+#: src/NWindow.cc:329
 msgid "Automatic"
 msgstr "Автоматически"
 
-#: src/NWindow.cc:245
+#: src/NWindow.cc:336
 msgid "Scaled"
 msgstr "Растянуть"
 
-#: src/NWindow.cc:253
+#: src/NWindow.cc:344
 msgid "Centered"
 msgstr "По центру"
 
-#: src/NWindow.cc:261
+#: src/NWindow.cc:352
 msgid "Tiled"
 msgstr "Замостить"
 
-#: src/NWindow.cc:270
+#: src/NWindow.cc:361
 msgid "Zoomed"
 msgstr "Увеличить"
 
-#: src/NWindow.cc:271
+#: src/NWindow.cc:362
 msgid "Zoomed Fill"
 msgstr "На весь рабочий стол"
 
-#: src/NWindow.cc:284 src/NWindow.cc:315
-msgid "Screen"
-msgstr "Экран"
-
-#: src/NWindow.cc:309 src/NWindow.cc:311
-msgid "Full Screen"
-msgstr "Весь экран"
-
-#: src/NWindow.cc:332
-msgid "Default"
-msgstr "По умолчанию"
-
-#: src/SetBG.cc:53 src/SetBG.cc:231
-msgid "Could not open display"
-msgstr "Не могу открыть дисплей"
-
-#: src/SetBG.cc:89 src/SetBG.cc:315
-msgid "ERROR: Could not load file in bg set"
-msgstr "Ошибка: не удалось загрузить файл изображения"
-
-#: src/SetBG.cc:126, fuzzy
-msgid "Unknown mode for saved bg on"
-msgstr "Неизвестный режим для сохранённого изображения"
-
-#: src/SetBG.cc:170 src/SetBG.cc:365, fuzzy
-msgid "ERROR: BG set could not make atoms."
-msgstr "Ошибка: не удалось установить изображение как фон рабочего стола"
-
-#: src/SetBG.cc:223
-msgid "Could not find Xinerama screen number"
-msgstr "Не удалось определить номер дисплея Ximerama"
-
-#: src/SetBG.cc:352, fuzzy
-msgid "Unknown mode for saved bg"
-msgstr "Неизвестный режим для сохранённого изображения"
-
-#: src/SetBG.cc:453
-msgid ""
-"UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
-msgstr "Неизвестный тип корневого окна, попытаюсь установить фон другим методом"
-
-#: src/SetBG.cc:511
-msgid "ERROR"
-msgstr "Ошибка"
-
-#: src/SetBG.cc:727 src/SetBG.cc:755
+#: src/SetBG.cc:516 src/SetBG.cc:544
 msgid "Scale"
 msgstr "Растянуть"
 
-#: src/SetBG.cc:730 src/SetBG.cc:757
+#: src/SetBG.cc:519 src/SetBG.cc:546
 msgid "Center"
 msgstr "По центру"
 
-#: src/SetBG.cc:733 src/SetBG.cc:759
+#: src/SetBG.cc:522 src/SetBG.cc:548
 msgid "Tile"
 msgstr "Замостить"
 
-#: src/SetBG.cc:736 src/SetBG.cc:761
+#: src/SetBG.cc:525 src/SetBG.cc:550
 msgid "Zoom"
 msgstr "Увеличить"
 
-#: src/SetBG.cc:739 src/SetBG.cc:763
+#: src/SetBG.cc:528 src/SetBG.cc:552
 msgid "ZoomFill"
 msgstr "На весь рабочий стол"
 
-#: src/SetBG.cc:742 src/SetBG.cc:765
+#: src/SetBG.cc:531 src/SetBG.cc:554
 msgid "Auto"
 msgstr "Автоматически"
 
-#: src/Thumbview.cc:262
-msgid "Could not open dir"
-msgstr "Не могу открыть папку"
-
-#: src/Thumbview.cc:298
-msgid "Invalid UTF-8 encountered. Skipping file"
-msgstr "Неверная кодировка, пропускаю файл"
-
-#: src/Util.cc:103
+#: src/SetBG.cc:622
 msgid "Could not get bg groups from config file."
 msgstr "Не удалось получить группы изображений из конфигурационного файла"
 
-#: src/Util.cc:135
-msgid "Could not get bg info for fullscreen xinerama"
-msgstr "Не удалось получить информацию об изображении для Ximerama"
+#: src/SetBG.cc:646 src/SetBG.cc:653
+msgid "ERROR"
+msgstr "Ошибка"
 
-#: src/Util.cc:147
-msgid "Could not get bg info for"
-msgstr "Не удалось получить информацию о"
+#: src/SetBG.cc:665 src/SetBG.cc:1040
+msgid "Could not open display"
+msgstr "Не могу открыть дисплей"
 
-#: src/Util.cc:173
-msgid "Could not get bg info"
-msgstr "Не удалось получить информацию о фоне рабочего стола"
+#: src/SetBG.cc:726
+msgid "ERROR: Could not load file in bg set"
+msgstr "Ошибка: не удалось загрузить файл изображения"
 
-#: src/Util.cc:188
+#: src/SetBG.cc:804
+msgid "Unknown mode for saved bg"
+msgstr "Неизвестный режим для сохранённого изображения"
+
+#: src/SetBG.cc:918
+msgid "ERROR: BG set could not make atoms."
+msgstr "Ошибка: не удалось установить изображение как фон рабочего стола"
+
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+msgid "Screen"
+msgstr "Экран"
+
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
+msgid "Full Screen"
+msgstr "Весь экран"
+
+#: src/SetBG.cc:1179
+msgid "Could not find Xinerama screen number"
+msgstr "Не удалось определить номер дисплея Ximerama"
+
+#: src/Util.cc:95
 msgid "Restore saved backgrounds"
 msgstr "Восстанавливать сохранённые изображения рабочего стола"
 
-#: src/Util.cc:189
+#: src/Util.cc:96
 msgid "Do not recurse into subdirectories"
 msgstr "Просматривать папку без подпапок"
 
-#: src/Util.cc:190
+#: src/Util.cc:97
 msgid ""
 "How to sort the backgrounds. Valid options are:\n"
 "\t\t\t* alpha, for alphanumeric sort\n"
@@ -213,52 +177,94 @@ msgstr ""
 "\t\t\t* time, по дате изменения (сначала самые старые)\n"
 "\t\t\t* rtime, по дате изменения в обратном порядке (сначала самые новые)"
 
-
-#: src/Util.cc:191
+#: src/Util.cc:98
 msgid "background color in hex, #000000 by default"
 msgstr "шестнадцатеричный код цвета, по умолчанию #000000"
 
-#: src/Util.cc:196 src/Util.cc:197 src/Util.cc:198 src/Util.cc:199
-#: src/Util.cc:200 src/Util.cc:201
+#: src/Util.cc:99
+msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
+msgstr ""
+
+#: src/Util.cc:100
+msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
+msgstr ""
+
+#: src/Util.cc:101
+msgid "Choose random background from config or given directory"
+msgstr ""
+
+#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
+#: src/Util.cc:110 src/Util.cc:111
 msgid "Sets the background to the given file"
 msgstr "Устанавливает указаный файл фоном рабочего стола"
 
-#: src/Util.cc:196
+#: src/Util.cc:106
 msgid "scaled"
 msgstr "растянуть"
 
-#: src/Util.cc:197
+#: src/Util.cc:107
 msgid "tiled"
 msgstr "замостить"
 
-#: src/Util.cc:198
+#: src/Util.cc:108
 msgid "auto"
 msgstr "автоматически"
 
-#: src/Util.cc:199
+#: src/Util.cc:109
 msgid "centered"
 msgstr "по центру"
 
-#: src/Util.cc:200
+#: src/Util.cc:110
 msgid "zoom"
 msgstr "увеличить"
 
-#: src/Util.cc:201
+#: src/Util.cc:111
 msgid "zoom-fill"
 msgstr "на весь рабочий стол"
 
-#: src/Util.cc:202
+#: src/Util.cc:112
 msgid "Saves the background permanently"
 msgstr "Сохраняет изображение рабочего стола"
 
-#: src/Util.cc:275
+#: src/Util.cc:207
+msgid "Could not open dir"
+msgstr "Не могу открыть папку"
+
+#: src/Util.cc:292
 msgid "Currently set background"
 msgstr "Текущее изображение рабочего стола"
 
-#: src/Util.cc:278
+#: src/Util.cc:295
 msgid "for"
 msgstr "для"
 
-#: src/main.cc:97
+#: src/main.cc:133
 msgid "Error parsing command line"
 msgstr "Ошибка распознавания аргумента командной строки"
+
+#~ msgid "Could not open config directory."
+#~ msgstr "Не удалось открыть папку с настройками."
+
+#~ msgid "Default"
+#~ msgstr "По умолчанию"
+
+#~ msgid "Unknown mode for saved bg on"
+#~ msgstr "Неизвестный режим для сохранённого изображения"
+
+#~ msgid ""
+#~ "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X "
+#~ "procedure"
+#~ msgstr ""
+#~ "Неизвестный тип корневого окна, попытаюсь установить фон другим методом"
+
+#~ msgid "Invalid UTF-8 encountered. Skipping file"
+#~ msgstr "Неверная кодировка, пропускаю файл"
+
+#~ msgid "Could not get bg info for fullscreen xinerama"
+#~ msgstr "Не удалось получить информацию об изображении для Ximerama"
+
+#~ msgid "Could not get bg info for"
+#~ msgstr "Не удалось получить информацию о"
+
+#~ msgid "Could not get bg info"
+#~ msgstr "Не удалось получить информацию о фоне рабочего стола"

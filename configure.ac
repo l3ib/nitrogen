@@ -41,7 +41,7 @@ AC_CHECK_LIB(X11, XOpenDisplay, [NITROGEN_LIBS="$NITROGEN_LIBS -lX11"])
 
 ALL_LINGUAS=""
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.16])
+AM_GNU_GETTEXT_VERSION([0.19.7])
 AC_DEFINE_UNQUOTED([LOCALEDIR], ["${prefix}/${DATADIRNAME}/locale"], [Name of gettext locale directory])
 
 AC_LANG([C++])

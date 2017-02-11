@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR l3ib.org
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the nitrogen package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: nitrogen 1.6.0\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2016-10-27 17:48-0400\n"
+"POT-Creation-Date: 2017-02-11 13:29-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,96 +65,91 @@ msgstr ""
 msgid "or"
 msgstr ""
 
-#: src/NWindow.cc:250
+#: src/NWindow.cc:253
 msgid "You previewed an image without applying it, apply?"
 msgstr ""
 
-#: src/NWindow.cc:326
+#: src/NWindow.cc:329
 msgid "Automatic"
 msgstr ""
 
-#: src/NWindow.cc:333
+#: src/NWindow.cc:336
 msgid "Scaled"
 msgstr ""
 
-#: src/NWindow.cc:341
+#: src/NWindow.cc:344
 msgid "Centered"
 msgstr ""
 
-#: src/NWindow.cc:349
+#: src/NWindow.cc:352
 msgid "Tiled"
 msgstr ""
 
-#: src/NWindow.cc:358
+#: src/NWindow.cc:361
 msgid "Zoomed"
 msgstr ""
 
-#: src/NWindow.cc:359
+#: src/NWindow.cc:362
 msgid "Zoomed Fill"
 msgstr ""
 
-#: src/SetBG.cc:229
-msgid ""
-"UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
-msgstr ""
-
-#: src/SetBG.cc:468 src/SetBG.cc:496
+#: src/SetBG.cc:516 src/SetBG.cc:544
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:471 src/SetBG.cc:498
+#: src/SetBG.cc:519 src/SetBG.cc:546
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:474 src/SetBG.cc:500
+#: src/SetBG.cc:522 src/SetBG.cc:548
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:477 src/SetBG.cc:502
+#: src/SetBG.cc:525 src/SetBG.cc:550
 msgid "Zoom"
 msgstr ""
 
-#: src/SetBG.cc:480 src/SetBG.cc:504
+#: src/SetBG.cc:528 src/SetBG.cc:552
 msgid "ZoomFill"
 msgstr ""
 
-#: src/SetBG.cc:483 src/SetBG.cc:506
+#: src/SetBG.cc:531 src/SetBG.cc:554
 msgid "Auto"
 msgstr ""
 
-#: src/SetBG.cc:574
+#: src/SetBG.cc:622
 msgid "Could not get bg groups from config file."
 msgstr ""
 
-#: src/SetBG.cc:598 src/SetBG.cc:605
+#: src/SetBG.cc:646 src/SetBG.cc:653
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:617 src/SetBG.cc:992
+#: src/SetBG.cc:665 src/SetBG.cc:1040
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:678
+#: src/SetBG.cc:726
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:756
+#: src/SetBG.cc:804
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:870
+#: src/SetBG.cc:918
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:971 src/SetBG.cc:1071 src/SetBG.cc:1472
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
 msgid "Screen"
 msgstr ""
 
-#: src/SetBG.cc:1066 src/SetBG.cc:1465
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
 msgid "Full Screen"
 msgstr ""
 
-#: src/SetBG.cc:1131
+#: src/SetBG.cc:1179
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
@@ -236,6 +231,6 @@ msgstr ""
 msgid "for"
 msgstr ""
 
-#: src/main.cc:132
+#: src/main.cc:133
 msgid "Error parsing command line"
 msgstr ""

@@ -24,6 +24,10 @@ BUILDING:
           the target system. For instance, CXXFLAGS=" -std=c++11" if using 
           gcc 5.x.
 
+    NOTE: If you want to install translations locally, you'll need to invoke
+          `make dist` to build the .gmo files before `make install`. No, I 
+          don't know why.
+
 USAGE:
     See the man page. It *might* be up to date.
 

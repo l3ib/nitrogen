@@ -7,199 +7,164 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.2\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2011-04-19 22:03-0400\n"
+"POT-Creation-Date: 2017-02-11 13:29-0500\n"
 "PO-Revision-Date: 2016-03-17 07:58+0100\n"
+"Last-Translator: Dino Duratović <dinomol@mail.com>\n"
 "Language-Team: \n"
 "Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: Dino Duratović <dinomol@mail.com>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/ArgParser.cc:66
+#: src/ArgParser.cc:75
 msgid "Unexpected argument "
 msgstr "Неочекивани аргумент"
 
-#: src/ArgParser.cc:75
+#: src/ArgParser.cc:84
 msgid " expects an argument."
 msgstr " очекује аргумент."
 
-#: src/ArgParser.cc:78
+#: src/ArgParser.cc:87
 msgid " does not expect an argument."
 msgstr " не очекује арумент."
 
-#: src/ArgParser.cc:84
+#: src/ArgParser.cc:93
 msgid " conflicts with another argument."
 msgstr " је у сукобу са другим аргументом."
 
-#: src/ArgParser.cc:96
+#: src/ArgParser.cc:105
 msgid "Usage:"
 msgstr "Употреба:"
 
-#: src/Config.cc:92
-msgid "Could not open config directory."
-msgstr "Није могуће отворити конфигурациони директориј."
-
-#: src/Config.cc:102 src/Config.cc:191
+#: src/Config.cc:128 src/Config.cc:217
 msgid "ERROR: Unable to load config file"
 msgstr "ГРЕШКА: Немогуће учитати конфигурациони фајл"
 
-#: src/Config.cc:113
+#: src/Config.cc:139
 msgid "Couldn't find group for"
 msgstr "Није могуће пронаћи групу за"
 
-#: src/Config.cc:125
+#: src/Config.cc:151
 msgid "Could not get filename from config file."
 msgstr "Није могуће добити име фајла из конфигурационог фајла."
 
-#: src/Config.cc:134
+#: src/Config.cc:160
 msgid "Could not get mode from config file."
 msgstr "Није могуће добити начин из конфигурационог фајла."
 
-#: src/Config.cc:193
+#: src/Config.cc:219
 msgid "The error code returned was"
 msgstr "Код грешке је"
 
-#: src/Config.cc:194
+#: src/Config.cc:220
 msgid "We expected"
 msgstr "Очекивали смо"
 
-#: src/Config.cc:194
+#: src/Config.cc:220
 msgid "or"
 msgstr "или"
 
-#: src/NWindow.cc:175
-msgid "You previewed an image without applying it, exit anyway?"
+#: src/NWindow.cc:253
+#, fuzzy
+msgid "You previewed an image without applying it, apply?"
 msgstr "Прегледали сте слику без прихватања, ипак напустити?"
 
-#: src/NWindow.cc:238
+#: src/NWindow.cc:329
 msgid "Automatic"
 msgstr "Аутоматски"
 
-#: src/NWindow.cc:245
+#: src/NWindow.cc:336
 msgid "Scaled"
 msgstr "Сразмерно"
 
-#: src/NWindow.cc:253
+#: src/NWindow.cc:344
 msgid "Centered"
 msgstr "Центрирано"
 
-#: src/NWindow.cc:261
+#: src/NWindow.cc:352
 msgid "Tiled"
 msgstr "Поплочано"
 
-#: src/NWindow.cc:270
+#: src/NWindow.cc:361
 msgid "Zoomed"
 msgstr "Увећано"
 
-#: src/NWindow.cc:271
+#: src/NWindow.cc:362
 msgid "Zoomed Fill"
 msgstr "Увећано попуњење"
 
-#: src/NWindow.cc:284 src/NWindow.cc:315
-msgid "Screen"
-msgstr "Екран"
+#: src/SetBG.cc:516 src/SetBG.cc:544
+msgid "Scale"
+msgstr "Скалирај"
 
-#: src/NWindow.cc:309 src/NWindow.cc:311
-msgid "Full Screen"
-msgstr "Преко целог екрана"
+#: src/SetBG.cc:519 src/SetBG.cc:546
+msgid "Center"
+msgstr "Центар"
 
-#: src/NWindow.cc:332
-msgid "Default"
-msgstr "Подразумевани"
+#: src/SetBG.cc:522 src/SetBG.cc:548
+msgid "Tile"
+msgstr "Поплочај"
 
-#: src/SetBG.cc:53 src/SetBG.cc:231
+#: src/SetBG.cc:525 src/SetBG.cc:550
+msgid "Zoom"
+msgstr "Увећај"
+
+#: src/SetBG.cc:528 src/SetBG.cc:552
+msgid "ZoomFill"
+msgstr "Увећај и попуни"
+
+#: src/SetBG.cc:531 src/SetBG.cc:554
+msgid "Auto"
+msgstr "Аутоматски"
+
+#: src/SetBG.cc:622
+msgid "Could not get bg groups from config file."
+msgstr "Немогуће добити позадинске групе из конфигурационог фајла."
+
+#: src/SetBG.cc:646 src/SetBG.cc:653
+msgid "ERROR"
+msgstr "ГРЕШКА"
+
+#: src/SetBG.cc:665 src/SetBG.cc:1040
 msgid "Could not open display"
 msgstr "Не могу отворити дисплеј"
 
 # Provjeriti da li slijedi nešto poslije
-#: src/SetBG.cc:89 src/SetBG.cc:315
+#: src/SetBG.cc:726
 msgid "ERROR: Could not load file in bg set"
 msgstr "ГРЕШКА: Не могу учитати позадински фајл"
 
-# Provjeriti da li slijedi nešto poslije
-#: src/SetBG.cc:126
-msgid "Unknown mode for saved bg on"
-msgstr "Непознат начин за сачувану позадину"
-
-#: src/SetBG.cc:170 src/SetBG.cc:365
-msgid "ERROR: BG set could not make atoms."
-msgstr "ГРЕШКА: постављена позадина не може направити атоме."
-
-#: src/SetBG.cc:223
-msgid "Could not find Xinerama screen number"
-msgstr "Није могуће пронаћи број Xinerama екрана"
-
-#: src/SetBG.cc:352
+#: src/SetBG.cc:804
 msgid "Unknown mode for saved bg"
 msgstr "Непознат начин за сачувану позадину"
 
-#: src/SetBG.cc:453
-msgid "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
-msgstr "НЕПОЗНАТ ТИП ROOT ПРОЗОРА ПРОНАЂЕН, покушаћу поставити преко нормалне X процедуре"
+#: src/SetBG.cc:918
+msgid "ERROR: BG set could not make atoms."
+msgstr "ГРЕШКА: постављена позадина не може направити атоме."
 
-#: src/SetBG.cc:511
-msgid "ERROR"
-msgstr "ГРЕШКА"
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+msgid "Screen"
+msgstr "Екран"
 
-#: src/SetBG.cc:727 src/SetBG.cc:755
-msgid "Scale"
-msgstr "Скалирај"
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
+msgid "Full Screen"
+msgstr "Преко целог екрана"
 
-#: src/SetBG.cc:730 src/SetBG.cc:757
-msgid "Center"
-msgstr "Центар"
+#: src/SetBG.cc:1179
+msgid "Could not find Xinerama screen number"
+msgstr "Није могуће пронаћи број Xinerama екрана"
 
-#: src/SetBG.cc:733 src/SetBG.cc:759
-msgid "Tile"
-msgstr "Поплочај"
-
-#: src/SetBG.cc:736 src/SetBG.cc:761
-msgid "Zoom"
-msgstr "Увећај"
-
-#: src/SetBG.cc:739 src/SetBG.cc:763
-msgid "ZoomFill"
-msgstr "Увећај и попуни"
-
-#: src/SetBG.cc:742 src/SetBG.cc:765
-msgid "Auto"
-msgstr "Аутоматски"
-
-#: src/Thumbview.cc:262
-msgid "Could not open dir"
-msgstr "Не могу отворити директориј"
-
-#: src/Thumbview.cc:298
-msgid "Invalid UTF-8 encountered. Skipping file"
-msgstr "Наишао на неважећи UTF-8. Прескачем фајл"
-
-#: src/Util.cc:103
-msgid "Could not get bg groups from config file."
-msgstr "Немогуће добити позадинске групе из конфигурационог фајла."
-
-#: src/Util.cc:135
-msgid "Could not get bg info for fullscreen xinerama"
-msgstr "Немогуће добити позадинску информацију за Xineramu преко целог екрана"
-
-#: src/Util.cc:147
-msgid "Could not get bg info for"
-msgstr "Немогуће добити позадинску информацију за"
-
-#: src/Util.cc:173
-msgid "Could not get bg info"
-msgstr "Немогуће добити позадинску информацију"
-
-#: src/Util.cc:188
+#: src/Util.cc:95
 msgid "Restore saved backgrounds"
 msgstr "Поврати сачуване позадине"
 
-#: src/Util.cc:189
+#: src/Util.cc:96
 msgid "Do not recurse into subdirectories"
 msgstr "Не залази у поддиректорије"
 
-#: src/Util.cc:190
+#: src/Util.cc:97
 msgid ""
 "How to sort the backgrounds. Valid options are:\n"
 "\t\t\t* alpha, for alphanumeric sort\n"
@@ -213,51 +178,97 @@ msgstr ""
 "\t\t\t* time, према последњем датуму измене (најстарији прво)\n"
 "\t\t\t* rtime, према обрнутом датуму последње измене (најновији прво)"
 
-#: src/Util.cc:191
+#: src/Util.cc:98
 msgid "background color in hex, #000000 by default"
 msgstr "позадинска боја у hexu, #000000 подразумевано"
 
-#: src/Util.cc:196 src/Util.cc:197 src/Util.cc:198 src/Util.cc:199
-#: src/Util.cc:200 src/Util.cc:201
+#: src/Util.cc:99
+msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
+msgstr ""
+
+#: src/Util.cc:100
+msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
+msgstr ""
+
+#: src/Util.cc:101
+msgid "Choose random background from config or given directory"
+msgstr ""
+
+#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
+#: src/Util.cc:110 src/Util.cc:111
 msgid "Sets the background to the given file"
 msgstr "Поставља позадину на задати фајл"
 
-#: src/Util.cc:196
+#: src/Util.cc:106
 msgid "scaled"
 msgstr "скалирано"
 
-#: src/Util.cc:197
+#: src/Util.cc:107
 msgid "tiled"
 msgstr "поплочано"
 
-#: src/Util.cc:198
+#: src/Util.cc:108
 msgid "auto"
 msgstr "аутоматски"
 
-#: src/Util.cc:199
+#: src/Util.cc:109
 msgid "centered"
 msgstr "центрирано"
 
-#: src/Util.cc:200
+#: src/Util.cc:110
 msgid "zoom"
 msgstr "увећано"
 
-#: src/Util.cc:201
+#: src/Util.cc:111
 msgid "zoom-fill"
 msgstr "увећано-попуњено"
 
-#: src/Util.cc:202
+#: src/Util.cc:112
 msgid "Saves the background permanently"
 msgstr "Сачува позадину трајно"
 
-#: src/Util.cc:275
+#: src/Util.cc:207
+msgid "Could not open dir"
+msgstr "Не могу отворити директориј"
+
+#: src/Util.cc:292
 msgid "Currently set background"
 msgstr "Тренутно постављена позадина"
 
-#: src/Util.cc:278
+#: src/Util.cc:295
 msgid "for"
 msgstr "за"
 
-#: src/main.cc:97
+#: src/main.cc:133
 msgid "Error parsing command line"
 msgstr "Грешка при расчлањењу командне линије"
+
+#~ msgid "Could not open config directory."
+#~ msgstr "Није могуће отворити конфигурациони директориј."
+
+#~ msgid "Default"
+#~ msgstr "Подразумевани"
+
+# Provjeriti da li slijedi nešto poslije
+#~ msgid "Unknown mode for saved bg on"
+#~ msgstr "Непознат начин за сачувану позадину"
+
+#~ msgid ""
+#~ "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X "
+#~ "procedure"
+#~ msgstr ""
+#~ "НЕПОЗНАТ ТИП ROOT ПРОЗОРА ПРОНАЂЕН, покушаћу поставити преко нормалне X "
+#~ "процедуре"
+
+#~ msgid "Invalid UTF-8 encountered. Skipping file"
+#~ msgstr "Наишао на неважећи UTF-8. Прескачем фајл"
+
+#~ msgid "Could not get bg info for fullscreen xinerama"
+#~ msgstr ""
+#~ "Немогуће добити позадинску информацију за Xineramu преко целог екрана"
+
+#~ msgid "Could not get bg info for"
+#~ msgstr "Немогуће добити позадинску информацију за"
+
+#~ msgid "Could not get bg info"
+#~ msgstr "Немогуће добити позадинску информацију"

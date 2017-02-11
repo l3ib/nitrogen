@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2016-11-21 09:50+0100\n"
+"POT-Creation-Date: 2017-02-11 13:29-0500\n"
 "PO-Revision-Date: 2016-11-21 10:03+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.11\n"
-"Last-Translator: \n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language: pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 
 #: src/ArgParser.cc:75
 msgid "Unexpected argument "
@@ -66,95 +67,91 @@ msgstr ""
 msgid "or"
 msgstr "lub"
 
-#: src/NWindow.cc:250
+#: src/NWindow.cc:253
 msgid "You previewed an image without applying it, apply?"
 msgstr "Podglądasz obraz bez zastosowania go, zastosować?"
 
-#: src/NWindow.cc:326
+#: src/NWindow.cc:329
 msgid "Automatic"
 msgstr "Automatycznie"
 
-#: src/NWindow.cc:333
+#: src/NWindow.cc:336
 msgid "Scaled"
 msgstr "Skalowanie"
 
-#: src/NWindow.cc:341
+#: src/NWindow.cc:344
 msgid "Centered"
 msgstr "Wycentrowane"
 
-#: src/NWindow.cc:349
+#: src/NWindow.cc:352
 msgid "Tiled"
 msgstr "Sąsiadująco"
 
-#: src/NWindow.cc:358
+#: src/NWindow.cc:361
 msgid "Zoomed"
 msgstr "Powiększone"
 
-#: src/NWindow.cc:359
+#: src/NWindow.cc:362
 msgid "Zoomed Fill"
 msgstr "Powiększone wypełniając"
 
-#: src/SetBG.cc:229
-msgid "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
-msgstr ""
-
-#: src/SetBG.cc:468 src/SetBG.cc:496
+#: src/SetBG.cc:516 src/SetBG.cc:544
 msgid "Scale"
 msgstr "Skalowanie"
 
-#: src/SetBG.cc:471 src/SetBG.cc:498
+#: src/SetBG.cc:519 src/SetBG.cc:546
 msgid "Center"
 msgstr "Wycentrowanie"
 
-#: src/SetBG.cc:474 src/SetBG.cc:500
+#: src/SetBG.cc:522 src/SetBG.cc:548
 msgid "Tile"
 msgstr "Sąsiadująco"
 
-#: src/SetBG.cc:477 src/SetBG.cc:502
+#: src/SetBG.cc:525 src/SetBG.cc:550
 msgid "Zoom"
 msgstr "Powiększenie"
 
-#: src/SetBG.cc:480 src/SetBG.cc:504
+#: src/SetBG.cc:528 src/SetBG.cc:552
 msgid "ZoomFill"
 msgstr "Powiększenie i wypełnienie"
 
-#: src/SetBG.cc:483 src/SetBG.cc:506
+#: src/SetBG.cc:531 src/SetBG.cc:554
 msgid "Auto"
 msgstr "Automatycznie"
 
-#: src/SetBG.cc:574
+#: src/SetBG.cc:622
 msgid "Could not get bg groups from config file."
 msgstr ""
 
-#: src/SetBG.cc:598 src/SetBG.cc:605
+#: src/SetBG.cc:646 src/SetBG.cc:653
 msgid "ERROR"
 msgstr "BŁĄD"
 
-#: src/SetBG.cc:617 src/SetBG.cc:992
+#: src/SetBG.cc:665 src/SetBG.cc:1040
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:678
+#: src/SetBG.cc:726
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:756
+#: src/SetBG.cc:804
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:870
+#: src/SetBG.cc:918
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:971 src/SetBG.cc:1071 src/SetBG.cc:1472
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
 msgid "Screen"
 msgstr "Ekran"
 
-#: src/SetBG.cc:1066 src/SetBG.cc:1465
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
 msgid "Full Screen"
 msgstr "Pełny ekran"
 
-#: src/SetBG.cc:1131
+#: src/SetBG.cc:1179
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
@@ -236,6 +233,6 @@ msgstr "Obecnie ustawione tło"
 msgid "for"
 msgstr "dla"
 
-#: src/main.cc:132
+#: src/main.cc:133
 msgid "Error parsing command line"
 msgstr "Błąd przetwarzania linii komend"
