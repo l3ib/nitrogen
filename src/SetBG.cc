@@ -1322,8 +1322,7 @@ Glib::ustring SetBGNemo::get_gsettings_key()
  */
 void SetBGNemo::set_show_desktop()
 {
-    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(Glib::ustring("org.nemo.desktop"));
-    settings->set_boolean("draw-background", true);
+    // this space left blank as show-desktop no longer a thing in Nemo
 }
 
 /**
