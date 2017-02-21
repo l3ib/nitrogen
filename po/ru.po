@@ -2,7 +2,7 @@
 # Copyright (C) 2013 l3ib.org
 # This file is distributed under the same license as the nitrogen
 # Max Vorob'jov <vmax0770@gmail.com>, 2013
-#
+# Vladimir Kudrya <vladimir-csp@yandex.ru>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
