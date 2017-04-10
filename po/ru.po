@@ -1,15 +1,15 @@
 # Russian translations for nitrogen 
 # Copyright (C) 2013 l3ib.org
-# This file is distributed under the same license as the nitrogen 
+# This file is distributed under the same license as the nitrogen
 # Max Vorob'jov <vmax0770@gmail.com>, 2013
-#
+# Vladimir Kudrya <vladimir-csp@yandex.ru>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
 "POT-Creation-Date: 2017-02-11 13:29-0500\n"
-"PO-Revision-Date: 2013-01-06 14:15+0400\n"
-"Last-Translator:  <vmax0770@gmail.com>\n"
+"PO-Revision-Date: 2017-02-22 00:04+0300\n"
+"Last-Translator: Vladimir Kudrya <vladimir-csp@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.8.11\n"
 
 #: src/ArgParser.cc:75
 msgid "Unexpected argument "
@@ -67,9 +68,8 @@ msgid "or"
 msgstr "или"
 
 #: src/NWindow.cc:253
-#, fuzzy
 msgid "You previewed an image without applying it, apply?"
-msgstr "Изображение не было установлено как фон рабочего стола. Выйти?"
+msgstr "Просмотренное изображение не было применено. Применить?"
 
 #: src/NWindow.cc:329
 msgid "Automatic"
@@ -184,14 +184,18 @@ msgstr "шестнадцатеричный код цвета, по умолча�
 #: src/Util.cc:99
 msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
 msgstr ""
+"Выбрать дисплей многомониторной конфигурации/xinerama в GUI: 0..n, -1 для "
+"полноэкранного режима."
 
 #: src/Util.cc:100
 msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
 msgstr ""
+"Переопределить движок установщика фонов: xwindows, xinerama, gnome, "
+"pcmanfm"
 
 #: src/Util.cc:101
 msgid "Choose random background from config or given directory"
-msgstr ""
+msgstr "Выбрать случайное изображение из конфигурации или каталога"
 
 #: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
 #: src/Util.cc:110 src/Util.cc:111
