@@ -393,8 +393,10 @@ bool Config::save_cfg()
 
     kf.set_string_list("nitrogen", "dirs", m_vec_dirs);
 
-    if (g_file_set_contents(cfgfile.c_str(), kf.to_data().c_str(), -1, NULL) == FALSE)
-        return false;
+    Glib::ustring outp = kf.to_data();
+    std::ofstream outf(cfgfile.c_str());
+    outf << outp;
+    outf.close();
 
     return true;
 }
