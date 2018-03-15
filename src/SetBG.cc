@@ -299,6 +299,8 @@ SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
                     retval.type = SetBG::IGNORE;   else        // discard Conky!
                 if (strclass == std::string("Easystroke"))
                     retval.type = SetBG::IGNORE;   else
+                if (strclass == std::string("Tilda"))
+                    retval.type = SetBG::IGNORE;   else
                 {
                     std::cerr << "UNKNOWN ROOT WINDOW TYPE DETECTED (" << strclass << "), please file a bug\n";
                     retval.type = SetBG::UNKNOWN;
