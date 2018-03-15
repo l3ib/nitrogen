@@ -1288,7 +1288,15 @@ Glib::ustring SetBGGnome::get_gsettings_key()
 void SetBGGnome::set_show_desktop()
 {
     Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(get_gsettings_key());
-    settings->set_boolean("draw-background", true);
+    std::vector<Glib::ustring> keys = settings->list_keys();
+
+    if (std::find(keys.begin(), keys.end(), Glib::ustring("draw-background")) != keys.end()) {
+        try {
+            settings->set_boolean("draw-background", true);
+        } catch (...) {
+            std::cerr << "ERROR: draw-background supposedly exists, but threw an error while setting it\n";
+        }
+    }
 }
 
 /**
