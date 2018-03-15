@@ -76,7 +76,7 @@ NWindow::NWindow(SetBG* bg_setter) : apply (Gtk::Stock::APPLY), btn_prefs(Gtk::S
 		Glib::ListHandle<Glib::RefPtr<Gdk::Pixbuf> > lister(vec);
 
 		this->set_icon_list(lister);
-	} catch  (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		// don't even worry about it!
 	}
 
@@ -314,13 +314,13 @@ void NWindow::setup_select_boxes() {
 
 	try {
 		genericicon = icontheme->load_icon("image-x-generic", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		genericicon = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 16, 16);
 	}
 
 	try {
 		video_display_icon = icontheme->load_icon("video-display", 16, Gtk::ICON_LOOKUP_NO_SVG);
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		video_display_icon = genericicon;
 	}
 
@@ -330,7 +330,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-scaled", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Scaled"), SetBG::mode_to_string(SetBG::SET_SCALE), false );
@@ -338,7 +338,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-centered", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Centered"), SetBG::mode_to_string(SetBG::SET_CENTER), false );
@@ -346,7 +346,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-tiled", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		icon = genericicon;
 	}
 	this->select_mode.add_image_row( icon, _("Tiled"), SetBG::mode_to_string(SetBG::SET_TILE), false );
@@ -354,7 +354,7 @@ void NWindow::setup_select_boxes() {
 	try {
 		icon = icontheme->load_icon("wallpaper-zoomed", 16, Gtk::ICON_LOOKUP_NO_SVG);
 		if (!icon) icon = genericicon;
-	} catch (Gtk::IconThemeError e) {
+	} catch (const Gtk::IconThemeError& e) {
 		icon = genericicon;
 	}
 

@@ -203,7 +203,7 @@ std::pair<VecStrs, VecStrs> get_image_files(std::string path, bool recurse)
 
         try {
             dirhandle = new Glib::Dir(curdir);
-		} catch (Glib::FileError e) {
+		} catch (const Glib::FileError& e) {
 			std::cerr << _("Could not open dir") << " " << curdir << ": " << e.what() << "\n";
 			continue;
 		}

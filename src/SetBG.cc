@@ -724,7 +724,7 @@ bool SetBG::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::C
     // get our pixbuf from the file
     try {
         pixbuf = Gdk::Pixbuf::create_from_file(file);
-    } catch (Glib::FileError e) {
+    } catch (const Glib::FileError& e) {
         std::cerr << _("ERROR: Could not load file in bg set") << ": " << e.what() << "\n";
         return false;
     }
