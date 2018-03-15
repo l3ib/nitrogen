@@ -195,6 +195,7 @@ std::pair<VecStrs, VecStrs> get_image_files(std::string path, bool recurse)
     VecStrs dir_list;       // full list of the dirs we've seen so we don't get dups
     VecStrs file_list;
 
+    dir_list.push_back(path);
     queue_dirs.push(path);
 
     while (!queue_dirs.empty()) {
