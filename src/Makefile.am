@@ -6,3 +6,5 @@ INCLUDES = @NITROGEN_CFLAGS@ \
 man_MANS = nitrogen.1
 noinst_HEADERS = Config.h NWindow.h SetBG.h main.h md5.h Thumbview.h ImageCombo.h ArgParser.h Inotify.h Util.h gcs-i18n.h NPrefsWindow.h
 EXTRA_DIST = $(man_MANS)
+
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\"
