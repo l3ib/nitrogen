@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: nitrogen 1.6.0\n"
+"Project-Id-Version: nitrogen 1.6.1\n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2017-02-11 13:29-0500\n"
+"POT-Creation-Date: 2018-03-22 23:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,63 +93,63 @@ msgstr ""
 msgid "Zoomed Fill"
 msgstr ""
 
-#: src/SetBG.cc:516 src/SetBG.cc:544
+#: src/SetBG.cc:520 src/SetBG.cc:548
 msgid "Scale"
 msgstr ""
 
-#: src/SetBG.cc:519 src/SetBG.cc:546
+#: src/SetBG.cc:523 src/SetBG.cc:550
 msgid "Center"
 msgstr ""
 
-#: src/SetBG.cc:522 src/SetBG.cc:548
+#: src/SetBG.cc:526 src/SetBG.cc:552
 msgid "Tile"
 msgstr ""
 
-#: src/SetBG.cc:525 src/SetBG.cc:550
+#: src/SetBG.cc:529 src/SetBG.cc:554
 msgid "Zoom"
 msgstr ""
 
-#: src/SetBG.cc:528 src/SetBG.cc:552
+#: src/SetBG.cc:532 src/SetBG.cc:556
 msgid "ZoomFill"
 msgstr ""
 
-#: src/SetBG.cc:531 src/SetBG.cc:554
+#: src/SetBG.cc:535 src/SetBG.cc:558
 msgid "Auto"
 msgstr ""
 
-#: src/SetBG.cc:622
+#: src/SetBG.cc:626
 msgid "Could not get bg groups from config file."
 msgstr ""
 
-#: src/SetBG.cc:646 src/SetBG.cc:653
+#: src/SetBG.cc:650 src/SetBG.cc:657
 msgid "ERROR"
 msgstr ""
 
-#: src/SetBG.cc:665 src/SetBG.cc:1040
+#: src/SetBG.cc:669 src/SetBG.cc:1044
 msgid "Could not open display"
 msgstr ""
 
-#: src/SetBG.cc:726
+#: src/SetBG.cc:730
 msgid "ERROR: Could not load file in bg set"
 msgstr ""
 
-#: src/SetBG.cc:804
+#: src/SetBG.cc:808
 msgid "Unknown mode for saved bg"
 msgstr ""
 
-#: src/SetBG.cc:918
+#: src/SetBG.cc:922
 msgid "ERROR: BG set could not make atoms."
 msgstr ""
 
-#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+#: src/SetBG.cc:1023 src/SetBG.cc:1123 src/SetBG.cc:1533
 msgid "Screen"
 msgstr ""
 
-#: src/SetBG.cc:1114 src/SetBG.cc:1514
+#: src/SetBG.cc:1118 src/SetBG.cc:1526
 msgid "Full Screen"
 msgstr ""
 
-#: src/SetBG.cc:1179
+#: src/SetBG.cc:1183
 msgid "Could not find Xinerama screen number"
 msgstr ""
 
@@ -219,18 +219,70 @@ msgstr ""
 msgid "Saves the background permanently"
 msgstr ""
 
-#: src/Util.cc:207
+#: src/Util.cc:208
 msgid "Could not open dir"
 msgstr ""
 
-#: src/Util.cc:292
+#: src/Util.cc:293
 msgid "Currently set background"
 msgstr ""
 
-#: src/Util.cc:295
+#: src/Util.cc:296
 msgid "for"
 msgstr ""
 
 #: src/main.cc:133
 msgid "Error parsing command line"
+msgstr ""
+
+#: src/NPrefsWindow.cc:27
+msgid "Preferences"
+msgstr ""
+
+#: src/NPrefsWindow.cc:28
+msgid "View Options"
+msgstr ""
+
+#: src/NPrefsWindow.cc:29
+msgid "Directories"
+msgstr ""
+
+#: src/NPrefsWindow.cc:30
+msgid "Sort by"
+msgstr ""
+
+#: src/NPrefsWindow.cc:31
+msgid "_Icon"
+msgstr ""
+
+#: src/NPrefsWindow.cc:32
+msgid "_Icon with captions"
+msgstr ""
+
+#: src/NPrefsWindow.cc:33
+msgid "_List"
+msgstr ""
+
+#: src/NPrefsWindow.cc:34
+msgid "_Time (descending)"
+msgstr ""
+
+#: src/NPrefsWindow.cc:35
+msgid "_Time (ascending)"
+msgstr ""
+
+#: src/NPrefsWindow.cc:36
+msgid "_Name (ascending)"
+msgstr ""
+
+#: src/NPrefsWindow.cc:37
+msgid "_Name (descending)"
+msgstr ""
+
+#: src/NPrefsWindow.cc:38
+msgid "Recurse"
+msgstr ""
+
+#: src/NPrefsWindow.cc:202
+msgid "Are you sure you want to delete <b>%1</b>?"
 msgstr ""
