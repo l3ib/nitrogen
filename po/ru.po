@@ -2,13 +2,13 @@
 # Copyright (C) 2013 l3ib.org
 # This file is distributed under the same license as the nitrogen
 # Max Vorob'jov <vmax0770@gmail.com>, 2013
-# Vladimir Kudrya <vladimir-csp@yandex.ru>, 2017
+# Vladimir Kudrya <vladimir-csp@yandex.ru>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: daf@minuslab.net\n"
-"POT-Creation-Date: 2017-02-11 13:29-0500\n"
-"PO-Revision-Date: 2017-02-22 00:04+0300\n"
+"POT-Creation-Date: 2018-03-22 22:04+0300\n"
+"PO-Revision-Date: 2018-03-22 22:11+0300\n"
 "Last-Translator: Vladimir Kudrya <vladimir-csp@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -17,153 +17,155 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 
-#: src/ArgParser.cc:75
+#: ../src/ArgParser.cc:75
 msgid "Unexpected argument "
 msgstr "Неожиданный аргумент "
 
-#: src/ArgParser.cc:84
+#: ../src/ArgParser.cc:84
 msgid " expects an argument."
 msgstr " ожидается аргумент."
 
-#: src/ArgParser.cc:87
+#: ../src/ArgParser.cc:87
 msgid " does not expect an argument."
 msgstr " не ожидался аргумент."
 
-#: src/ArgParser.cc:93
+#: ../src/ArgParser.cc:93
 msgid " conflicts with another argument."
 msgstr " конфликтует с другим аргументом."
 
-#: src/ArgParser.cc:105
+#: ../src/ArgParser.cc:105
 msgid "Usage:"
 msgstr "Использование:"
 
-#: src/Config.cc:128 src/Config.cc:217
+#: ../src/Config.cc:128 ../src/Config.cc:217
 msgid "ERROR: Unable to load config file"
 msgstr "Ошибка: не удалось загрузить конфигурационный файл"
 
-#: src/Config.cc:139
+#: ../src/Config.cc:139
 msgid "Couldn't find group for"
 msgstr "Не удалось найти группу для"
 
-#: src/Config.cc:151
+#: ../src/Config.cc:151
 msgid "Could not get filename from config file."
 msgstr "Не удалось получить имя файла из конфигурационного файла."
 
-#: src/Config.cc:160
+#: ../src/Config.cc:160
 msgid "Could not get mode from config file."
 msgstr "Не удалось получить режим из конфигурационного файла."
 
-#: src/Config.cc:219
+#: ../src/Config.cc:219
 msgid "The error code returned was"
 msgstr "Программа завершилась с кодом"
 
-#: src/Config.cc:220
+#: ../src/Config.cc:220
 msgid "We expected"
 msgstr "Ожидалось"
 
-#: src/Config.cc:220
+#: ../src/Config.cc:220
 msgid "or"
 msgstr "или"
 
-#: src/NWindow.cc:253
+#: ../src/NWindow.cc:253
 msgid "You previewed an image without applying it, apply?"
 msgstr "Просмотренное изображение не было применено. Применить?"
 
-#: src/NWindow.cc:329
+#: ../src/NWindow.cc:329
 msgid "Automatic"
 msgstr "Автоматически"
 
-#: src/NWindow.cc:336
+#: ../src/NWindow.cc:336
 msgid "Scaled"
 msgstr "Растянуть"
 
-#: src/NWindow.cc:344
+#: ../src/NWindow.cc:344
 msgid "Centered"
 msgstr "По центру"
 
-#: src/NWindow.cc:352
+#: ../src/NWindow.cc:352
 msgid "Tiled"
 msgstr "Замостить"
 
-#: src/NWindow.cc:361
+#: ../src/NWindow.cc:361
 msgid "Zoomed"
 msgstr "Увеличить"
 
-#: src/NWindow.cc:362
+#: ../src/NWindow.cc:362
 msgid "Zoomed Fill"
 msgstr "На весь рабочий стол"
 
-#: src/SetBG.cc:516 src/SetBG.cc:544
+#: ../src/SetBG.cc:520 ../src/SetBG.cc:548
 msgid "Scale"
 msgstr "Растянуть"
 
-#: src/SetBG.cc:519 src/SetBG.cc:546
+#: ../src/SetBG.cc:523 ../src/SetBG.cc:550
 msgid "Center"
 msgstr "По центру"
 
-#: src/SetBG.cc:522 src/SetBG.cc:548
+#: ../src/SetBG.cc:526 ../src/SetBG.cc:552
 msgid "Tile"
 msgstr "Замостить"
 
-#: src/SetBG.cc:525 src/SetBG.cc:550
+#: ../src/SetBG.cc:529 ../src/SetBG.cc:554
 msgid "Zoom"
 msgstr "Увеличить"
 
-#: src/SetBG.cc:528 src/SetBG.cc:552
+#: ../src/SetBG.cc:532 ../src/SetBG.cc:556
 msgid "ZoomFill"
 msgstr "На весь рабочий стол"
 
-#: src/SetBG.cc:531 src/SetBG.cc:554
+#: ../src/SetBG.cc:535 ../src/SetBG.cc:558
 msgid "Auto"
 msgstr "Автоматически"
 
-#: src/SetBG.cc:622
+#. @TODO exception??
+#: ../src/SetBG.cc:626
 msgid "Could not get bg groups from config file."
-msgstr "Не удалось получить группы изображений из конфигурационного файла"
+msgstr "Не удалось получить группы изображений из конфигурационного файла."
 
-#: src/SetBG.cc:646 src/SetBG.cc:653
+#: ../src/SetBG.cc:650 ../src/SetBG.cc:657
 msgid "ERROR"
 msgstr "Ошибка"
 
-#: src/SetBG.cc:665 src/SetBG.cc:1040
+#: ../src/SetBG.cc:669 ../src/SetBG.cc:1044
 msgid "Could not open display"
 msgstr "Не могу открыть дисплей"
 
-#: src/SetBG.cc:726
+#: ../src/SetBG.cc:730
 msgid "ERROR: Could not load file in bg set"
 msgstr "Ошибка: не удалось загрузить файл изображения"
 
-#: src/SetBG.cc:804
+#: ../src/SetBG.cc:808
 msgid "Unknown mode for saved bg"
 msgstr "Неизвестный режим для сохранённого изображения"
 
-#: src/SetBG.cc:918
+#: ../src/SetBG.cc:922
 msgid "ERROR: BG set could not make atoms."
-msgstr "Ошибка: не удалось установить изображение как фон рабочего стола"
+msgstr "Ошибка: не удалось установить изображение как фон рабочего стола."
 
-#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+#: ../src/SetBG.cc:1023 ../src/SetBG.cc:1123 ../src/SetBG.cc:1533
 msgid "Screen"
 msgstr "Экран"
 
-#: src/SetBG.cc:1114 src/SetBG.cc:1514
+#. always add full screen as we need the -1 key always
+#: ../src/SetBG.cc:1118 ../src/SetBG.cc:1526
 msgid "Full Screen"
 msgstr "Весь экран"
 
-#: src/SetBG.cc:1179
+#: ../src/SetBG.cc:1183
 msgid "Could not find Xinerama screen number"
 msgstr "Не удалось определить номер дисплея Ximerama"
 
-#: src/Util.cc:95
+#: ../src/Util.cc:95
 msgid "Restore saved backgrounds"
 msgstr "Восстанавливать сохранённые изображения рабочего стола"
 
-#: src/Util.cc:96
+#: ../src/Util.cc:96
 msgid "Do not recurse into subdirectories"
 msgstr "Просматривать папку без подпапок"
 
-#: src/Util.cc:97
+#: ../src/Util.cc:97
 msgid ""
 "How to sort the backgrounds. Valid options are:\n"
 "\t\t\t* alpha, for alphanumeric sort\n"
@@ -177,74 +179,124 @@ msgstr ""
 "\t\t\t* time, по дате изменения (сначала самые старые)\n"
 "\t\t\t* rtime, по дате изменения в обратном порядке (сначала самые новые)"
 
-#: src/Util.cc:98
+#: ../src/Util.cc:98
 msgid "background color in hex, #000000 by default"
 msgstr "шестнадцатеричный код цвета, по умолчанию #000000"
 
-#: src/Util.cc:99
+#: ../src/Util.cc:99
 msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
 msgstr ""
-"Выбрать дисплей многомониторной конфигурации/xinerama в GUI: 0..n, -1 для "
-"полноэкранного режима."
+"Выбрать дисплей многомониторной конфигурации: 0..n, -1 для общего фона"
 
-#: src/Util.cc:100
+#: ../src/Util.cc:100
 msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
 msgstr ""
-"Переопределить движок установщика фонов: xwindows, xinerama, gnome, "
-"pcmanfm"
+"Переопределить движок установщика фонов: xwindows, xinerama, gnome, pcmanfm"
 
-#: src/Util.cc:101
+#: ../src/Util.cc:101
 msgid "Choose random background from config or given directory"
 msgstr "Выбрать случайное изображение из конфигурации или каталога"
 
-#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
-#: src/Util.cc:110 src/Util.cc:111
+#: ../src/Util.cc:106 ../src/Util.cc:107 ../src/Util.cc:108 ../src/Util.cc:109
+#: ../src/Util.cc:110 ../src/Util.cc:111
 msgid "Sets the background to the given file"
 msgstr "Устанавливает указаный файл фоном рабочего стола"
 
-#: src/Util.cc:106
+#: ../src/Util.cc:106
 msgid "scaled"
 msgstr "растянуть"
 
-#: src/Util.cc:107
+#: ../src/Util.cc:107
 msgid "tiled"
 msgstr "замостить"
 
-#: src/Util.cc:108
+#: ../src/Util.cc:108
 msgid "auto"
 msgstr "автоматически"
 
-#: src/Util.cc:109
+#: ../src/Util.cc:109
 msgid "centered"
 msgstr "по центру"
 
-#: src/Util.cc:110
+#: ../src/Util.cc:110
 msgid "zoom"
 msgstr "увеличить"
 
-#: src/Util.cc:111
+#: ../src/Util.cc:111
 msgid "zoom-fill"
 msgstr "на весь рабочий стол"
 
-#: src/Util.cc:112
+#: ../src/Util.cc:112
 msgid "Saves the background permanently"
 msgstr "Сохраняет изображение рабочего стола"
 
-#: src/Util.cc:207
+#: ../src/Util.cc:208
 msgid "Could not open dir"
 msgstr "Не могу открыть папку"
 
-#: src/Util.cc:292
+#: ../src/Util.cc:293
 msgid "Currently set background"
 msgstr "Текущее изображение рабочего стола"
 
-#: src/Util.cc:295
+#: ../src/Util.cc:296
 msgid "for"
 msgstr "для"
 
-#: src/main.cc:133
+#: ../src/main.cc:133
 msgid "Error parsing command line"
 msgstr "Ошибка распознавания аргумента командной строки"
+
+#: ../src/NPrefsWindow.cc:27
+msgid "Preferences"
+msgstr "Настройки"
+
+#: ../src/NPrefsWindow.cc:28
+msgid "View Options"
+msgstr "Параметры отображения"
+
+#: ../src/NPrefsWindow.cc:29
+msgid "Directories"
+msgstr "Каталоги"
+
+#: ../src/NPrefsWindow.cc:30
+msgid "Sort by"
+msgstr "_Сортировка"
+
+#: ../src/NPrefsWindow.cc:31
+msgid "_Icon"
+msgstr "_Значки"
+
+#: ../src/NPrefsWindow.cc:32
+msgid "_Icon with captions"
+msgstr "Значки с _подписями"
+
+#: ../src/NPrefsWindow.cc:33
+msgid "_List"
+msgstr "Список"
+
+#: ../src/NPrefsWindow.cc:34
+msgid "_Time (descending)"
+msgstr "Время (по _убыванию)"
+
+#: ../src/NPrefsWindow.cc:35
+msgid "_Time (ascending)"
+msgstr "_Время (по возрастанию)"
+
+#: ../src/NPrefsWindow.cc:36
+msgid "_Name (ascending)"
+msgstr "_Имя (по возрастанию)"
+
+#: ../src/NPrefsWindow.cc:37
+msgid "_Name (descending)"
+msgstr "Им_я (по убыванию)"
+
+#: ../src/NPrefsWindow.cc:38
+msgid "Recurse"
+msgstr "Рекурсивно"
+
+#: ../src/NPrefsWindow.cc:202
+msgid "Are you sure you want to delete <b>%1</b>?"
+msgstr "Вы уверены что хотите удалить <b>%1</b>?"
 
 #~ msgid "Could not open config directory."
 #~ msgstr "Не удалось открыть папку с настройками."
