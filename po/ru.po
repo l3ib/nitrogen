@@ -85,7 +85,7 @@ msgstr "По центру"
 
 #: ../src/NWindow.cc:352
 msgid "Tiled"
-msgstr "Мозаикой"
+msgstr "Замостить"
 
 #: ../src/NWindow.cc:361
 msgid "Zoomed"
@@ -109,11 +109,11 @@ msgstr "Замостить"
 
 #: ../src/SetBG.cc:529 ../src/SetBG.cc:554
 msgid "Zoom"
-msgstr "Увеличить"
+msgstr "Пропорционально уместить"
 
 #: ../src/SetBG.cc:532 ../src/SetBG.cc:556
 msgid "ZoomFill"
-msgstr "На весь рабочий стол"
+msgstr "Пропорционально заполнить"
 
 #: ../src/SetBG.cc:535 ../src/SetBG.cc:558
 msgid "Auto"
@@ -220,11 +220,11 @@ msgstr "по центру"
 
 #: ../src/Util.cc:110
 msgid "zoom"
-msgstr "увеличить"
+msgstr "пропорционально уместить"
 
 #: ../src/Util.cc:111
 msgid "zoom-fill"
-msgstr "на весь рабочий стол"
+msgstr "пропорционально заполнить"
 
 #: ../src/Util.cc:112
 msgid "Saves the background permanently"
