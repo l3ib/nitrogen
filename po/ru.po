@@ -85,15 +85,15 @@ msgstr "По центру"
 
 #: ../src/NWindow.cc:352
 msgid "Tiled"
-msgstr "Замостить"
+msgstr "Мозаикой"
 
 #: ../src/NWindow.cc:361
 msgid "Zoomed"
-msgstr "Увеличить"
+msgstr "Пропорционально уместить"
 
 #: ../src/NWindow.cc:362
 msgid "Zoomed Fill"
-msgstr "На весь рабочий стол"
+msgstr "Пропорционально заполнить"
 
 #: ../src/SetBG.cc:520 ../src/SetBG.cc:548
 msgid "Scale"
