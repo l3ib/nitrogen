@@ -260,7 +260,7 @@ msgstr "Каталоги"
 
 #: ../src/NPrefsWindow.cc:30
 msgid "Sort by"
-msgstr "_Сортировка"
+msgstr "Сортировка"
 
 #: ../src/NPrefsWindow.cc:31
 msgid "_Icon"
@@ -276,7 +276,7 @@ msgstr "Список"
 
 #: ../src/NPrefsWindow.cc:34
 msgid "_Time (descending)"
-msgstr "Время (по _убыванию)"
+msgstr "В_ремя (по убыванию)"
 
 #: ../src/NPrefsWindow.cc:35
 msgid "_Time (ascending)"
