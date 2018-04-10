@@ -1,0 +1,269 @@
+# German translations for nitrogen 
+# Copyright (C) 2013 l3ib.org
+# This file is distributed under the same license as the nitrogen
+# Max Vorob'jov <vmax0770@gmail.com>, 2013
+# Vinzenz Vietzke <vinz@vinzv.de>, 2018
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: daf@minuslab.net\n"
+"POT-Creation-Date: 2017-02-11 13:29-0500\n"
+"PO-Revision-Date: 2018-04-10 14:20+0200\n"
+"Last-Translator: Vinzenz Vietzke <vinz@vinzv.de>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: src/ArgParser.cc:75
+msgid "Unexpected argument "
+msgstr "Unerwartetes Argument"
+
+#: src/ArgParser.cc:84
+msgid " expects an argument."
+msgstr " erwartet ein Argument."
+
+#: src/ArgParser.cc:87
+msgid " does not expect an argument."
+msgstr " erwartet kein Argument."
+
+#: src/ArgParser.cc:93
+msgid " conflicts with another argument."
+msgstr " steht in Konflikt mit einem weiteren Argument."
+
+#: src/ArgParser.cc:105
+msgid "Usage:"
+msgstr "Verwendung:"
+
+#: src/Config.cc:128 src/Config.cc:217
+msgid "ERROR: Unable to load config file"
+msgstr "FEHLER: Kann Konfigurationsdatei nicht laden"
+
+#: src/Config.cc:139
+msgid "Couldn't find group for"
+msgstr "Konnte keine Gruppe finden für"
+
+#: src/Config.cc:151
+msgid "Could not get filename from config file."
+msgstr "Konnte keinen Dateinamen aus der Konfigurationsdatei lesen."
+
+#: src/Config.cc:160
+msgid "Could not get mode from config file."
+msgstr "Konnte keinen Modus aus der Konfigurationsdatei lesen."
+
+#: src/Config.cc:219
+msgid "The error code returned was"
+msgstr "Der zurückgemeldete Fehlercode war"
+
+#: src/Config.cc:220
+msgid "We expected"
+msgstr "Wir erwarteten"
+
+#: src/Config.cc:220
+msgid "or"
+msgstr "oder"
+
+#: src/NWindow.cc:253
+msgid "You previewed an image without applying it, apply?"
+msgstr "Sie haben eine Bild in der Vorschau angezeigt ohne es anzuwenden, jetzt anwenden?"
+
+#: src/NWindow.cc:329
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: src/NWindow.cc:336
+msgid "Scaled"
+msgstr "Skaliert"
+
+#: src/NWindow.cc:344
+msgid "Centered"
+msgstr "Zentriert"
+
+#: src/NWindow.cc:352
+msgid "Tiled"
+msgstr "Gekachelt"
+
+#: src/NWindow.cc:361
+msgid "Zoomed"
+msgstr "Gezoomt"
+
+#: src/NWindow.cc:362
+msgid "Zoomed Fill"
+msgstr "Gezoomt und gefüllt"
+
+#: src/SetBG.cc:516 src/SetBG.cc:544
+msgid "Scale"
+msgstr "Skalieren"
+
+#: src/SetBG.cc:519 src/SetBG.cc:546
+msgid "Center"
+msgstr "Zentrieren"
+
+#: src/SetBG.cc:522 src/SetBG.cc:548
+msgid "Tile"
+msgstr "Kacheln"
+
+#: src/SetBG.cc:525 src/SetBG.cc:550
+msgid "Zoom"
+msgstr "Zoomen"
+
+#: src/SetBG.cc:528 src/SetBG.cc:552
+msgid "ZoomFill"
+msgstr "Zoomen und Füllen"
+
+#: src/SetBG.cc:531 src/SetBG.cc:554
+msgid "Auto"
+msgstr "Automatisch"
+
+#: src/SetBG.cc:622
+msgid "Could not get bg groups from config file."
+msgstr "Konnte bg-Gruppen nicht aus der Konfigurationsdatei lesen."
+
+#: src/SetBG.cc:646 src/SetBG.cc:653
+msgid "ERROR"
+msgstr "FEHLER"
+
+#: src/SetBG.cc:665 src/SetBG.cc:1040
+msgid "Could not open display"
+msgstr "Konnte Anzeige nicht öffnen"
+
+#: src/SetBG.cc:726
+msgid "ERROR: Could not load file in bg set"
+msgstr "FEHLER: Konnte keine Datei im bg-Set laden"
+
+#: src/SetBG.cc:804
+msgid "Unknown mode for saved bg"
+msgstr "Unbekannter Modus für gespeicherten bg"
+
+#: src/SetBG.cc:918
+#, fuzzy
+msgid "ERROR: BG set could not make atoms."
+msgstr "FEHLER: BG-Set konnte keine Atome erstellen."
+
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+msgid "Screen"
+msgstr "Bildschirm"
+
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
+msgid "Full Screen"
+msgstr "Vollbild"
+
+#: src/SetBG.cc:1179
+msgid "Could not find Xinerama screen number"
+msgstr "Konnte Xinerama-Bildschirmnummer nicht finden"
+
+#: src/Util.cc:95
+msgid "Restore saved backgrounds"
+msgstr "Gespeicherte Hintergründe wiederhergestellt"
+
+#: src/Util.cc:96
+msgid "Do not recurse into subdirectories"
+msgstr "Nicht auf Unterverzeichnisse zurückgreifen"
+
+#: src/Util.cc:97
+msgid ""
+"How to sort the backgrounds. Valid options are:\n"
+"\t\t\t* alpha, for alphanumeric sort\n"
+"\t\t\t* ralpha, for reverse alphanumeric sort\n"
+"\t\t\t* time, for last modified time sort (oldest first)\n"
+"\t\t\t* rtime, for reverse last modified time sort (newest first)"
+msgstr ""
+"Wie Hintergründe sortiert werden. Gültige Optionen sind:\n"
+"\t\t\t* alpha, für alphanumerische Sortierung\n"
+"\t\t\t* ralpha, für umgekehrte alphanumerische Sortierung\n"
+"\t\t\t* Zeit, für Sortierung nach zuletzt geänderter Zeit (älteste zuerst)\n"
+"\t\t\t* rtime, für umgekehrte Sortierung nach zuletzt geänderter Zeit (neueste zuerst)"
+
+#: src/Util.cc:98
+msgid "background color in hex, #000000 by default"
+msgstr "Hintergrundfarbe als Hex, standardmäßig #000000"
+
+#: src/Util.cc:99
+msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
+msgstr "Gewähltes xinerama/multihead-Display in der GUI, 0..n, -1 für Vollbild"
+
+#: src/Util.cc:100
+#, fuzzy
+msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
+msgstr "Setzer-Engine erzwingen: xwindows, xinerama, gnome, pcmanfm"
+
+#: src/Util.cc:101
+msgid "Choose random background from config or given directory"
+msgstr "Einen zufälligen Hintergrund aus der Konfiguration oder dem angegebenen Verzeichnis wählen"
+
+#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
+#: src/Util.cc:110 src/Util.cc:111
+msgid "Sets the background to the given file"
+msgstr "Legt den Hintergrund auf die angegebene Datei fest"
+
+#: src/Util.cc:106
+msgid "scaled"
+msgstr "skaliert"
+
+#: src/Util.cc:107
+msgid "tiled"
+msgstr "gekachelt"
+
+#: src/Util.cc:108
+msgid "auto"
+msgstr "automatisch"
+
+#: src/Util.cc:109
+msgid "centered"
+msgstr "zentriert"
+
+#: src/Util.cc:110
+msgid "zoom"
+msgstr "gezoomt"
+
+#: src/Util.cc:111
+msgid "zoom-fill"
+msgstr "gezoomt und gefüllt"
+
+#: src/Util.cc:112
+msgid "Saves the background permanently"
+msgstr "Speichert den Hintergrund dauerhaft"
+
+#: src/Util.cc:207
+msgid "Could not open dir"
+msgstr "Konnte Verzeichnis nicht öffnen"
+
+#: src/Util.cc:292
+msgid "Currently set background"
+msgstr "Momentan festgelegter Hintergrund"
+
+#: src/Util.cc:295
+msgid "for"
+msgstr "für"
+
+#: src/main.cc:133
+msgid "Error parsing command line"
+msgstr "Fehler beim Parsen der Kommandozeile"
+
+msgid "Could not open config directory."
+msgstr "Konnte Verzeichnis der Konfiguration nicht öffnen."
+
+msgid "Default"
+msgstr "Standard"
+
+#, fuzzy
+msgid "Unknown mode for saved bg on"
+msgstr "Unbekannter Modus für gespeichterten BG bei"
+
+msgid "UNKNOWN ROOT WINDOW TYPE DETECTED, will attempt to set via normal X procedure"
+msgstr "UNBEKANNTER URSPRUNGSFENSTER-TYP ERKANNT, versuche ihn über das normale X-Vorgehen zu setzen"
+
+msgid "Invalid UTF-8 encountered. Skipping file"
+msgstr "Ungültiges UTF-8 erkannt. Überspringe Datei"
+
+msgid "Could not get bg info for fullscreen xinerama"
+msgstr "Konnte keine BG-Info laden für Vollbild xinerama"
+
+msgid "Could not get bg info for"
+msgstr "Konnte keine BG-Info laden für"
+
+msgid "Could not get bg info"
+msgstr "Konnte BG-Info nicht laden"
