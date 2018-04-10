@@ -7,3 +7,4 @@
      ../src/Thumbview.cc \
      ../src/Util.cc \
      ../src/main.cc
+     ../src/NPrefsWindow.cc
