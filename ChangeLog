@@ -1,4 +1,52 @@
-2017-02-11  gettextize  <bug-gnu-gettext@gnu.org>
+Sat Feb 11 23:23:23 EDT 2017    Dave Foster <daf@minuslab.net>
+  * Releasing 1.6.1:
+  * Issues Fixed:
+  * Root window detection for windows such as conky fixed (#40, #90, #88, #86, #89)
+  * Fixed Mutter detection, added wrapped mode for mutter (#78)
+  * Respect $PREFIX for application data (@berkley4, #70)
+  * Don't set show desktop key for Nemo (#91)
+  * No-op when Apply is pressed and nothing is selected (#92)
+  * Translations now install again (#64)
+  * Xinerama disabled compilation fix (@jer-gentoo, #84)
+  * Random codepath if statement fix (#85)
+  * README spelling error (@gfa, #82)
+  * Translations:
+  * Polish (@sirlucjan, #87)
+
+Sun Nov 13 23:23:23 EDT 2016    Dave Foster <daf@minuslab.net>
+  * Releasing 1.6.0:
+  * Features:
+  * Keyboard shortcuts (#10)
+  * Select head on command line with (--head) (@jaypikay, #13)
+  * Exit confirmation dialog (@jameh, #33)
+  * Can restore original background in X if changes not confirmed
+  * Sorting and recursion pref options (@easysid, #47, #23)
+  * Icon view with captions (#15)
+  * Random background selector (Ctrl+R or --random)
+  * Mutter support (#61)
+  * LXDE support (#63, #80)
+  * SVG image file support (@Vladimir-csp, #75)
+  * Translations:
+  * Russian (@vmax)
+  * Bosnian, Croatian, Serbian (@dglava)
+
+  * Issues fixed:
+  * Autotools issue with X11 (#12)
+  * Add desktop file (@andrewsomething, @Vladimir-csp, #28, #29, #74)
+  * Freedesktop spec fix (@EvanPurkhiser, #30)
+  * Nautilus detection fixes (#52, #59)
+  * XDG system dir fix (Unit193, #41)
+  * Don't let Xinerama mode set heads that don't exist (#55)
+  * Xinerama fullscreen issue/detection (#59)
+  * Man pages (#20)
+
+  * Internal:
+  * Major refactor of setter code/organization, easier to support external background setters (gnome/lxde/xfce etc) (#25)
+  * Autotools refactor (@JamesNZ/@JamesWrigley, #42, #45)
+  * Whitespace cleanup (@jubalh, #56)
+  * Notes for packagers about C++11 (@rtlanceroad, #65)
+
+Tue Apr 19 21:55:56 EDT 2011    Dave Foster <daf@minuslab.net>
 
 	* m4/gettext.m4: Upgrade to gettext-0.19.7.
 	* m4/iconv.m4: Upgrade to gettext-0.19.7.
