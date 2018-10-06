@@ -200,6 +200,21 @@ SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> dis
         wid = *(guint*)data;
         g_free(data);
 
+        // xfce also sets NAUTILUS_DESKTOP_WINDOW_ID, check for XFCE_DESKTOP_WINDOW
+        ret = gdk_property_get(rootwin->gobj(),
+                               gdk_atom_intern("XFCE_DESKTOP_WINDOW", FALSE),
+                               gdk_atom_intern("WINDOW", FALSE),
+                               0L,
+                               4L, /* length of a window is 32bits*/
+                               FALSE, &type, &format, &length, &data);
+
+        if (ret) {
+            wid = *(guint*)data;
+            g_free(data);
+
+            return SetBG::RootWindowData((Window)wid, SetBG::XFCE, "XFCE_DESKTOP_WINDOW");
+        }
+
         return SetBG::RootWindowData((Window)wid, SetBG::NAUTILUS, "NAUTILUS_DESKTOP_WINDOW_ID");
     } else {
         // check for mutter atoms on root window
@@ -1577,6 +1592,14 @@ bool SetBGPcmanfm::save_to_config()
  */
 
 bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+    std::cerr << "SetBG for " << disp << "\n";
+    // set image
+    std::vector<std::string> params;
+    params.push_back(std::string("-s"));
+    params.push_back(std::string(file));
+
+    call_xfconf(Glib::ustring("0"), std::string("last-image"), params);
+
     Glib::ustring strmode = "1"; //centered
 	switch(mode) {
 		case SetBG::SET_CENTER:     strmode = "1"; break;
@@ -1586,28 +1609,29 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
 		case SetBG::SET_ZOOM_FILL:  strmode = "5"; break;   // xfce calls this "zoomed"
 	};
 
-    std::vector<std::string> vecCmdLine;
-    vecCmdLine.push_back(std::string("xfconf-query"));
-    vecCmdLine.push_back(std::string("-c"));
-    vecCmdLine.push_back(std::string("xfce4-desktop"));
-    vecCmdLine.push_back(std::string("-p"));
-    vecCmdLine.push_back(std::string("/backdrop/screen0/monitor0/workspace0/last-image"));  // XXX: monitor
-    vecCmdLine.push_back(std::string("-s"));
-    vecCmdLine.push_back(std::string(file));
+    params.clear();
+    params.push_back(std::string("-s"));
+    params.push_back(strmode);
+    call_xfconf(Glib::ustring("0"), std::string("image-style"), params);
 
-    try {
-        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
-    }
-    catch (Glib::SpawnError e) {
-		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+    // set color mode
+    // we only support "solid" color mode (for now!)
+    params.clear();
+    params.push_back(std::string("-s"));
+    params.push_back(std::string("0"));
+    call_xfconf(Glib::ustring("0"), std::string("color-style"), params);
 
-        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
-			std::cerr << *i << " ";
-
-		std::cerr << "\n";
-
-        return false;
-	}
+    // set color
+    params.clear();
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_red()));     // r
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_green()));     // g
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_blue()));     // b
+    params.push_back(std::string("-s"));
+    params.push_back(std::string("65535")); // a
+    call_xfconf(Glib::ustring("0"), std::string("color1"), params);
 
 	return true;
 }
@@ -1654,3 +1678,26 @@ bool SetBGXFCE::save_to_config()
     return false;
 }
 
+bool SetBGXFCE::call_xfconf(Glib::ustring disp, std::string key, const std::vector<std::string>& params) {
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("xfconf-query"));
+    vecCmdLine.push_back(std::string("-c"));
+    vecCmdLine.push_back(std::string("xfce4-desktop"));
+    vecCmdLine.push_back(std::string("-p"));
+    vecCmdLine.push_back(Glib::ustring::compose("/backdrop/screen0/monitor%1/workspace0/%2", disp, key));
+    vecCmdLine.insert(vecCmdLine.end(), params.begin(), params.end());
+
+    try {
+        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+    }
+    catch (Glib::SpawnError e) {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
+
+		std::cerr << "\n";
+
+        return false;
+	}
+}

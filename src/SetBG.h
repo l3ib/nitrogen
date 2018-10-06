@@ -210,6 +210,8 @@ class SetBGXFCE : public SetBG {
     protected:
         virtual Glib::ustring get_prefix();
         virtual Glib::ustring make_display_key(gint head);
+
+        bool call_xfconf(Glib::ustring disp, std::string key, const std::vector<std::string>& params);
 };
 
 #endif
