@@ -1592,15 +1592,7 @@ bool SetBGPcmanfm::save_to_config()
  */
 
 bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
-    std::cerr << "SetBG for " << disp << "\n";
-    // set image
-    std::vector<std::string> params;
-    params.push_back(std::string("-s"));
-    params.push_back(std::string(file));
-
-    call_xfconf(disp, std::string("last-image"), params);
-
-    Glib::ustring strmode = "1"; //centered
+    Glib::ustring strmode = "1";
 	switch(mode) {
 		case SetBG::SET_CENTER:     strmode = "1"; break;
 		case SetBG::SET_TILE:       strmode = "2"; break;
@@ -1608,6 +1600,21 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
 		case SetBG::SET_ZOOM:       strmode = "4"; break;   // xfce calls this "scaled"
 		case SetBG::SET_ZOOM_FILL:  strmode = "5"; break;   // xfce calls this "zoomed"
 	};
+
+    if (disp == this->get_fullscreen_key()) {
+        // special handling for fullscreen:
+        // XFCE sets a new mode (value "6", labeled "Spanning Screens" in their config tool), and
+        // sets it on monitor0.  just tweak the params here and continue
+        disp    = std::string("0");
+        strmode = std::string("6");
+    }
+
+    // set image
+    std::vector<std::string> params;
+    params.push_back(std::string("-s"));
+    params.push_back(std::string(file));
+
+    call_xfconf(disp, std::string("last-image"), params);
 
     params.clear();
     params.push_back(std::string("-s"));
