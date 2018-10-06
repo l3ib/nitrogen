@@ -1598,7 +1598,7 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
     params.push_back(std::string("-s"));
     params.push_back(std::string(file));
 
-    call_xfconf(Glib::ustring("0"), std::string("last-image"), params);
+    call_xfconf(disp, std::string("last-image"), params);
 
     Glib::ustring strmode = "1"; //centered
 	switch(mode) {
@@ -1612,17 +1612,26 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
     params.clear();
     params.push_back(std::string("-s"));
     params.push_back(strmode);
-    call_xfconf(Glib::ustring("0"), std::string("image-style"), params);
+    call_xfconf(disp, std::string("image-style"), params);
 
     // set color mode
     // we only support "solid" color mode (for now!)
     params.clear();
     params.push_back(std::string("-s"));
     params.push_back(std::string("0"));
-    call_xfconf(Glib::ustring("0"), std::string("color-style"), params);
+    call_xfconf(disp, std::string("color-style"), params);
 
     // set color
     params.clear();
+    params.push_back(std::string("--create"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
     params.push_back(std::string("-s"));
     params.push_back(Glib::ustring::compose("%1", bgcolor.get_red()));     // r
     params.push_back(std::string("-s"));
@@ -1631,20 +1640,31 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
     params.push_back(Glib::ustring::compose("%1", bgcolor.get_blue()));     // b
     params.push_back(std::string("-s"));
     params.push_back(std::string("65535")); // a
-    call_xfconf(Glib::ustring("0"), std::string("color1"), params);
+    call_xfconf(disp, std::string("color1"), params);
 
 	return true;
 }
 
+/*
+ * Make a usable display key to pass to set_bg with a given head number.
+ *
+ * For XFCE, return simply the head/monitor number.
+ */
 Glib::ustring SetBGXFCE::make_display_key(gint head)
 {
-    //if (head == -1)
-    //    return this->get_fullscreen_key();
+    if (head == -1)
+        return this->get_fullscreen_key();
 
-    //return Glib::ustring::compose("monitor%1/workspace%2", this->get_prefix(), head);
-    return Glib::ustring("dummy");
+    return Glib::ustring::compose("%1", head);
 }
 
+/**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
 std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
 {
     std::map<Glib::ustring, Glib::ustring> map_displays;
@@ -1653,13 +1673,18 @@ std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
 
     //map_displays[screen->make_display_name()] = ostr.str();
 
-    map_displays["dummy"] = "XFCE";
+    map_displays["0"] = "XFCE 0";
     return map_displays;
 }
 
+/**
+ * Gets the full key for "full screen" for this setter.
+ *
+ * For XFCE, simply "fullscreen".
+ */
 Glib::ustring SetBGXFCE::get_fullscreen_key()
 {
-    return Glib::ustring("dummy");
+    return Glib::ustring("fullscreen");
 }
 
 Glib::ustring SetBGXFCE::get_prefix()
@@ -1678,6 +1703,20 @@ bool SetBGXFCE::save_to_config()
     return false;
 }
 
+/**
+ * Helper method to call xfconf asynchronously.
+ *
+ * Settings in XFCE appear to only be settable one at a time, so we have to call this method
+ * repeatedly to set all the various parameters Nitrogen handles.
+ *
+ * Expects to set properties in the form "/backdrop/screen0/monitor<X>/workspace0/<key>", where
+ * the monitor number is set by the `disp` param.
+ *
+ * @param   disp    The display, which translates into monitorX.
+ * @param   key     The name of the property key to set.
+ * @param   params  Parameters (typically ["-s", "some value"]).
+ * @return          Success or if it had an issue with spawn.
+ */
 bool SetBGXFCE::call_xfconf(Glib::ustring disp, std::string key, const std::vector<std::string>& params) {
     std::vector<std::string> vecCmdLine;
     vecCmdLine.push_back(std::string("xfconf-query"));
