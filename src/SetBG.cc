@@ -1669,11 +1669,54 @@ std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
 {
     std::map<Glib::ustring, Glib::ustring> map_displays;
 
-    // @TODO: execute xfconf-query, listing keys in -c xfce4-desktop, extract screenX/monitorY entries (just use the monitors)
+    // execute xfconf-query, listing keys in -c xfce4-desktop, extract screenX/monitorY entries (just use the monitors)
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("xfconf-query"));
+    vecCmdLine.push_back(std::string("-c"));
+    vecCmdLine.push_back(std::string("xfce4-desktop"));
+    vecCmdLine.push_back(std::string("-l"));
 
-    //map_displays[screen->make_display_name()] = ostr.str();
+    std::string so;
+    try {
+        Glib::spawn_sync("", vecCmdLine, Glib::SPAWN_SEARCH_PATH, sigc::slot<void>(), &so, NULL, NULL);
+    }
+    catch (Glib::SpawnError e) {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
 
-    map_displays["0"] = "XFCE 0";
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
+
+		std::cerr << "\n";
+        return map_displays;
+    }
+
+    std::vector<std::string> lines = Glib::Regex::split_simple("\n", so);
+    Glib::RefPtr<Glib::Regex> rMonitor = Glib::Regex::create("monitor(\\d+)");
+    Glib::MatchInfo info;
+
+    for (std::vector<std::string>::const_iterator i = lines.begin(); i != lines.end(); i++) {
+
+        bool ok = rMonitor->match(*i, info);
+        if (ok) {
+            std::string monitorNum = info.fetch(1);
+
+            if (map_displays.find(monitorNum) == map_displays.end()) {
+                guint monitorNumInt;
+                std::istringstream inpstream(monitorNum);
+                inpstream >> monitorNumInt;
+
+                std::ostringstream ostr;
+                ostr << _("Screen") << " " << (monitorNumInt+1);
+
+                map_displays[monitorNum] = ostr.str();
+            }
+        }
+    }
+
+    if (map_displays.size() > 1) {
+        map_displays[this->get_fullscreen_key()] = _("Full Screen");
+    }
+
     return map_displays;
 }
 
