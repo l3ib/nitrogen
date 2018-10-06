@@ -66,6 +66,9 @@ SetBG* SetBG::get_bg_setter()
         case SetBG::PCMANFM:
             setter = new SetBGPcmanfm();
             break;
+        case SetBG::XFCE:
+            setter = new SetBGXFCE();
+            break;
         case SetBG::DEFAULT:
         default:
             setter = new SetBGXWindows();
@@ -1563,6 +1566,90 @@ Glib::ustring SetBGPcmanfm::make_display_key(gint head) {
  * The Pcmanfm mode is completely external.
  */
 bool SetBGPcmanfm::save_to_config()
+{
+    return false;
+}
+
+/*
+ * **************************************************************************
+ * SetBGXFCE
+ * **************************************************************************
+ */
+
+bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+    Glib::ustring strmode = "1"; //centered
+	switch(mode) {
+		case SetBG::SET_CENTER:     strmode = "1"; break;
+		case SetBG::SET_TILE:       strmode = "2"; break;
+		case SetBG::SET_SCALE:      strmode = "3"; break;   // xfce calls this "stretched"
+		case SetBG::SET_ZOOM:       strmode = "4"; break;   // xfce calls this "scaled"
+		case SetBG::SET_ZOOM_FILL:  strmode = "5"; break;   // xfce calls this "zoomed"
+	};
+
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("xfconf-query"));
+    vecCmdLine.push_back(std::string("-c"));
+    vecCmdLine.push_back(std::string("xfce4-desktop"));
+    vecCmdLine.push_back(std::string("-p"));
+    vecCmdLine.push_back(std::string("/backdrop/screen0/monitor0/workspace0/last-image"));  // XXX: monitor
+    vecCmdLine.push_back(std::string("-s"));
+    vecCmdLine.push_back(std::string(file));
+
+    try {
+        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+    }
+    catch (Glib::SpawnError e) {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
+
+		std::cerr << "\n";
+
+        return false;
+	}
+
+	return true;
+}
+
+Glib::ustring SetBGXFCE::make_display_key(gint head)
+{
+    //if (head == -1)
+    //    return this->get_fullscreen_key();
+
+    //return Glib::ustring::compose("monitor%1/workspace%2", this->get_prefix(), head);
+    return Glib::ustring("dummy");
+}
+
+std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
+{
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+
+    // @TODO: execute xfconf-query, listing keys in -c xfce4-desktop, extract screenX/monitorY entries (just use the monitors)
+
+    //map_displays[screen->make_display_name()] = ostr.str();
+
+    map_displays["dummy"] = "XFCE";
+    return map_displays;
+}
+
+Glib::ustring SetBGXFCE::get_fullscreen_key()
+{
+    return Glib::ustring("dummy");
+}
+
+Glib::ustring SetBGXFCE::get_prefix()
+{
+    Glib::ustring display("");
+    return display;
+}
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The XFCE mode is completely external.
+ */
+bool SetBGXFCE::save_to_config()
 {
     return false;
 }

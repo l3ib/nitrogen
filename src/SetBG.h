@@ -198,4 +198,18 @@ class SetBGPcmanfm : public SetBGGnome {
         virtual Glib::ustring make_display_key(gint head);
 };
 
+class SetBGXFCE : public SetBG {
+    public:
+        virtual Glib::ustring get_fullscreen_key();
+        virtual std::map<Glib::ustring, Glib::ustring> get_active_displays();
+        virtual bool save_to_config();
+        virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+    protected:
+        virtual Glib::ustring get_prefix();
+        virtual Glib::ustring make_display_key(gint head);
+};
+
 #endif
