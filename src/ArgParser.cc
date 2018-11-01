@@ -36,7 +36,9 @@ bool ArgParser::parse
             (std::vector<Glib::ustring> argVec) {
 	bool retval = true;
 
-    for (std::vector<Glib::ustring>::const_iterator i = argVec.begin() + 1; i != argVec.end(); i++) {
+	std::string marker("--");
+
+	for (std::vector<Glib::ustring>::const_iterator i = argVec.begin() + 1; i != argVec.end(); i++) {
 		std::string arg(*i);
 		std::string key = arg;
 		std::string value;
@@ -46,8 +48,7 @@ bool ArgParser::parse
 			continue;
 		}
 
-		std::string::size_type minuspos;
-		if ((minuspos = key.find ("--")) == std::string::npos) {
+		if (key.compare(0, marker.length(), marker) != 0) {
 			// this is not an arg, append it
 			// to the extra string
 			if (extra_arg_str.length ()) {
@@ -58,7 +59,7 @@ bool ArgParser::parse
 			continue;
 		}
 
-		key = std::string (key, minuspos + 2);
+		key = std::string(key, 2);	//trim marker
 
 		std::string::size_type pos = key.find ('=');
 		if (pos != std::string::npos) {
