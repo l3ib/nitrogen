@@ -1607,6 +1607,13 @@ bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gd
         // sets it on monitor0.  just tweak the params here and continue
         disp    = std::string("0");
         strmode = std::string("6");
+    } else {
+        // special checking: make sure it's in active displays, or we'll accidentally set brand new keys
+        std::map<Glib::ustring, Glib::ustring> active_displays = this->get_active_displays();
+        if (active_displays.find(disp) == active_displays.end()) {
+            std::cerr << Glib::ustring::compose("Unknown display value (%1) for XFCE", disp) << "\n";
+            return false;
+        }
     }
 
     // set image
