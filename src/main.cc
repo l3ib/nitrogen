@@ -163,6 +163,8 @@ int main (int argc, char ** argv) {
             setter = new SetBGGnome();
         else if (setter_str == "pcmanfm")
             setter = new SetBGPcmanfm();
+        else if (setter_str == "xfce")
+            setter = new SetBGXFCE();
         else
             setter = SetBG::get_bg_setter();
 

@@ -66,6 +66,9 @@ SetBG* SetBG::get_bg_setter()
         case SetBG::PCMANFM:
             setter = new SetBGPcmanfm();
             break;
+        case SetBG::XFCE:
+            setter = new SetBGXFCE();
+            break;
         case SetBG::DEFAULT:
         default:
             setter = new SetBGXWindows();
@@ -196,6 +199,21 @@ SetBG::RootWindowData SetBG::get_root_window_data(Glib::RefPtr<Gdk::Display> dis
     if (ret) {
         wid = *(guint*)data;
         g_free(data);
+
+        // xfce also sets NAUTILUS_DESKTOP_WINDOW_ID, check for XFCE_DESKTOP_WINDOW
+        ret = gdk_property_get(rootwin->gobj(),
+                               gdk_atom_intern("XFCE_DESKTOP_WINDOW", FALSE),
+                               gdk_atom_intern("WINDOW", FALSE),
+                               0L,
+                               4L, /* length of a window is 32bits*/
+                               FALSE, &type, &format, &length, &data);
+
+        if (ret) {
+            wid = *(guint*)data;
+            g_free(data);
+
+            return SetBG::RootWindowData((Window)wid, SetBG::XFCE, "XFCE_DESKTOP_WINDOW");
+        }
 
         return SetBG::RootWindowData((Window)wid, SetBG::NAUTILUS, "NAUTILUS_DESKTOP_WINDOW_ID");
     } else {
@@ -1567,3 +1585,239 @@ bool SetBGPcmanfm::save_to_config()
     return false;
 }
 
+/*
+ * **************************************************************************
+ * SetBGXFCE
+ * **************************************************************************
+ */
+
+bool SetBGXFCE::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor) {
+    Glib::ustring strmode = "1";
+	switch(mode) {
+		case SetBG::SET_CENTER:     strmode = "1"; break;
+		case SetBG::SET_TILE:       strmode = "2"; break;
+		case SetBG::SET_SCALE:      strmode = "3"; break;   // xfce calls this "stretched"
+		case SetBG::SET_ZOOM:       strmode = "4"; break;   // xfce calls this "scaled"
+		case SetBG::SET_ZOOM_FILL:  strmode = "5"; break;   // xfce calls this "zoomed"
+	};
+
+    if (disp == this->get_fullscreen_key()) {
+        // special handling for fullscreen:
+        // XFCE sets a new mode (value "6", labeled "Spanning Screens" in their config tool), and
+        // sets it on monitor0.  just tweak the params here and continue
+        disp    = std::string("0");
+        strmode = std::string("6");
+    } else {
+        // special checking: make sure it's in active displays, or we'll accidentally set brand new keys
+        std::map<Glib::ustring, Glib::ustring> active_displays = this->get_active_displays();
+        if (active_displays.find(disp) == active_displays.end()) {
+            std::cerr << Glib::ustring::compose("Unknown display value (%1) for XFCE", disp) << "\n";
+            return false;
+        }
+    }
+
+    // set image
+    std::vector<std::string> params;
+    params.push_back(std::string("-s"));
+    params.push_back(std::string(file));
+
+    call_xfconf(disp, std::string("last-image"), params);
+
+    params.clear();
+    params.push_back(std::string("-s"));
+    params.push_back(strmode);
+    call_xfconf(disp, std::string("image-style"), params);
+
+    // set color mode
+    // we only support "solid" color mode (for now!)
+    params.clear();
+    params.push_back(std::string("-s"));
+    params.push_back(std::string("0"));
+    call_xfconf(disp, std::string("color-style"), params);
+
+    // set color
+    params.clear();
+    params.push_back(std::string("--create"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("--type"));
+    params.push_back(std::string("uint"));
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_red()));     // r
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_green()));     // g
+    params.push_back(std::string("-s"));
+    params.push_back(Glib::ustring::compose("%1", bgcolor.get_blue()));     // b
+    params.push_back(std::string("-s"));
+    params.push_back(std::string("65535")); // a
+    call_xfconf(disp, std::string("color1"), params);
+
+	return true;
+}
+
+/*
+ * Make a usable display key to pass to set_bg with a given head number.
+ *
+ * For XFCE, return simply the head/monitor number.
+ */
+Glib::ustring SetBGXFCE::make_display_key(gint head)
+{
+    if (head == -1)
+        return this->get_fullscreen_key();
+
+    return Glib::ustring::compose("%1", head);
+}
+
+/**
+ * Gets all active screens on this display.
+ * This is used by the main window to determine what to show in the dropdown,
+ * if anything.
+ *
+ * Returns a map of display string to human-readable representation.
+ */
+std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
+{
+    std::map<Glib::ustring, Glib::ustring> map_displays;
+
+    // execute xfconf-query, listing keys in -c xfce4-desktop, extract screenX/monitorY entries (just use the monitors)
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("xfconf-query"));
+    vecCmdLine.push_back(std::string("-c"));
+    vecCmdLine.push_back(std::string("xfce4-desktop"));
+    vecCmdLine.push_back(std::string("-l"));
+
+    std::string so;
+    try {
+        Glib::spawn_sync("", vecCmdLine, Glib::SPAWN_SEARCH_PATH, sigc::slot<void>(), &so, NULL, NULL);
+    }
+    catch (Glib::SpawnError e) {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
+
+		std::cerr << "\n";
+        return map_displays;
+    }
+
+    std::vector<std::string> lines = Glib::Regex::split_simple("\n", so);
+    Glib::RefPtr<Glib::Regex> rMonitor = Glib::Regex::create("monitor(\\d+)");
+    Glib::MatchInfo info;
+
+    // augment this info with info we get from Xinerama @TODO use xrandr
+    // trying to catch cases where:
+    // - XFCE config has not yet been generated for a head (add to map)
+    // - a head unplugged (remove from map!)
+    std::vector<std::string> xin_heads;
+
+#ifdef USE_XINERAMA
+    XineramaScreenInfo *xinerama_info;
+    gint xinerama_num_screens;
+    Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
+
+    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+
+    // populate xin_heads, so we don't have to use ifdef guards further down
+    for (int i=0; i < xinerama_num_screens; i++) {
+      std::ostringstream ostr;
+      ostr << xinerama_info[i].screen_number;
+      xin_heads.push_back(ostr.str());
+    }
+#endif
+
+    for (std::vector<std::string>::const_iterator i = lines.begin(); i != lines.end(); i++) {
+
+        bool ok = rMonitor->match(*i, info);
+        if (ok) {
+            std::string monitorNum = info.fetch(1);
+
+            // add it if:
+            // - it's not already in the seen display list
+            // - we have items in xin_heads and this display is in that set
+            if (map_displays.find(monitorNum) == map_displays.end() && (xin_heads.empty() ? true : std::find(xin_heads.begin(), xin_heads.end(), monitorNum) != xin_heads.end())) {
+                guint monitorNumInt;
+                std::istringstream inpstream(monitorNum);
+                inpstream >> monitorNumInt;
+
+                std::ostringstream ostr;
+                ostr << _("Screen") << " " << (monitorNumInt+1);
+
+                map_displays[monitorNum] = ostr.str();
+            }
+        }
+    }
+
+    if (map_displays.size() > 1) {
+        map_displays[this->get_fullscreen_key()] = _("Full Screen");
+    }
+
+    return map_displays;
+}
+
+/**
+ * Gets the full key for "full screen" for this setter.
+ *
+ * For XFCE, simply "fullscreen".
+ */
+Glib::ustring SetBGXFCE::get_fullscreen_key()
+{
+    return Glib::ustring("fullscreen");
+}
+
+Glib::ustring SetBGXFCE::get_prefix()
+{
+    Glib::ustring display("");
+    return display;
+}
+
+/**
+ * Returns if this background setter should be setting the Nitrogen configuration.
+ *
+ * The XFCE mode is completely external.
+ */
+bool SetBGXFCE::save_to_config()
+{
+    return false;
+}
+
+/**
+ * Helper method to call xfconf asynchronously.
+ *
+ * Settings in XFCE appear to only be settable one at a time, so we have to call this method
+ * repeatedly to set all the various parameters Nitrogen handles.
+ *
+ * Expects to set properties in the form "/backdrop/screen0/monitor<X>/workspace0/<key>", where
+ * the monitor number is set by the `disp` param.
+ *
+ * @param   disp    The display, which translates into monitorX.
+ * @param   key     The name of the property key to set.
+ * @param   params  Parameters (typically ["-s", "some value"]).
+ * @return          Success or if it had an issue with spawn.
+ */
+bool SetBGXFCE::call_xfconf(Glib::ustring disp, std::string key, const std::vector<std::string>& params) {
+    std::vector<std::string> vecCmdLine;
+    vecCmdLine.push_back(std::string("xfconf-query"));
+    vecCmdLine.push_back(std::string("-c"));
+    vecCmdLine.push_back(std::string("xfce4-desktop"));
+    vecCmdLine.push_back(std::string("-p"));
+    vecCmdLine.push_back(Glib::ustring::compose("/backdrop/screen0/monitor%1/workspace0/%2", disp, key));
+    vecCmdLine.insert(vecCmdLine.end(), params.begin(), params.end());
+
+    try {
+        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+    }
+    catch (Glib::SpawnError e) {
+		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
+
+        for (std::vector<std::string>::const_iterator i = vecCmdLine.begin(); i != vecCmdLine.end(); i++)
+			std::cerr << *i << " ";
+
+		std::cerr << "\n";
+
+        return false;
+	}
+}
