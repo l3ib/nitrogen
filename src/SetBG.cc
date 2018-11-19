@@ -1701,13 +1701,37 @@ std::map<Glib::ustring, Glib::ustring> SetBGXFCE::get_active_displays()
     Glib::RefPtr<Glib::Regex> rMonitor = Glib::Regex::create("monitor(\\d+)");
     Glib::MatchInfo info;
 
+    // augment this info with info we get from Xinerama @TODO use xrandr
+    // trying to catch cases where:
+    // - XFCE config has not yet been generated for a head (add to map)
+    // - a head unplugged (remove from map!)
+    std::vector<std::string> xin_heads;
+
+#ifdef USE_XINERAMA
+    XineramaScreenInfo *xinerama_info;
+    gint xinerama_num_screens;
+    Glib::RefPtr<Gdk::Display> dpy = Gdk::DisplayManager::get()->get_default_display();
+
+    xinerama_info = XineramaQueryScreens(GDK_DISPLAY_XDISPLAY(dpy->gobj()), &xinerama_num_screens);
+
+    // populate xin_heads, so we don't have to use ifdef guards further down
+    for (int i=0; i < xinerama_num_screens; i++) {
+      std::ostringstream ostr;
+      ostr << xinerama_info[i].screen_number;
+      xin_heads.push_back(ostr.str());
+    }
+#endif
+
     for (std::vector<std::string>::const_iterator i = lines.begin(); i != lines.end(); i++) {
 
         bool ok = rMonitor->match(*i, info);
         if (ok) {
             std::string monitorNum = info.fetch(1);
 
-            if (map_displays.find(monitorNum) == map_displays.end()) {
+            // add it if:
+            // - it's not already in the seen display list
+            // - we have items in xin_heads and this display is in that set
+            if (map_displays.find(monitorNum) == map_displays.end() && (xin_heads.empty() ? true : std::find(xin_heads.begin(), xin_heads.end(), monitorNum) != xin_heads.end())) {
                 guint monitorNumInt;
                 std::istringstream inpstream(monitorNum);
                 inpstream >> monitorNumInt;
