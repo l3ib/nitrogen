@@ -1808,7 +1808,7 @@ bool SetBGXFCE::call_xfconf(Glib::ustring disp, std::string key, const std::vect
     vecCmdLine.insert(vecCmdLine.end(), params.begin(), params.end());
 
     try {
-        Glib::spawn_async("", vecCmdLine, Glib::SPAWN_SEARCH_PATH);
+        Glib::spawn_async(std::string(""), vecCmdLine, Glib::SPAWN_SEARCH_PATH);
     }
     catch (Glib::SpawnError e) {
 		std::cerr << _("ERROR") << "\n" << e.what() << "\n";
