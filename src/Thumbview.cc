@@ -154,10 +154,24 @@ Thumbview::Thumbview()
 	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
 
 	// load loading image, which not all themes seem to provide
-	try {
-		this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", 64, Gtk::ICON_LOOKUP_FORCE_SVG);
-	} catch (const Gtk::IconThemeError& e) { std::cerr << "ERR: Could not load \"image-loading\" from icon theme, this indicates a problem with your Gtk/Gtkmm install.\n"; }
-      catch (const Gdk::PixbufError& e) { std::cerr << "ERR: Could not load \"image-loading\" from icon theme, this indicates a problem with your Gtk/Gtkmm install.\n"; }
+	std::vector<guint> sizes;
+	sizes.push_back(64);
+	sizes.push_back(48);
+	sizes.push_back(24);
+	sizes.push_back(16);
+
+	for (std::vector<guint>::const_iterator i = sizes.begin(); i != sizes.end(); i++) {
+		try {
+			this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", *i, (Gtk::IconLookupFlags)0);
+			break;
+		} catch (const Gtk::IconThemeError& e) {
+		} catch (const Gdk::PixbufError& e) {
+		}
+	}
+
+	if (!this->loading_image) {
+		std::cerr << "WARN: Could not load \"image-loading\" from icon theme, tried sizes 64/48/24/16.\n";
+	}
 
 	// init dispatcher
 	this->dispatch_thumb.connect(sigc::mem_fun(this, &Thumbview::handle_dispatch_thumb));
