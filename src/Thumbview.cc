@@ -154,18 +154,23 @@ Thumbview::Thumbview()
 	view.set_search_equal_func (sigc::mem_fun (this, &Thumbview::search_compare));
 
 	// load loading image, which not all themes seem to provide
+	std::vector<std::string> icon_names;
+	icon_names.push_back("image-loading");
+	icon_names.push_back("image-loading-symbolic");
+
 	std::vector<guint> sizes;
 	sizes.push_back(64);
 	sizes.push_back(48);
 	sizes.push_back(24);
 	sizes.push_back(16);
 
-	for (std::vector<guint>::const_iterator i = sizes.begin(); i != sizes.end(); i++) {
-		try {
-			this->loading_image = Gtk::IconTheme::get_default()->load_icon("image-loading", *i, (Gtk::IconLookupFlags)0);
-			break;
-		} catch (const Gtk::IconThemeError& e) {
-		} catch (const Gdk::PixbufError& e) {
+	for (std::vector<std::string>::const_iterator i = icon_names.begin(); i != icon_names.end() && !this->loading_image; i++) {
+		for (std::vector<guint>::const_iterator j = sizes.begin(); j != sizes.end() && !this->loading_image; j++) {
+			try {
+				this->loading_image = Gtk::IconTheme::get_default()->load_icon(*i, *j, (Gtk::IconLookupFlags)0);
+			} catch (const Gtk::IconThemeError& e) {
+			} catch (const Gdk::PixbufError& e) {
+			}
 		}
 	}
 
