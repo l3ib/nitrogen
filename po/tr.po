@@ -1,0 +1,244 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR l3ib.org
+# This file is distributed under the same license as the nitrogen package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: nitrogen 1.6.1\n"
+"Report-Msgid-Bugs-To: daf@minuslab.net\n"
+"POT-Creation-Date: 2017-02-11 14:19-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Yaşar Çiv <yasarciv@protonmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Language: tr\n"
+"X-Source-Language: C\n"
+
+#: src/ArgParser.cc:75
+msgid "Unexpected argument "
+msgstr "Beklenmeyen değişken "
+
+#: src/ArgParser.cc:84
+msgid " expects an argument."
+msgstr " beklenen bir değişken."
+
+#: src/ArgParser.cc:87
+msgid " does not expect an argument."
+msgstr " beklenen bir değişken değil."
+
+#: src/ArgParser.cc:93
+msgid " conflicts with another argument."
+msgstr " başka bir değişkenle çatışıyor."
+
+#: src/ArgParser.cc:105
+msgid "Usage:"
+msgstr "Kullanım:"
+
+#: src/Config.cc:128 src/Config.cc:217
+msgid "ERROR: Unable to load config file"
+msgstr "HATA: Yapılandırma dosyası yüklenemedi"
+
+#: src/Config.cc:139
+msgid "Couldn't find group for"
+msgstr "Şunun için grup bulunamadı"
+
+#: src/Config.cc:151
+msgid "Could not get filename from config file."
+msgstr "Yapılandırma dosyasından dosya adı alınamadı."
+
+#: src/Config.cc:160
+msgid "Could not get mode from config file."
+msgstr "Yapılandırma dosyasından kip alınamadı."
+
+#: src/Config.cc:219
+msgid "The error code returned was"
+msgstr "Döndürülen hata kodu şuydu"
+
+#: src/Config.cc:220
+msgid "We expected"
+msgstr "Bekledik"
+
+#: src/Config.cc:220
+msgid "or"
+msgstr "veya"
+
+#: src/NWindow.cc:253
+msgid "You previewed an image without applying it, apply?"
+msgstr "Bir resmi uygulamadan önizlediniz, uygulansın mı?"
+
+#: src/NWindow.cc:329
+msgid "Automatic"
+msgstr "Otomatik"
+
+#: src/NWindow.cc:336
+msgid "Scaled"
+msgstr "Ölçeklenmiş"
+
+#: src/NWindow.cc:344
+msgid "Centered"
+msgstr "Ortalanmış"
+
+#: src/NWindow.cc:352
+msgid "Tiled"
+msgstr "Döşenmiş"
+
+#: src/NWindow.cc:361
+msgid "Zoomed"
+msgstr "Büyütülmüş"
+
+#: src/NWindow.cc:362
+msgid "Zoomed Fill"
+msgstr "Büyütülmüş Dolgu"
+
+#: src/SetBG.cc:516 src/SetBG.cc:544
+msgid "Scale"
+msgstr "Ölçekle"
+
+#: src/SetBG.cc:519 src/SetBG.cc:546
+msgid "Center"
+msgstr "Ortala"
+
+#: src/SetBG.cc:522 src/SetBG.cc:548
+msgid "Tile"
+msgstr "Döşe"
+
+#: src/SetBG.cc:525 src/SetBG.cc:550
+msgid "Zoom"
+msgstr "Büyüt"
+
+#: src/SetBG.cc:528 src/SetBG.cc:552
+msgid "ZoomFill"
+msgstr "Büyüterek Doldur"
+
+#: src/SetBG.cc:531 src/SetBG.cc:554
+msgid "Auto"
+msgstr "Otomatik"
+
+#: src/SetBG.cc:622
+msgid "Could not get bg groups from config file."
+msgstr "Yapılandırma dosyasından arka plan grupları alınamadı."
+
+#: src/SetBG.cc:646 src/SetBG.cc:653
+msgid "ERROR"
+msgstr "HATA"
+
+#: src/SetBG.cc:665 src/SetBG.cc:1040
+msgid "Could not open display"
+msgstr "Ekran açılamadı"
+
+#: src/SetBG.cc:726
+msgid "ERROR: Could not load file in bg set"
+msgstr "HATA: arka plan ayarında dosya yüklenemedi"
+
+#: src/SetBG.cc:804
+msgid "Unknown mode for saved bg"
+msgstr "Kaydedilmiş arka plan için bilinmeyen kip"
+
+#: src/SetBG.cc:918
+msgid "ERROR: BG set could not make atoms."
+msgstr "HATA: Arka Plan ayarı atom oluşturamadı."
+
+#: src/SetBG.cc:1019 src/SetBG.cc:1119 src/SetBG.cc:1521
+msgid "Screen"
+msgstr "Ekran"
+
+#: src/SetBG.cc:1114 src/SetBG.cc:1514
+msgid "Full Screen"
+msgstr "Tam Ekran"
+
+#: src/SetBG.cc:1179
+msgid "Could not find Xinerama screen number"
+msgstr "Xinerama ekran numarası bulunamadı"
+
+#: src/Util.cc:95
+msgid "Restore saved backgrounds"
+msgstr "Kayıtlı arka planları geri yükle"
+
+#: src/Util.cc:96
+msgid "Do not recurse into subdirectories"
+msgstr "Alt dizinlere özyineleme yapma"
+
+#: src/Util.cc:97
+msgid ""
+"How to sort the backgrounds. Valid options are:\n"
+"\t\t\t* alpha, for alphanumeric sort\n"
+"\t\t\t* ralpha, for reverse alphanumeric sort\n"
+"\t\t\t* time, for last modified time sort (oldest first)\n"
+"\t\t\t* rtime, for reverse last modified time sort (newest first)"
+msgstr ""
+"Arka planlar nasıl sıralanır. Geçerli seçenekler:\n"
+"\t\t\t* alfasayısal sıralama için alfa\n"
+"\t\t\t* ters alfasayısal sıralama için ralpha\n"
+"\t\t\t* son değiştirilme zamanı sıralaması için (en eskisi) time\n"
+"\t\t\t* son değiştirilme zamanı tersine (en yenisi) rtime"
+
+#: src/Util.cc:98
+msgid "background color in hex, #000000 by default"
+msgstr "arka plan rengi onaltılık, varsayılan olarak #000000"
+
+#: src/Util.cc:99
+msgid "Select xinerama/multihead display in GUI, 0..n, -1 for full"
+msgstr "Arayüzde xinerama/çok başlı ekranı seçin, tam olarak 0..n, -1"
+
+#: src/Util.cc:100
+msgid "Force setter engine: xwindows, xinerama, gnome, pcmanfm"
+msgstr "Zorla ayarlama motoru: xwindows, xinerama, gnome, pcmanfm"
+
+#: src/Util.cc:101
+msgid "Choose random background from config or given directory"
+msgstr "Yapılandırmadan veya verilen dizinden rastgele arkaplan seç"
+
+#: src/Util.cc:106 src/Util.cc:107 src/Util.cc:108 src/Util.cc:109
+#: src/Util.cc:110 src/Util.cc:111
+msgid "Sets the background to the given file"
+msgstr "Arka planı verilen dosyaya ayarlar"
+
+#: src/Util.cc:106
+msgid "scaled"
+msgstr "ölçeklenmiş"
+
+#: src/Util.cc:107
+msgid "tiled"
+msgstr "döşenmiş"
+
+#: src/Util.cc:108
+msgid "auto"
+msgstr "otomatik"
+
+#: src/Util.cc:109
+msgid "centered"
+msgstr "ortalanmış"
+
+#: src/Util.cc:110
+msgid "zoom"
+msgstr "büyütülmüş"
+
+#: src/Util.cc:111
+msgid "zoom-fill"
+msgstr "büyütülmüş dolgu"
+
+#: src/Util.cc:112
+msgid "Saves the background permanently"
+msgstr "Arka planı kalıcı olarak kaydeder"
+
+#: src/Util.cc:207
+msgid "Could not open dir"
+msgstr "Dizin açılamadı"
+
+#: src/Util.cc:292
+msgid "Currently set background"
+msgstr "Şu anda ayarlanmış arka plan"
+
+#: src/Util.cc:295
+msgid "for"
+msgstr "için"
+
+#: src/main.cc:133
+msgid "Error parsing command line"
+msgstr "Komut satırı ayrıştırılırken hata oluştu"
