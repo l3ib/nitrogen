@@ -52,6 +52,9 @@ SetBG* SetBG::get_bg_setter()
         case SetBG::NEMO:
             setter = new SetBGNemo();
             break;
+        case SetBG::CAJA:
+            setter = new SetBGCaja();
+            break;
 #ifdef USE_XINERAMA
         case SetBG::XINERAMA:
             XineramaScreenInfo *xinerama_info;
@@ -311,6 +314,7 @@ SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
 
                 if (strclass == std::string("Xfdesktop")) retval.type = SetBG::XFCE;     else
                 if (strclass == std::string("Nautilus"))  retval.type = SetBG::NAUTILUS; else
+                if (strclass == std::string("Caja"))      retval.type = SetBG::CAJA;     else
                 if (strclass == std::string("Nemo"))      retval.type = SetBG::NEMO;     else
                 if (strclass == std::string("Pcmanfm"))   retval.type = SetBG::PCMANFM;  else
                 if (strclass == std::string("Conky") || strclass == std::string("conky"))
@@ -1365,6 +1369,51 @@ void SetBGNemo::set_show_desktop()
 bool SetBGNemo::save_to_config()
 {
     return false;
+}
+
+/*
+ * **************************************************************************
+ * SetBGCaja
+ * **************************************************************************
+ */
+
+/**
+ * Returns the schema key to be used for setting background settings.
+ *
+ * Can be overridden.
+ */
+Glib::ustring SetBGCaja::get_gsettings_key()
+{
+    return Glib::ustring("org.mate.background");
+}
+
+/**
+ * Sets the bg if caja is appearing to draw the desktop image.
+ */
+bool SetBGCaja::set_bg(Glib::ustring &disp, Glib::ustring file, SetMode mode, Gdk::Color bgcolor)
+{
+    Glib::ustring strmode;
+    switch(mode) {
+        case SetBG::SET_SCALE:      strmode = "stretched";  break;
+        case SetBG::SET_TILE:       strmode = "wallpaper"; break;
+        case SetBG::SET_CENTER:     strmode = "centered"; break;
+        case SetBG::SET_ZOOM:       strmode = "scaled"; break;
+        case SetBG::SET_ZOOM_FILL:  strmode = "spanned"; break;
+        default:                    strmode = "zoom"; break;
+        };
+
+    Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create(get_gsettings_key());
+
+    Glib::RefPtr<Gio::File> iofile = Gio::File::create_for_commandline_arg(file);
+
+    settings->set_string("picture-filename", iofile->get_path());
+    settings->set_string("picture-options", strmode);
+    settings->set_string("primary-color", bgcolor.to_string());
+    settings->set_string("secondary-color", bgcolor.to_string());
+
+    set_show_desktop();
+
+    return true;
 }
 
 /*
