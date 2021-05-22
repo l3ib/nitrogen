@@ -58,6 +58,7 @@ class SetBG {
             XINERAMA,
             NEMO,
             PCMANFM,
+            CAJA,
             IGNORE      // Conky, etc
         };
 
@@ -182,6 +183,16 @@ class SetBGNemo : public SetBGGnome {
     protected:
         virtual Glib::ustring get_gsettings_key();
         virtual void set_show_desktop();
+};
+
+class SetBGCaja : public SetBGGnome {
+    public:
+        virtual bool set_bg(Glib::ustring &disp,
+                            Glib::ustring file,
+                            SetMode mode,
+                            Gdk::Color bgcolor);
+    protected:
+        virtual Glib::ustring get_gsettings_key();
 };
 
 class SetBGPcmanfm : public SetBGGnome {
