@@ -6,5 +6,5 @@
      ../src/SetBG.cc \
      ../src/Thumbview.cc \
      ../src/Util.cc \
-     ../src/main.cc
+     ../src/main.cc \
      ../src/NPrefsWindow.cc
