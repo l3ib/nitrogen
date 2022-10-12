@@ -1,9 +1,9 @@
 SUBDIRS = icons
 
-appdatadir = $(datarootdir)/appdata
+metainfodir = $(datarootdir)/metainfo
 desktopdir = $(datadir)/applications
 desktop_DATA = nitrogen.desktop
-appdata_DATA = nitrogen.appdata.xml
+metainfo_DATA = nitrogen.metainfo.xml
 
 UPDATE_DESKTOP = update-desktop-database $(datadir)/applications || :
 
@@ -12,5 +12,5 @@ install-data-hook:
 uninstall-hook: 
 	$(UPDATE_DESKTOP)
 
-EXTRA_DIST = icon-theme-installer nitrogen.appdata.xml
+EXTRA_DIST = icon-theme-installer nitrogen.metainfo.xml
 
