@@ -321,6 +321,8 @@ SetBG::RootWindowData SetBG::check_window_type(Display *display, Window window)
                     retval.type = SetBG::IGNORE;   else
                 if (strclass == std::string("awesome"))         // awesome's widget library "drawin" will set _NET_WM_WINDOW_TYPE_DESKTOP, should be safe to ignore
                     retval.type = SetBG::IGNORE;   else
+                if (strclass == std::string("Nemo-desktop"))
+                    retval.type = SetBG::IGNORE;     else
                 {
                     std::cerr << "UNKNOWN ROOT WINDOW TYPE DETECTED (" << strclass << "), please file a bug\n";
                     retval.type = SetBG::UNKNOWN;
