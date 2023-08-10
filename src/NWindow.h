@@ -59,6 +59,7 @@ class NWindow : public Gtk::Window {
         Gtk::ColorButton button_bgcolor;
 
         bool m_dirty;       // set if the user double clicks to preview but forgets to press apply
+        std::map<Glib::ustring, std::pair<bool, std::string>> m_dirty_displays;
 
         void setup_select_boxes();
 

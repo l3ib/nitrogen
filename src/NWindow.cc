@@ -199,9 +199,16 @@ void NWindow::apply_bg () {
     Glib::ustring thedisp = this->select_display.get_active_data();
     Gdk::Color bgcolor = this->button_bgcolor.get_color();
 
-    // save
-    if (saveToConfig)
-        Config::get_instance()->set_bg(thedisp, file, mode, bgcolor);
+    for(std::map<Glib::ustring, std::pair<bool, std::string>>::iterator i = m_dirty_displays.begin(); i != m_dirty_displays.end(); ++i)
+    {
+        auto disp = (*i).first;
+        if (saveToConfig && disp != "xin_-1")
+            Config::get_instance()->set_bg(disp, (*i).second.second, mode, bgcolor);
+
+        // remove dirty flag
+        (*i).second.first = false;
+        (*i).second.second = "";
+    }
 
     // tell the bg setter to forget about the first pixmap
     bg_setter->clear_first_pixmaps();
@@ -298,7 +305,9 @@ bool NWindow::set_bg(const Glib::ustring file) {
 	// set it
     bg_setter->set_bg(thedisp, file, mode, bgcolor);
 
-    return bg_setter->save_to_config();
+    bool dirty = bg_setter->save_to_config();
+    m_dirty_displays[thedisp] = {dirty, file};
+    return dirty;
 }
 
 // leethax destructor
@@ -369,6 +378,7 @@ void NWindow::setup_select_boxes() {
 
     for (std::map<Glib::ustring, Glib::ustring>::const_iterator i = map_displays.begin(); i != map_displays.end(); i++) {
         this->select_display.add_image_row( video_display_icon, (*i).second, (*i).first, false);
+        m_dirty_displays[(*i).first] = {false, ""};
     }
 
 	return;
