@@ -201,8 +201,9 @@ void NWindow::apply_bg () {
 
     for(std::map<Glib::ustring, std::pair<bool, std::string>>::iterator i = m_dirty_displays.begin(); i != m_dirty_displays.end(); ++i)
     {
-        if (saveToConfig)
-            Config::get_instance()->set_bg((*i).first, (*i).second.second, mode, bgcolor);
+        auto disp = (*i).first;
+        if (saveToConfig && disp != "xin_-1")
+            Config::get_instance()->set_bg(disp, (*i).second.second, mode, bgcolor);
 
         // remove dirty flag
         (*i).second.first = false;
