@@ -538,41 +538,60 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> 
  */
 Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_img_fill(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
 
-	int x, y, w, h;
+	int x, y, w, h, resx, resy;
 
-	// depends on bigger side
 	unsigned orig_w = orig->get_width();
 	unsigned orig_h = orig->get_height();
 
-    int dw = winw - orig_w;
-    int dh = winh - orig_h;
+    Glib::RefPtr<Gdk::Pixbuf> tmp;
+    Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(
+        orig->get_colorspace(), orig->get_has_alpha(),
+		orig->get_bits_per_sample(), winw, winh);
 
-    // what if we expand it to fit the screen width?
+	retval->fill(GdkColorToUint32(bgcolor));
+
+    // apply the zoom fill image first
     x = 0;
     w = winw;
     h = winw * orig_h / orig_w;
     y = (h - winh) / 2;
 
     if (!(h >= winh)) {
-        // the image isn't tall enough that way!
-        // expand it to fit the screen height
         y = 0;
         w = winh * orig_w / orig_h;
         h = winh;
         x = (w - winw) / 2;
     }
 
-	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(w, h,
-		Gdk::INTERP_BILINEAR);
-	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(
-		orig->get_colorspace(), orig->get_has_alpha(),
-		orig->get_bits_per_sample(), winw, winh);
-
-	// use passed bg color
-	retval->fill(GdkColorToUint32(bgcolor));
-
-	// copy it in
+	tmp = orig->scale_simple(w, h, Gdk::INTERP_BILINEAR);
 	tmp->copy_area(x, y, winw, winh, retval, 0, 0);
+
+    // apply the zoom image
+	if ( orig_w > orig_h && ((float)orig_w / (float)orig_h) > ((float)winw / (float)winh)) {
+		resx = winw;
+		resy = (int)(((float)(orig->get_height()*resx))/(float)orig->get_width());
+		x = 0;
+		y = (winh - resy) >> 1;
+
+	} else {
+		resy = winh;
+		resx = (int)(((float)(orig->get_width()*resy))/(float)orig->get_height());
+		y = 0;
+		x = (winw - resx) >> 1;
+
+	}
+
+	if ( resx > winw )
+		resx = winw;
+	if ( resy > winh )
+		resy = winh;
+	if ( x < 0 )
+		x = 0;
+	if ( y < 0 )
+		y = 0;
+
+	tmp = orig->scale_simple(resx, resy, Gdk::INTERP_BILINEAR);
+	tmp->copy_area(0, 0, tmp->get_width(), tmp->get_height(), retval, x, y);
 
 	return retval;
 }
