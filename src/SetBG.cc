@@ -600,6 +600,9 @@ Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
 		case SET_ZOOM_FILL:
 			ret = Glib::ustring(_("ZoomFill"));
 			break;
+		case SET_ZOOM_IMG_FILL:
+			ret = Glib::ustring(_("ZoomImgFill"));
+			break;
         case SET_AUTO:
             ret = Glib::ustring(_("Auto"));
             break;
@@ -624,6 +627,8 @@ SetBG::SetMode SetBG::string_to_mode( const Glib::ustring str ) {
 		return SetBG::SET_ZOOM;
 	else if ( str == Glib::ustring(_("ZoomFill")) )
 		return SetBG::SET_ZOOM_FILL;
+	else if ( str == Glib::ustring(_("ZoomImgFill")) )
+		return SetBG::SET_ZOOM_IMG_FILL;
     else if ( str == Glib::ustring(_("Auto")) )
         return SetBG::SET_AUTO;
 
