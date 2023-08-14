@@ -360,6 +360,7 @@ void NWindow::setup_select_boxes() {
 
 	this->select_mode.add_image_row( icon, _("Zoomed"), SetBG::mode_to_string(SetBG::SET_ZOOM), false );
 	this->select_mode.add_image_row( icon, _("Zoomed Fill"), SetBG::mode_to_string(SetBG::SET_ZOOM_FILL), false );
+	this->select_mode.add_image_row( icon, _("Zoomed Image Fill"), SetBG::mode_to_string(SetBG::SET_ZOOM_IMG_FILL), false );
 
 
     // @TODO GET ALL THIS INTEL FROM THE SETTER

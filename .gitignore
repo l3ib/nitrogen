@@ -27,3 +27,5 @@ po/*.sin
 po/*quot*
 
 data/nitrogen.desktop
+.cache/
+compile_commands.json

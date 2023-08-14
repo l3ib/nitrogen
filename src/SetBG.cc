@@ -529,6 +529,55 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_fill(const Glib::RefPtr<Gdk::Pixbuf> 
 }
 
 /**
+ * Handles SET_ZOOM_IMG_FILL mode.
+ *
+ * @param	orig	The original pixbuf
+ * @param	winw	Width of the window
+ * @param	winh	Height of the window
+ * @param	bgcolor	Background color
+ */
+Glib::RefPtr<Gdk::Pixbuf> SetBG::make_zoom_img_fill(const Glib::RefPtr<Gdk::Pixbuf> orig, const gint winw, const gint winh, Gdk::Color bgcolor) {
+
+	int x, y, w, h;
+
+	// depends on bigger side
+	unsigned orig_w = orig->get_width();
+	unsigned orig_h = orig->get_height();
+
+    int dw = winw - orig_w;
+    int dh = winh - orig_h;
+
+    // what if we expand it to fit the screen width?
+    x = 0;
+    w = winw;
+    h = winw * orig_h / orig_w;
+    y = (h - winh) / 2;
+
+    if (!(h >= winh)) {
+        // the image isn't tall enough that way!
+        // expand it to fit the screen height
+        y = 0;
+        w = winh * orig_w / orig_h;
+        h = winh;
+        x = (w - winw) / 2;
+    }
+
+	Glib::RefPtr<Gdk::Pixbuf> tmp = orig->scale_simple(w, h,
+		Gdk::INTERP_BILINEAR);
+	Glib::RefPtr<Gdk::Pixbuf> retval = Gdk::Pixbuf::create(
+		orig->get_colorspace(), orig->get_has_alpha(),
+		orig->get_bits_per_sample(), winw, winh);
+
+	// use passed bg color
+	retval->fill(GdkColorToUint32(bgcolor));
+
+	// copy it in
+	tmp->copy_area(x, y, winw, winh, retval, 0, 0);
+
+	return retval;
+}
+
+/**
  * Utility function to convert a mode (an enum) to a string.
  */
 Glib::ustring SetBG::mode_to_string( const SetMode mode ) {
@@ -823,6 +872,9 @@ Glib::RefPtr<Gdk::Pixbuf> SetBG::make_resized_pixbuf(Glib::RefPtr<Gdk::Pixbuf> p
         case SetBG::SET_ZOOM_FILL:
             outpixbuf = SetBG::make_zoom_fill(pixbuf, tarw, tarh, bgcolor);
             break;
+
+        case SetBG::SET_ZOOM_IMG_FILL:
+            outpixbuf = SetBG::make_zoom_img_fill(pixbuf, tarw, tarh, bgcolor);
 
         default:
             std::cerr << _("Unknown mode for saved bg") << std::endl;
