@@ -253,7 +253,9 @@ bool is_image(std::string file) {
 		file.find(".gif")  != std::string::npos ||
 		file.find(".GIF")  != std::string::npos ||
 		file.find(".svg")  != std::string::npos ||
-        	file.find(".SVG")  != std::string::npos)
+        	file.find(".SVG")  != std::string::npos ||
+		file.find(".webp")  != std::string::npos ||
+		file.find(".WEBP")  != std::string::npos)
 		return true;
 
 	return false;
